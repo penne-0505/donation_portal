@@ -22,20 +22,6 @@ Definitions to suppress Markdown warnings
 
 ## Backlog
 
-### [Feature] Discord OAuth & セッション実装 (Phase 2)
-- **ID**: Core-Feature-2
-- **Priority**: P1
-- **Size**: M
-- **Area**: Core
-- **Dependencies**: DevOps-Chore-1
-- **Goal**: Discord OAuthで表示名と掲示同意を取得し、署名付きCookieでセッション管理できるようにする。
-- **Steps**:
-  1. `docs/plan/donation-portal/phase-02-oauth/plan.md` のタスクを参照し、`/oauth/start` と `/oauth/callback` を実装してstate Cookie検証を確立する。
-  2. `/donate` ページにOAuth導線と掲示同意UIを追加し、sess Cookieの値を反映する。
-  3. Discord OAuth実機テストとCookie属性確認を行い、エラーハンドリングとログ出力を整える。
-- **Description**: Donation Portal MVP Phase 2の実装。Stripe連携前に必要な表示名取得・同意フローを完成させる。
-- **Plan**: [`docs/plan/donation-portal/phase-02-oauth/plan.md`](docs/plan/donation-portal/phase-02-oauth/plan.md)
-
 ### [Feature] Stripe Checkout & Metadata 実装 (Phase 3)
 - **ID**: Core-Feature-3
 - **Priority**: P1

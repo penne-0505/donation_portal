@@ -45,14 +45,14 @@ function parseSessionCookieValue(cookieValue) {
   let payloadText;
   try {
     payloadText = base64UrlDecode(encodedPayload);
-  } catch (error) {
+  } catch (_error) {
     return { type: 'invalid' };
   }
 
   let payload;
   try {
     payload = JSON.parse(payloadText);
-  } catch (error) {
+  } catch (_error) {
     return { type: 'invalid' };
   }
 
@@ -67,7 +67,7 @@ function parseSessionCookieValue(cookieValue) {
   let session;
   try {
     session = JSON.parse(payload.value);
-  } catch (error) {
+  } catch (_error) {
     return { type: 'invalid' };
   }
 
@@ -101,7 +101,7 @@ function getCookieValue(doc, name) {
       const rawValue = trimmed.slice(name.length + 1);
       try {
         return decodeURIComponent(rawValue);
-      } catch (error) {
+      } catch (_error) {
         return rawValue;
       }
     }

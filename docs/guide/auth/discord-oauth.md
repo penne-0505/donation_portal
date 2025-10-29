@@ -1,10 +1,10 @@
 ---
 title: 'Discord OAuth フロー運用ガイド'
 domain: 'donation-portal'
-status: 'draft'
-version: '0.1.0'
+status: 'active'
+version: '0.1.1'
 created: '2025-10-30'
-updated: '2025-10-30'
+updated: '2025-10-31'
 related_issues: []
 related_prs: []
 references:
@@ -49,12 +49,12 @@ Discord OAuth を利用して寄附者の表示名と掲示同意を取得し、
 | --- | --- |
 | 名前 | `sess` |
 | 値 | `{ "display_name": "<Discord 表示名>", "discord_id": "<ユーザーID>", "consent_public": true, "exp": 1730257500 }` を JSON 化し Base64URL + 署名 |
-| TTL | 24 時間（Phase 2 では 86,400 秒を目安） |
-| 属性 | `Secure`, `HttpOnly`, `SameSite=Lax`, `Path=/`, `Max-Age=86400` |
+| TTL | 600 秒（10 分） |
+| 属性 | `Secure`, `HttpOnly`, `SameSite=Lax`, `Path=/`, `Max-Age=600` |
 | 用途 | `/donate` の UI 状態管理と Stripe metadata 連携の前準備 |
 
 - `display_name` には Discord の `global_name` を優先し、未設定なら `username` を保存します。
-- TTL は Phase 3 以降で要件に応じて短縮する想定ですが、Phase 2 時点では 24 時間を許容します。
+- TTL は Phase 2 実装時点で 10 分です（Phase 3 で要件を再評価予定）。
 - 署名方式とキーは state Cookie と同一です。ローテーション時は両 Cookie を同時に破棄します。
 
 ## エラーハンドリング
@@ -63,10 +63,11 @@ Discord OAuth を利用して寄附者の表示名と掲示同意を取得し、
 | --- | --- | --- | --- |
 | state 署名不一致 | `GET /oauth/callback` | `/donate?error=state_invalid` に 302、UI で「もう一度ログインしてください」 | `warn` ログに `requestId` とエラー種別のみ記録。 |
 | state TTL 失効 | `GET /oauth/callback` | `/donate?error=state_expired` へリダイレクト | `warn` ログと共に `nonce` を破棄。 |
-| Discord 認可拒否 (`error=access_denied`) | Discord からのリダイレクト | `/donate?error=discord_denied` で再試行導線を表示 | `info` レベルで拒否を記録、再認可を案内。 |
-| トークン交換失敗 | Discord API | `/donate?error=discord_exchange` へ遷移し UI で再ログインを案内 | `error` ログ（HTTP ステータスと Discord レスポンス ID のみ）。 |
-| ユーザー情報取得失敗 | Discord API | `/donate?error=discord_profile` に遷移 | `error` ログ。必要なら Discord 側の状態を確認。 |
-| Cookie 発行失敗 | Functions | `/donate?error=cookie_issue` を表示しサポート問い合わせを案内 | `error` ログと共に Cloudflare Logs で詳細調査。 |
+| state パラメータ不一致 | `GET /oauth/callback` | `/donate?error=state_mismatch` に遷移 | `error` ログに差分のみ記録（コード等は残さない）。 |
+| OAuth リクエスト欠落 (`code` / `state`) | `GET /oauth/callback` | `/donate?error=invalid_request` に遷移 | `error` ログ（パラメータ欠落のみ記録）。 |
+| Discord トークン交換失敗 | Discord API | `/donate?error=discord_token_error` へ遷移し UI で再ログインを案内 | `error` ログ（HTTP ステータスのみ記録）。 |
+| ユーザー情報取得失敗 | Discord API | `/donate?error=discord_user_error` に遷移 | `error` ログ。必要なら Discord 側の状態を確認。 |
+| Cookie 署名キー不足 | Functions | start: 500 応答 / callback: 例外発生（Pages 側で 500） | Secrets 設定を再確認し、キーを登録後に再デプロイ。 |
 
 - エラーコードは UI とドキュメント（FAQ/Runbook）で共通化し、Pages Functions から返すクエリパラメータも統一します。
 - 重大障害（Discord API ダウン、署名キー漏洩など）が発生した場合は TODO リストにある運用タスク（Core-Feature-5 以降）で定義される Incident 手順に従います。
