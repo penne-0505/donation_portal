@@ -1,6 +1,7 @@
 declare namespace NodeJS {
   interface ProcessEnv {
     readonly npm_package_version?: string;
+    readonly COOKIE_SIGN_KEY?: string;
   }
 }
 
