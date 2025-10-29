@@ -4,7 +4,11 @@ import assert from 'node:assert/strict';
 import { onRequestGet as oauthStart } from '../functions/oauth/start.js';
 import { onRequestGet as oauthCallback } from '../functions/oauth/callback.js';
 
-type Env = { COOKIE_SIGN_KEY?: string };
+type Env = {
+  COOKIE_SIGN_KEY?: string;
+  DISCORD_CLIENT_ID?: string;
+  DISCORD_REDIRECT_URI?: string;
+};
 
 type Context = {
   request: Request;
@@ -27,37 +31,29 @@ function createContext(env: Env): Context {
 }
 
 describe('OAuth Functions', () => {
-  it('Cookie 署名キーがあれば 501 を返す', async () => {
+  it('start は構成不足の場合 500 を返す', async () => {
     const context = createContext({ COOKIE_SIGN_KEY: 'from-tests' });
 
     const startResponse = await oauthStart(context);
+
+    assert.equal(startResponse.status, 500);
+  });
+
+  it('callback は未実装のため 501 を返す', async () => {
+    const context = createContext({ COOKIE_SIGN_KEY: 'from-tests' });
+
     const callbackResponse = await oauthCallback(context);
 
-    assert.equal(startResponse.status, 501);
     assert.equal(callbackResponse.status, 501);
   });
 
-  it('Cookie 署名キーが未設定の場合はエラーを投げる', async () => {
+  it('Cookie 署名キーが未設定の場合 start は 500 を返し、callback はエラーになる', async () => {
     const context = createContext({});
 
-    let startError: unknown;
-    try {
-      await oauthStart(context);
-    } catch (error) {
-      startError = error;
-    }
+    const startResponse = await oauthStart(context);
 
-    assert.ok(startError instanceof Error);
-    assert.match((startError as Error).message, /COOKIE_SIGN_KEY/);
+    assert.equal(startResponse.status, 500);
 
-    let callbackError: unknown;
-    try {
-      await oauthCallback(context);
-    } catch (error) {
-      callbackError = error;
-    }
-
-    assert.ok(callbackError instanceof Error);
-    assert.match((callbackError as Error).message, /COOKIE_SIGN_KEY/);
+    await assert.rejects(() => oauthCallback(context), /COOKIE_SIGN_KEY/);
   });
 });
