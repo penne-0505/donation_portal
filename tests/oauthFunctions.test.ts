@@ -7,6 +7,7 @@ import { onRequestGet as oauthCallback } from '../functions/oauth/callback.js';
 type Env = {
   COOKIE_SIGN_KEY?: string;
   DISCORD_CLIENT_ID?: string;
+  DISCORD_CLIENT_SECRET?: string;
   DISCORD_REDIRECT_URI?: string;
 };
 
@@ -21,7 +22,11 @@ type Context = {
 function createContext(env: Env): Context {
   return {
     request: new Request('https://example.com/mock'),
-    env,
+    env: {
+      DISCORD_CLIENT_ID: 'id-from-test',
+      DISCORD_CLIENT_SECRET: 'secret-from-test',
+      ...env,
+    },
     params: {},
     waitUntil: () => {
       // noop
