@@ -4,7 +4,11 @@ import assert from 'node:assert/strict';
 import { onRequestGet as oauthStart } from '../functions/oauth/start.js';
 import { onRequestGet as oauthCallback } from '../functions/oauth/callback.js';
 
-type Env = { COOKIE_SIGN_KEY?: string };
+type Env = {
+  COOKIE_SIGN_KEY?: string;
+  DISCORD_CLIENT_ID?: string;
+  DISCORD_CLIENT_SECRET?: string;
+};
 
 type Context = {
   request: Request;
@@ -17,7 +21,11 @@ type Context = {
 function createContext(env: Env): Context {
   return {
     request: new Request('https://example.com/mock'),
-    env,
+    env: {
+      DISCORD_CLIENT_ID: 'id-from-test',
+      DISCORD_CLIENT_SECRET: 'secret-from-test',
+      ...env,
+    },
     params: {},
     waitUntil: () => {
       // noop
@@ -27,14 +35,16 @@ function createContext(env: Env): Context {
 }
 
 describe('OAuth Functions', () => {
-  it('Cookie 署名キーがあれば 501 を返す', async () => {
+  it('Cookie 署名キーがあれば start は 501、callback はリダイレクトを返す', async () => {
     const context = createContext({ COOKIE_SIGN_KEY: 'from-tests' });
 
     const startResponse = await oauthStart(context);
     const callbackResponse = await oauthCallback(context);
 
     assert.equal(startResponse.status, 501);
-    assert.equal(callbackResponse.status, 501);
+    assert.equal(callbackResponse.status, 302);
+    assert.equal(callbackResponse.headers.get('Location'), '/donate?error=invalid_request');
+    assert.equal(callbackResponse.headers.get('Set-Cookie'), null);
   });
 
   it('Cookie 署名キーが未設定の場合はエラーを投げる', async () => {
