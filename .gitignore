@@ -70,7 +70,8 @@ dist
 
 # Gatsby files
 .cache/
-public
+# Cloudflare Pages の静的アセットをリポジトリで管理するため、public ディレクトリは除外しない
+!public/
 
 # Storybook build outputs
 .out
