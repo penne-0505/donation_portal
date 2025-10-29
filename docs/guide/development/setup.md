@@ -49,6 +49,8 @@ Cloudflare Pages 上で Donation Portal を開発するためのローカル環�
    cp .env.example .env
    # 値を自分のアカウント・テスト環境に合わせて編集
    ```
+   - `COOKIE_SIGN_KEY` は OAuth state Cookie の HMAC 署名に利用する秘密鍵です。32 文字以上のランダムな英数字を生成し、
+     漏洩しないよう Secrets 管理してください。
 5. 静的アセットと Functions を含むローカル開発サーバを起動します。
 
    ```bash
