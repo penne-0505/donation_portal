@@ -22,20 +22,6 @@ Definitions to suppress Markdown warnings
 
 ## Backlog
 
-### [Chore] Cloudflare Pages 基盤整備 (Phase 1)
-- **ID**: DevOps-Chore-1
-- **Priority**: P1
-- **Size**: M
-- **Area**: DevOps
-- **Dependencies**: None
-- **Goal**: リポジトリ構成とCI/Cloudflare Pages連携が整い、開発環境でPages Functionsが起動できる状態にする。
-- **Steps**:
-  1. `docs/plan/donation-portal/phase-01-foundation/plan.md` のタスク3章に基づき、リポジトリ構成・設定ファイル・テンプレートを整備する。
-  2. GitHub Actionsでlint/test/build/Pagesデプロイを実行するワークフローを作成し、Cloudflare Pagesと連携する。
-  3. `.env.example` やセットアップ手順を用意し、ローカルでFunctionsが動作することを確認する。
-- **Description**: Donation Portal MVP Phase 1の実装。モノレポ構成やCI/CD基盤を確立して後続フェーズの土台を作る。
-- **Plan**: [`docs/plan/donation-portal/phase-01-foundation/plan.md`](docs/plan/donation-portal/phase-01-foundation/plan.md)
-
 ### [Feature] Discord OAuth & セッション実装 (Phase 2)
 - **ID**: Core-Feature-2
 - **Priority**: P1
