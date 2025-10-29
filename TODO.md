@@ -1,6 +1,6 @@
 # TODO
 
-Next ID No: 1
+Next ID No: 7
 **(連番は全カテゴリで通し番号)**
 
 --- 
@@ -21,6 +21,90 @@ Definitions to suppress Markdown warnings
 ---
 
 ## Backlog
+
+### [Chore] Cloudflare Pages 基盤整備 (Phase 1)
+- **ID**: DevOps-Chore-1
+- **Priority**: P1
+- **Size**: M
+- **Area**: DevOps
+- **Dependencies**: None
+- **Goal**: リポジトリ構成とCI/Cloudflare Pages連携が整い、開発環境でPages Functionsが起動できる状態にする。
+- **Steps**:
+  1. `docs/plan/donation-portal/phase-01-foundation/plan.md` のタスク3章に基づき、リポジトリ構成・設定ファイル・テンプレートを整備する。
+  2. GitHub Actionsでlint/test/build/Pagesデプロイを実行するワークフローを作成し、Cloudflare Pagesと連携する。
+  3. `.env.example` やセットアップ手順を用意し、ローカルでFunctionsが動作することを確認する。
+- **Description**: Donation Portal MVP Phase 1の実装。モノレポ構成やCI/CD基盤を確立して後続フェーズの土台を作る。
+- **Plan**: [`docs/plan/donation-portal/phase-01-foundation/plan.md`](docs/plan/donation-portal/phase-01-foundation/plan.md)
+
+### [Feature] Discord OAuth & セッション実装 (Phase 2)
+- **ID**: Core-Feature-2
+- **Priority**: P1
+- **Size**: M
+- **Area**: Core
+- **Dependencies**: DevOps-Chore-1
+- **Goal**: Discord OAuthで表示名と掲示同意を取得し、署名付きCookieでセッション管理できるようにする。
+- **Steps**:
+  1. `docs/plan/donation-portal/phase-02-oauth/plan.md` のタスクを参照し、`/oauth/start` と `/oauth/callback` を実装してstate Cookie検証を確立する。
+  2. `/donate` ページにOAuth導線と掲示同意UIを追加し、sess Cookieの値を反映する。
+  3. Discord OAuth実機テストとCookie属性確認を行い、エラーハンドリングとログ出力を整える。
+- **Description**: Donation Portal MVP Phase 2の実装。Stripe連携前に必要な表示名取得・同意フローを完成させる。
+- **Plan**: [`docs/plan/donation-portal/phase-02-oauth/plan.md`](docs/plan/donation-portal/phase-02-oauth/plan.md)
+
+### [Feature] Stripe Checkout & Metadata 実装 (Phase 3)
+- **ID**: Core-Feature-3
+- **Priority**: P1
+- **Size**: M
+- **Area**: Core
+- **Dependencies**: Core-Feature-2
+- **Goal**: Stripe Checkoutで単発/定期寄附が完了し、Customer metadataに表示名と同意が保存されること。
+- **Steps**:
+  1. `docs/plan/donation-portal/phase-03-checkout/plan.md` に沿って `POST /api/checkout/session` を実装し、metadata更新とバリデーションを整備する。
+  2. `/donate` ページに単発/定期寄附ボタンを実装し、Checkout URLで遷移させるUIを完成させる。
+  3. `/thanks` ページとStripe Test環境でのE2Eテストを実施し、エラー時のユーザ通知を確認する。
+- **Description**: Donation Portal MVP Phase 3の実装。StripeをSSOTとして扱い、寄附フローを完成させる。
+- **Plan**: [`docs/plan/donation-portal/phase-03-checkout/plan.md`](docs/plan/donation-portal/phase-03-checkout/plan.md)
+
+### [Feature] Donors 掲載 & 同意管理実装 (Phase 4)
+- **ID**: UI/UX-Feature-4
+- **Priority**: P1
+- **Size**: M
+- **Area**: UI/UX
+- **Dependencies**: Core-Feature-3
+- **Goal**: Donorsページで同意者の表示名のみ掲示し、同意/撤回操作でStripe metadataが更新される状態にする。
+- **Steps**:
+  1. `docs/plan/donation-portal/phase-04-donors/plan.md` を基に `GET /api/donors` と `POST /api/consent` を実装する。
+  2. `/donors` ページを完成させ、撤回リンクとキャッシュ制御(max-age=60)を組み込む。
+  3. OAuth→寄附→撤回までのE2Eテストを行い、APIドキュメント草案を更新する。
+- **Description**: Donation Portal MVP Phase 4の実装。同意者のみ表示するDonors体験とConsent更新APIを提供する。
+- **Plan**: [`docs/plan/donation-portal/phase-04-donors/plan.md`](docs/plan/donation-portal/phase-04-donors/plan.md)
+
+### [Feature] Stripe Webhook & 運用整備 (Phase 5)
+- **ID**: Core-Feature-5
+- **Priority**: P1
+- **Size**: M
+- **Area**: Core
+- **Dependencies**: UI/UX-Feature-4
+- **Goal**: Stripe Webhookが署名検証・冪等化され、Healthエンドポイントと運用手順が整備されていること。
+- **Steps**:
+  1. `docs/plan/donation-portal/phase-05-webhook/plan.md` に従い `POST /api/webhooks/stripe` と `GET /health` を実装する。
+  2. Stripe CLIで署名成功/失敗/再送をテストし、Cloudflare Logsでイベントを確認する。
+  3. Webhook運用手順と監視プロセスをドキュメントに記録する。
+- **Description**: Donation Portal MVP Phase 5の実装。Stripeイベントの受信体制と軽量な運用監視を整備する。
+- **Plan**: [`docs/plan/donation-portal/phase-05-webhook/plan.md`](docs/plan/donation-portal/phase-05-webhook/plan.md)
+
+### [Chore] QA & 本番リリース準備 (Phase 6)
+- **ID**: DevOps-Chore-6
+- **Priority**: P1
+- **Size**: M
+- **Area**: DevOps
+- **Dependencies**: Core-Feature-5
+- **Goal**: MVP全体の総合テストを完了し、Stripe Liveキー投入と本番デプロイが安全に実施されること。
+- **Steps**:
+  1. `docs/plan/donation-portal/phase-06-qa/plan.md` の総合テスト計画に従い、単発/定期フロー・Donors・Webhook・Consentを検証する。
+  2. Liveキー・Webhook設定・Pages本番デプロイを手順通りに実施し、少額寄附でスモークテストを行う。
+  3. Runbook/FAQ/CHANGELOGを更新し、リリース結果と監視体制を共有する。
+- **Description**: Donation Portal MVP Phase 6の実装。QAと本番ローンチ、運用引き継ぎの最終準備を行う。
+- **Plan**: [`docs/plan/donation-portal/phase-06-qa/plan.md`](docs/plan/donation-portal/phase-06-qa/plan.md)
 
 ---
 
