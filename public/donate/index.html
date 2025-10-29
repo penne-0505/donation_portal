@@ -4,19 +4,74 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Donation Portal | Donate</title>
+    <meta
+      name="description"
+      content="Donation Portal の寄附受付ページです。Discord ログインと掲示同意の管理が行えます。"
+    />
     <link rel="stylesheet" href="/styles/base.css" />
   </head>
   <body>
-    <main>
-      <h1>Donation Portal (準備中)</h1>
-      <p>寄附ページの実装は Phase 3 で提供予定です。現在は基盤整備を進めています。</p>
-      <section>
-        <h2>開発メモ</h2>
-        <ul>
-          <li>Discord OAuth 導線は Phase 2 で追加予定。</li>
-          <li>Stripe Checkout 連携は Phase 3 で実装予定。</li>
-        </ul>
+    <main class="donation-container" aria-labelledby="page-title">
+      <header class="donation-header">
+        <h1 id="page-title">寄附のご案内</h1>
+        <p class="donation-lead">
+          Donation Portal は Discord コミュニティの運営費を支える任意の寄附を受け付けています。Discord でログインし、掲示への同意を設定してください。
+        </p>
+      </header>
+
+      <section class="auth-card" aria-labelledby="auth-section-title">
+        <h2 id="auth-section-title">Discord ログイン</h2>
+        <p id="auth-description">
+          Stripe Checkout で寄附を進める前に、Discord アカウントでログインして掲示同意を確認します。
+        </p>
+        <div class="auth-actions">
+          <a
+            id="auth-login"
+            class="button button--primary"
+            href="/oauth/start"
+            aria-describedby="auth-description"
+          >Discord でログイン</a>
+          <a id="auth-logout" class="button button--secondary" href="/oauth/logout" hidden>ログアウト</a>
+        </div>
+        <p id="auth-status" class="auth-status" role="status" aria-live="polite">
+          Discord へのログインが必要です。
+        </p>
+        <div id="auth-error" class="auth-error" role="alert" aria-live="assertive" hidden></div>
+      </section>
+
+      <section class="consent-card" aria-labelledby="consent-section-title">
+        <h2 id="consent-section-title">掲示への同意</h2>
+        <p id="consent-explanation">
+          同意した場合、Donors ページに Discord の表示名を掲載します（寄附額は表示されません）。
+        </p>
+        <div class="consent-control">
+          <input
+            type="checkbox"
+            id="consent-public"
+            name="consent_public"
+            value="1"
+            aria-describedby="consent-explanation consent-note"
+            disabled
+          />
+          <label for="consent-public">Donors ページに表示名を掲載することに同意します</label>
+        </div>
+        <p id="consent-note" class="consent-note">
+          Discord でログインすると同意の状態を変更できます。寄附後でも撤回が可能です。
+        </p>
+      </section>
+
+      <section class="info-card" aria-labelledby="info-section-title">
+        <h2 id="info-section-title">これからの流れ</h2>
+        <ol class="info-steps">
+          <li>Discord でログインし、掲示への同意を確認します。</li>
+          <li>同意内容を決めたら Stripe Checkout で寄附を行います。</li>
+          <li>寄附が完了するとサンクスページへ遷移します。</li>
+        </ol>
+        <p class="info-disclaimer">
+          いただいた寄附はコミュニティ運営にのみ利用し、対価の提供は行いません。
+        </p>
       </section>
     </main>
+    <script type="module" src="/donate/app.js"></script>
   </body>
 </html>

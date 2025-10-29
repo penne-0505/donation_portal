@@ -44,12 +44,13 @@ describe('OAuth Functions', () => {
     assert.equal(startResponse.status, 500);
   });
 
-  it('callback は未実装のため 501 を返す', async () => {
+  it('callback は不正なリクエストの場合にエラー付きで /donate へリダイレクトする', async () => {
     const context = createContext({ COOKIE_SIGN_KEY: 'from-tests' });
 
     const callbackResponse = await oauthCallback(context);
 
-    assert.equal(callbackResponse.status, 501);
+    assert.equal(callbackResponse.status, 302);
+    assert.equal(callbackResponse.headers.get('Location'), '/donate?error=invalid_request');
   });
 
   it('Cookie 署名キーが未設定の場合 start は 500 を返し、callback はエラーになる', async () => {

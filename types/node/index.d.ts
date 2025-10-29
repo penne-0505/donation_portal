@@ -7,6 +7,7 @@ declare namespace NodeJS {
 
 declare const process: {
   env: NodeJS.ProcessEnv;
+  cwd(): string;
 };
 
 declare module 'node:test' {
@@ -31,6 +32,7 @@ declare module 'node:test' {
     restoreAll(): void;
   }
   export const mock: MockModule;
+  export function test(name: string, fn: TestFn): void;
   export function describe(name: string, fn: TestFn): void;
   export function it(name: string, fn: TestFn): void;
   export function beforeEach(fn: TestFn): void;
@@ -59,7 +61,11 @@ declare module 'node:assert/strict' {
 }
 
 declare const Buffer: {
-  from(data: string, encoding: 'binary' | 'base64'): {
-    toString(encoding: 'base64' | 'binary'): string;
+  from(data: string, encoding?: 'utf8' | 'binary' | 'base64'): {
+    toString(encoding: 'base64' | 'binary' | 'utf8'): string;
   };
 };
+
+declare module 'node:fs/promises' {
+  export function readFile(path: string | URL, encoding: 'utf8'): Promise<string>;
+}
