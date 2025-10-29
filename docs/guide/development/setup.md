@@ -4,11 +4,12 @@ domain: 'donation-portal'
 status: 'draft'
 version: '0.1.0'
 created: '2025-10-29'
-updated: '2025-10-29'
+updated: '2025-10-30'
 related_issues: []
 related_prs: []
 references:
   - docs/plan/donation-portal/phase-01-foundation/plan.md
+  - docs/guide/auth/discord-oauth.md
 ---
 
 ## 概要
@@ -58,6 +59,29 @@ Cloudflare Pages 上で Donation Portal を開発するためのローカル環�
    ```
 
    - `wrangler` が未インストールの場合はエラーになるため、`npm install wrangler --save-dev` または `npm install -g wrangler` で導入してください。
+
+## 環境変数と Secrets 管理
+
+`.env.example` と Cloudflare Pages の Secrets 設定の対応関係は以下の通りです。Discord OAuth に関する詳細は [Discord OAuth フロー運用ガイド](../auth/discord-oauth.md) を参照してください。
+
+| 変数 | 用途 | Pages での配置 | 備考 |
+| --- | --- | --- | --- |
+| `CLOUDFLARE_ACCOUNT_ID` | `wrangler` CLI で Pages プロジェクトを操作するためのアカウント ID | ローカル `.env` のみ | CI からデプロイする際に利用します。 |
+| `CLOUDFLARE_API_TOKEN` | `wrangler` が API 呼び出しを行う際のトークン | ローカル `.env` のみ | Pages ダッシュボードから作成。スコープは Pages デプロイに限定。 |
+| `CLOUDFLARE_PAGES_PROJECT` | デプロイ対象プロジェクト名 | ローカル `.env` のみ | 既定値 `donation-portal`。 |
+| `STRIPE_SECRET_KEY` | Checkout 作成や Customer 更新で使用 | Pages **Environment variables (Secrets)** | Test と Production で値を分け、ローカルは `.env` で管理。 |
+| `STRIPE_WEBHOOK_SECRET` | Webhook 検証用署名 | Pages **Environment variables (Secrets)** | 本番/プレビューで別 Secret を登録し、Stripe Dashboard のエンドポイントごとに紐付け。 |
+| `DISCORD_CLIENT_ID` | Discord OAuth クライアント ID | Pages **Environment variables (Secrets)** | Developer Portal で取得。 |
+| `DISCORD_CLIENT_SECRET` | Discord OAuth クライアントシークレット | Pages **Environment variables (Secrets)** | Secrets 更新時は必ず再デプロイ。 |
+| `DISCORD_REDIRECT_URI` | Discord からの Callback URL | Pages **Environment variables (Secrets)** | 本番は `https://<project>.pages.dev/oauth/callback` を指定。 |
+| `APP_BASE_URL` | Functions が生成するリダイレクト先の基準 URL | Pages **Environment variables (Secrets)** | 本番の Pages URL を設定し、ローカルでは `http://localhost:8788`。 |
+| `COOKIE_SIGN_KEY` | state/sess Cookie 署名用の HMAC キー | Pages **Environment variables (Secrets)** | 32 文字以上のランダム値。ローテーション時は古い Cookie を破棄。 |
+
+### Cloudflare Pages への登録手順
+
+1. Cloudflare Pages プロジェクトの **Settings → Environment variables** を開きます。
+2. `Production` と `Preview` の両方に上記表で「Pages」欄が Secrets となっている値を追加します。
+3. Secrets 変更後に GitHub 連携または `wrangler pages publish` で再デプロイします。Discord OAuth の動作確認は [Discord OAuth フロー運用ガイド](../auth/discord-oauth.md#secrets-設定手順) の手順に沿って実施してください。
 
 ## 開発用コマンド
 
