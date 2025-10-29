@@ -2,6 +2,18 @@
 const { spawnSync } = require('node:child_process');
 const path = require('node:path');
 
+function resolveLocalBin(packageName, binRelativePath) {
+  try {
+    const packageJsonPath = require.resolve(`${packageName}/package.json`, {
+      paths: [process.cwd()],
+    });
+    const packageRoot = path.dirname(packageJsonPath);
+    return path.join(packageRoot, binRelativePath);
+  } catch (_error) {
+    return null;
+  }
+}
+
 function resolveGlobalBin(packageName, binRelativePath) {
   const npmRoot = spawnSync('npm', ['root', '-g'], { encoding: 'utf8' });
   if (npmRoot.status !== 0) {
@@ -10,9 +22,17 @@ function resolveGlobalBin(packageName, binRelativePath) {
   return path.join(npmRoot.stdout.trim(), packageName, binRelativePath);
 }
 
+function resolveBin(packageName, binRelativePath) {
+  const localBin = resolveLocalBin(packageName, binRelativePath);
+  if (localBin) {
+    return localBin;
+  }
+  return resolveGlobalBin(packageName, binRelativePath);
+}
+
 function run() {
   try {
-    const prettierBin = resolveGlobalBin('prettier', 'bin/prettier.cjs');
+    const prettierBin = resolveBin('prettier', 'bin/prettier.cjs');
     const result = spawnSync('node', [prettierBin, ...process.argv.slice(2)], {
       stdio: 'inherit',
     });

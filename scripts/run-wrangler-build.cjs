@@ -2,12 +2,32 @@
 const { spawnSync } = require('node:child_process');
 const path = require('node:path');
 
-function resolveWranglerBin() {
+function resolveLocalWranglerBin() {
+  try {
+    const packageJsonPath = require.resolve('wrangler/package.json', {
+      paths: [process.cwd()],
+    });
+    const packageRoot = path.dirname(packageJsonPath);
+    return path.join(packageRoot, 'bin', 'wrangler.js');
+  } catch (_error) {
+    return null;
+  }
+}
+
+function resolveGlobalWranglerBin() {
   const npmRoot = spawnSync('npm', ['root', '-g'], { encoding: 'utf8' });
   if (npmRoot.status !== 0) {
     throw new Error('Failed to resolve npm global root');
   }
   return path.join(npmRoot.stdout.trim(), 'wrangler', 'bin', 'wrangler.js');
+}
+
+function resolveWranglerBin() {
+  const local = resolveLocalWranglerBin();
+  if (local) {
+    return local;
+  }
+  return resolveGlobalWranglerBin();
 }
 
 function run() {

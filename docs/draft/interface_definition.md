@@ -1,3 +1,25 @@
+---
+title: '寄附受付 I/F仕様'
+domain: 'donation-portal'
+status: 'draft'
+version: '1.0.0'
+created: '2025-10-29'
+updated: '2025-10-29'
+related_issues: []
+related_prs: []
+references:
+  - docs/draft/requirements_definition.md
+state: 'exploring'
+hypothesis:
+  - '主要エンドポイント構成が Phase 2 以降でも有効である'
+options: []
+open_questions:
+  - 'Discord OAuth state 管理の具体的な検証ケース'
+next_action_by: 'engineering-lead'
+review_due: '2025-11-28'
+ttl_days: 30
+---
+
 # I/F仕様 — 寄附受付（Cloudflare Pages＋Functions, TypeScript） v1.0
 
 最終更新: 2025-10-29 (JST)
