@@ -1,10 +1,10 @@
 ---
 title: "Donation Portal Phase 2 — OAuth & Session 計画"
 domain: "donation-portal"
-status: "draft"
-version: "0.1.0"
+status: "active"
+version: "0.1.1"
 created: "2025-10-29"
-updated: "2025-10-29"
+updated: "2025-10-31"
 related_issues: []
 related_prs: []
 references:
@@ -41,7 +41,7 @@ api_changes:
   deprecated: []
 data_models:
   - "state Cookie: {nonce, consent_public, exp} を JSON で記録し署名。"
-  - "sess Cookie: {display_name, discord_id, consent_public, exp} を JSON で記録し署名。"
+  - "sess Cookie: {display_name, discord_id, consent_public, exp} を JSON で記録し署名（TTL=600秒）。"
 migrations:
   - "なし。"
 rollout_plan:
