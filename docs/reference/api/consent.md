@@ -62,7 +62,7 @@ Cookie: sess=<signed>
 
 ## Stripe 連携仕様
 
-1. `POST /v1/customers/search` で `metadata['discord_id']` が一致する Customer を検索。
+1. `GET /v1/customers/search` で `metadata['discord_id']` が一致する Customer を検索。
 2. 見つかった Customer の `metadata[consent_public]` を `true`/`false` で更新。同時に `metadata[display_name]` と `metadata[display_name_source]` も Discord 情報で上書き。
 3. Customer が存在しない場合は `404 Not Found` を返却。
 

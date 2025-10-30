@@ -102,15 +102,19 @@ describe('functions/api/checkout/session', () => {
     globalThis.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
       fetchCalls += 1;
       const url = String(input);
+      const method = init?.method ?? (input instanceof Request ? input.method : undefined);
       const headers = new Headers(init?.headers);
       assert.equal(headers.get('Authorization'), `Bearer ${STRIPE_SECRET_KEY}`);
-      assert.equal(headers.get('Content-Type'), 'application/x-www-form-urlencoded');
+      if (method === 'POST') {
+        assert.equal(headers.get('Content-Type'), 'application/x-www-form-urlencoded');
+      }
 
       if (fetchCalls === 1) {
-        assert.equal(url, 'https://api.stripe.com/v1/customers/search');
-        const body = new URLSearchParams(init?.body as string);
-        assert.equal(body.get('query'), "metadata['discord_id']:\"123456789\"");
-        assert.equal(body.get('limit'), '1');
+        assert.equal(method, 'GET');
+        const searchUrl = new URL(url);
+        assert.equal(`${searchUrl.origin}${searchUrl.pathname}`, 'https://api.stripe.com/v1/customers/search');
+        assert.equal(searchUrl.searchParams.get('query'), "metadata['discord_id']:\"123456789\"");
+        assert.equal(searchUrl.searchParams.get('limit'), '1');
         return new Response(JSON.stringify({ data: [] }), {
           status: 200,
           headers: { 'Content-Type': 'application/json' },
@@ -118,6 +122,7 @@ describe('functions/api/checkout/session', () => {
       }
 
       if (fetchCalls === 2) {
+        assert.equal(method, 'POST');
         assert.equal(url, 'https://api.stripe.com/v1/customers');
         const body = new URLSearchParams(init?.body as string);
         assert.equal(body.get('metadata[display_name]'), '寄附ユーザー');
@@ -132,6 +137,7 @@ describe('functions/api/checkout/session', () => {
       }
 
       assert.equal(fetchCalls, 3);
+      assert.equal(method, 'POST');
       assert.equal(url, 'https://api.stripe.com/v1/checkout/sessions');
       const body = new URLSearchParams(init?.body as string);
       assert.equal(body.get('mode'), 'payment');
@@ -164,13 +170,15 @@ describe('functions/api/checkout/session', () => {
     );
     const context = createContext(request);
 
-    const callHistory: Array<{ url: string; body: URLSearchParams }> = [];
+    const callHistory: Array<{ url: string; method?: string; body?: URLSearchParams }> = [];
     globalThis.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
-      const body = new URLSearchParams(init?.body as string);
-      callHistory.push({ url, body });
+      const method = init?.method ?? (input instanceof Request ? input.method : undefined);
+      const body = typeof init?.body === 'string' ? new URLSearchParams(init.body) : undefined;
+      callHistory.push({ url, method, body });
 
-      if (url.endsWith('/customers/search')) {
+      const parsed = new URL(url);
+      if (parsed.pathname.endsWith('/customers/search')) {
         return new Response(JSON.stringify({ data: [{ id: 'cus_existing' }] }), {
           status: 200,
           headers: { 'Content-Type': 'application/json' },
@@ -197,9 +205,15 @@ describe('functions/api/checkout/session', () => {
     const body = (await response.json()) as { url?: string };
     assert.equal(body.url, 'https://checkout.stripe.com/subscription');
     assert.equal(callHistory.length, 3);
+    assert.equal(callHistory[0]?.method, 'GET');
+    const searchUrl = new URL(callHistory[0]?.url ?? '');
+    assert.equal(searchUrl.searchParams.get('query'), "metadata['discord_id']:\"987654321\"");
+    assert.equal(searchUrl.searchParams.get('limit'), '1');
     assert.equal(callHistory[1]?.url, 'https://api.stripe.com/v1/customers/cus_existing');
-    assert.equal(callHistory[1]?.body.get('metadata[consent_public]'), 'false');
-    assert.equal(callHistory[2]?.body.get('line_items[0][price]'), PRICE_SUB_MONTHLY_300);
+    assert.equal(callHistory[1]?.method, 'POST');
+    assert.equal(callHistory[1]?.body?.get('metadata[consent_public]'), 'false');
+    assert.equal(callHistory[2]?.method, 'POST');
+    assert.equal(callHistory[2]?.body?.get('line_items[0][price]'), PRICE_SUB_MONTHLY_300);
   });
 
   it('sess Cookie がない場合は 401 を返す', async () => {

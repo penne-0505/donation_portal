@@ -77,12 +77,14 @@ describe('functions/api/consent', () => {
     const cookie = await createSessionCookie(true);
     const context = createContext({ consent_public: false }, cookie);
 
-    const calls: Array<{ url: string; body: URLSearchParams }> = [];
+    const calls: Array<{ url: string; method?: string; body?: URLSearchParams }> = [];
     globalThis.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
-      const params = new URLSearchParams(init?.body as string);
-      calls.push({ url, body: params });
-      if (url.endsWith('/customers/search')) {
+      const method = init?.method ?? (input instanceof Request ? input.method : undefined);
+      const body = typeof init?.body === 'string' ? new URLSearchParams(init.body) : undefined;
+      calls.push({ url, method, body });
+      const parsed = new URL(url);
+      if (parsed.pathname.endsWith('/customers/search')) {
         return new Response(JSON.stringify({ data: [{ id: 'cus_123' }] }), {
           status: 200,
           headers: { 'Content-Type': 'application/json' },
@@ -99,8 +101,12 @@ describe('functions/api/consent', () => {
     assert.equal(response.status, 204);
     assert.equal(response.headers.get('cache-control'), 'no-store');
     assert.equal(calls.length, 2);
-    assert.equal(calls[0]?.body.get('query'), "metadata['discord_id']:\"9876543210\"");
-    assert.equal(calls[1]?.body.get('metadata[consent_public]'), 'false');
+    assert.equal(calls[0]?.method, 'GET');
+    const searchUrl = new URL(calls[0]?.url ?? '');
+    assert.equal(searchUrl.searchParams.get('query'), "metadata['discord_id']:\"9876543210\"");
+    assert.equal(searchUrl.searchParams.get('limit'), '1');
+    assert.equal(calls[1]?.method, 'POST');
+    assert.equal(calls[1]?.body?.get('metadata[consent_public]'), 'false');
   });
 
   it('未ログインの場合は 401 を返す', async () => {
@@ -149,9 +155,10 @@ describe('functions/api/consent', () => {
     const cookie = await createSessionCookie(true);
     const context = createContext({ consent_public: false }, cookie);
 
-    globalThis.fetch = async (input: RequestInfo | URL) => {
+    globalThis.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
-      if (url.endsWith('/customers/search')) {
+      const parsed = new URL(url);
+      if (parsed.pathname.endsWith('/customers/search')) {
         return new Response(JSON.stringify({ data: [] }), {
           status: 200,
           headers: { 'Content-Type': 'application/json' },

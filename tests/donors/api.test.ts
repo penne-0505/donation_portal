@@ -46,16 +46,16 @@ describe('functions/api/donors', () => {
   });
 
   it('Stripe から同意済み Donor を取得しレスポンスを返す', async () => {
-    const calls: Array<{ url: string; body: URLSearchParams }> = [];
+    const calls: Array<{ url: string; method?: string }> = [];
     globalThis.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
-      const params = new URLSearchParams(init?.body as string);
-      calls.push({ url, body: params });
+      const method = init?.method ?? (input instanceof Request ? input.method : undefined);
+      calls.push({ url, method });
       return new Response(
         JSON.stringify({
           data: [
-            { metadata: { display_name: 'Alice' } },
-            { metadata: { display_name: ' Bob ' } },
+            { metadata: { display_name: 'Alice' }, created: 1_700_000_000 },
+            { metadata: { display_name: ' Bob ' }, created: 1_700_000_100 },
           ],
         }),
         {
@@ -74,14 +74,16 @@ describe('functions/api/donors', () => {
     assert.ok(etag && etag.startsWith('W/"'));
 
     const body = (await response.json()) as { donors?: string[]; count?: number };
-    assert.deepEqual(body.donors, ['Alice', 'Bob']);
+    assert.deepEqual(body.donors, ['Bob', 'Alice']);
     assert.equal(body.count, 2);
 
     assert.equal(calls.length, 1);
-    assert.equal(calls[0]?.url, 'https://api.stripe.com/v1/customers/search');
-    assert.equal(calls[0]?.body.get('limit'), '100');
-    assert.equal(calls[0]?.body.get('order'), 'desc');
-    assert.equal(calls[0]?.body.get('query'), "metadata['consent_public']:'true'");
+    const calledUrl = new URL(calls[0]?.url ?? '');
+    assert.equal(`${calledUrl.origin}${calledUrl.pathname}`, 'https://api.stripe.com/v1/customers/search');
+    assert.equal(calls[0]?.method, 'GET');
+    assert.equal(calledUrl.searchParams.get('limit'), '100');
+    assert.equal(calledUrl.searchParams.get('order'), null);
+    assert.equal(calledUrl.searchParams.get('query'), "metadata['consent_public']:'true'");
   });
 
   it('order=random の場合はレスポンスをシャッフルして返す', async () => {
@@ -90,9 +92,9 @@ describe('functions/api/donors', () => {
       new Response(
         JSON.stringify({
           data: [
-            { metadata: { display_name: 'Alpha' } },
-            { metadata: { display_name: 'Bravo' } },
-            { metadata: { display_name: 'Charlie' } },
+            { metadata: { display_name: 'Alpha' }, created: 1 },
+            { metadata: { display_name: 'Bravo' }, created: 2 },
+            { metadata: { display_name: 'Charlie' }, created: 3 },
           ],
         }),
         { status: 200, headers: { 'Content-Type': 'application/json' } },
