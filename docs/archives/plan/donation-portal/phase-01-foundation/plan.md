@@ -1,7 +1,7 @@
 ---
 title: "Donation Portal Phase 1 — Project Foundation 計画"
 domain: "donation-portal"
-status: "draft"
+status: "superseded"
 version: "0.1.0"
 created: "2025-10-29"
 updated: "2025-10-29"
@@ -11,6 +11,7 @@ references:
   - docs/plan/donation-portal/mvp/plan.md
   - docs/draft/interface_definition.md
   - docs/draft/impl_plan_v0.md
+  - docs/intent/donation-portal/mvp-architecture-and-phases.md
 scope:
   - "Cloudflare Pages プロジェクトの基盤構築（ディレクトリ、ビルド、環境設定）を完了する。"
   - "TypeScript/ESLint/Prettier/Wrangler を設定し、Pages Functions/API 実装の土台を作る。"
@@ -63,7 +64,12 @@ acceptance_criteria:
   - "開発環境で Pages Functions のローカル実行が可能になる。"
 owners:
   - "@donation-portal-core"
+superseded_by: docs/intent/donation-portal/mvp-architecture-and-phases.md
 ---
+
+# 本ドキュメントの位置付け
+
+Phase 1 の意図と判断は `docs/intent/donation-portal/mvp-architecture-and-phases.md` に収録されています。本 Plan は経緯参照用として保管してください。
 
 # Phase 1 — Project Foundation 計画
 

@@ -1,7 +1,7 @@
 ---
 title: "Donation Portal Phase 6 — QA & Release 計画"
 domain: "donation-portal"
-status: "active"
+status: "superseded"
 version: "1.0.0"
 created: "2025-10-29"
 updated: "2025-10-31"
@@ -11,6 +11,7 @@ references:
   - docs/plan/donation-portal/mvp/plan.md
   - docs/draft/interface_definition.md
   - docs/guide/operations/phase-06-qa-release.md
+  - docs/intent/donation-portal/mvp-architecture-and-phases.md
 scope:
   - "MVP の統合テスト、ドキュメント整備、リリース準備を完了する。"
   - "Stripe Live キーへの切替と本番デプロイを実施する。"
@@ -67,7 +68,12 @@ acceptance_criteria:
   - "運用 Runbook とサポート FAQ が最新化されている。"
 owners:
   - "@donation-portal-core"
+superseded_by: docs/intent/donation-portal/mvp-architecture-and-phases.md
 ---
+
+# 本ドキュメントの位置付け
+
+QA とリリース準備に関する決定事項は intent ドキュメント `docs/intent/donation-portal/mvp-architecture-and-phases.md` に整理されています。本 Plan は履歴用途で参照してください。
 
 # Phase 6 — QA & Release 計画
 
