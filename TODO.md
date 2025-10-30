@@ -36,19 +36,6 @@ Definitions to suppress Markdown warnings
 - **Description**: Donation Portal MVP Phase 4の実装。同意者のみ表示するDonors体験とConsent更新APIを提供する。
 - **Plan**: [`docs/plan/donation-portal/phase-04-donors/plan.md`](docs/plan/donation-portal/phase-04-donors/plan.md)
 
-### [Bugfix] Stripe Customer 検索のHTTPメソッド修正
-- **ID**: Core-Bugfix-7
-- **Priority**: P0
-- **Size**: S
-- **Area**: Core
-- **Dependencies**: None
-- **Goal**: Stripe の `/v1/customers/search` 呼び出しが Cloudflare Pages Functions 全体で成功し、Donors/Consent/Checkout の Stripe 連携が 200 を返す状態にする。
-- **Steps**:
-  1. `functions/api/donors.ts` を中心に `/customers/search` を `GET` クエリで呼び出すよう修正し、昇順/降順はアプリ側でソートする。
-  2. 同じ共通実装を利用する `functions/api/consent.ts` と `functions/api/checkout/session.ts` へも適用し、Stripe からのレスポンス処理を更新する。
-  3. 既存の API テストを更新し、Stripe 呼び出しのメソッドと並び順を検証する。
-- **Description**: 現状は `POST` + `order` パラメータで呼び出しており Stripe 側が 400/405 を返す。Donors 取得・Consent 更新・Checkout 開始が失敗するため、Stripe Search API の仕様に従った実装へ修正する。
-
 ### [Bugfix] Donors ページの DOM 操作安定化
 - **ID**: UI/UX-Bugfix-8
 - **Priority**: P0
