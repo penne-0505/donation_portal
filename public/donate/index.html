@@ -71,6 +71,52 @@
           いただいた寄附はコミュニティ運営にのみ利用し、対価の提供は行いません。
         </p>
       </section>
+
+      <section class="checkout-card" aria-labelledby="checkout-section-title">
+        <h2 id="checkout-section-title">寄附メニュー</h2>
+        <p id="checkout-description" class="checkout-description">
+          Stripe Checkout で寄附を行います。カード決済のみ対応し、すべて税込の金額です。
+        </p>
+        <div id="checkout-error" class="checkout-error" role="alert" aria-live="assertive" hidden></div>
+        <div class="checkout-actions" role="group" aria-labelledby="checkout-section-title">
+          <button
+            id="donate-onetime"
+            class="button button--primary"
+            type="button"
+            data-mode="payment"
+            data-variant="fixed300"
+            data-interval=""
+            aria-describedby="checkout-description checkout-note"
+            disabled
+          >単発寄附 ¥300</button>
+          <button
+            id="donate-monthly"
+            class="button button--primary"
+            type="button"
+            data-mode="subscription"
+            data-variant="fixed300"
+            data-interval="monthly"
+            aria-describedby="checkout-description checkout-note"
+            disabled
+          >毎月の寄附 ¥300</button>
+          <button
+            id="donate-yearly"
+            class="button button--primary"
+            type="button"
+            data-mode="subscription"
+            data-variant="fixed3000"
+            data-interval="yearly"
+            aria-describedby="checkout-description checkout-note"
+            disabled
+          >毎年の寄附 ¥3,000</button>
+        </div>
+        <p id="checkout-note" class="checkout-note">
+          寄附ボタンを押すと Stripe Checkout に移動します。完了後は自動的にサンクスページへ戻ります。
+        </p>
+        <div id="checkout-loading" class="checkout-loading" role="status" aria-live="polite" hidden>
+          Stripe Checkout を準備しています…
+        </div>
+      </section>
     </main>
     <script type="module" src="/donate/app.js"></script>
   </body>

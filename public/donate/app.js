@@ -1,5 +1,6 @@
 const SESSION_COOKIE_NAME = 'sess';
 const AUTH_ERROR_MESSAGE = 'セッション情報を読み取れませんでした。お手数ですが、再度 Discord ログインをお試しください。';
+const CHECKOUT_ERROR_MESSAGE = 'Stripe Checkout の開始に失敗しました。時間をおいて再試行してください。';
 
 function base64UrlDecode(segment) {
   let base64 = segment.replace(/-/g, '+').replace(/_/g, '/');
@@ -181,7 +182,180 @@ function collectElements(doc) {
     statusField: doc.getElementById('auth-status'),
     errorField: doc.getElementById('auth-error'),
     consentCheckbox: doc.getElementById('consent-public'),
+    checkoutOnceButton: doc.getElementById('donate-onetime'),
+    checkoutMonthlyButton: doc.getElementById('donate-monthly'),
+    checkoutYearlyButton: doc.getElementById('donate-yearly'),
+    checkoutError: doc.getElementById('checkout-error'),
+    checkoutLoading: doc.getElementById('checkout-loading'),
   };
+}
+
+function setCheckoutButtonsDisabled(elements, disabled) {
+  const buttons = [
+    elements.checkoutOnceButton,
+    elements.checkoutMonthlyButton,
+    elements.checkoutYearlyButton,
+  ];
+
+  for (const button of buttons) {
+    if (!button) {
+      continue;
+    }
+    button.disabled = disabled;
+    if (disabled) {
+      button.setAttribute?.('aria-disabled', 'true');
+    } else {
+      button.removeAttribute?.('aria-disabled');
+    }
+  }
+}
+
+function setCheckoutLoading(element, visible) {
+  if (!element) {
+    return;
+  }
+  element.hidden = !visible;
+}
+
+function getCheckoutTarget(button) {
+  if (!button || !button.dataset) {
+    return null;
+  }
+
+  const mode = button.dataset.mode;
+  const variant = button.dataset.variant;
+  if (typeof mode !== 'string' || typeof variant !== 'string') {
+    return null;
+  }
+
+  const intervalRaw = button.dataset.interval ?? '';
+  const interval = intervalRaw === '' ? null : intervalRaw;
+
+  return { mode, variant, interval };
+}
+
+function getGlobalLocation() {
+  if (typeof window !== 'undefined' && window.location) {
+    return window.location;
+  }
+  if (typeof globalThis !== 'undefined' && globalThis.location) {
+    return globalThis.location;
+  }
+  return null;
+}
+
+async function startCheckout(button, elements) {
+  const target = getCheckoutTarget(button);
+  if (!target) {
+    setErrorMessage(elements.checkoutError, CHECKOUT_ERROR_MESSAGE);
+    return;
+  }
+
+  if (typeof fetch !== 'function') {
+    setErrorMessage(elements.checkoutError, CHECKOUT_ERROR_MESSAGE);
+    return;
+  }
+
+  setErrorMessage(elements.checkoutError, null);
+  setCheckoutLoading(elements.checkoutLoading, true);
+  setCheckoutButtonsDisabled(elements, true);
+
+  try {
+    const response = await fetch('/api/checkout/session', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      credentials: 'same-origin',
+      body: JSON.stringify({
+        mode: target.mode,
+        variant: target.variant,
+        interval: target.interval,
+      }),
+    });
+
+    if (!response.ok) {
+      let message = CHECKOUT_ERROR_MESSAGE;
+      try {
+        const body = await response.json();
+        if (body && typeof body === 'object' && body.error && typeof body.error.message === 'string') {
+          message = body.error.message;
+        }
+      } catch (_error) {
+        // ignore json parse errors
+      }
+      setErrorMessage(elements.checkoutError, message);
+      return;
+    }
+
+    let payload;
+    try {
+      payload = await response.json();
+    } catch (_error) {
+      setErrorMessage(elements.checkoutError, CHECKOUT_ERROR_MESSAGE);
+      return;
+    }
+
+    if (!payload || typeof payload.url !== 'string' || payload.url.length === 0) {
+      setErrorMessage(elements.checkoutError, CHECKOUT_ERROR_MESSAGE);
+      return;
+    }
+
+    const locationTarget = getGlobalLocation();
+    if (locationTarget && typeof locationTarget.assign === 'function') {
+      locationTarget.assign(payload.url);
+    } else if (locationTarget && typeof locationTarget === 'object') {
+      locationTarget.href = payload.url;
+    } else {
+      setErrorMessage(elements.checkoutError, `Checkout URL: ${payload.url}`);
+    }
+  } catch (_error) {
+    setErrorMessage(elements.checkoutError, CHECKOUT_ERROR_MESSAGE);
+  } finally {
+    setCheckoutLoading(elements.checkoutLoading, false);
+    setCheckoutButtonsDisabled(elements, false);
+  }
+}
+
+function attachCheckoutHandlers(doc, elements) {
+  const buttons = [
+    elements.checkoutOnceButton,
+    elements.checkoutMonthlyButton,
+    elements.checkoutYearlyButton,
+  ];
+
+  for (const button of buttons) {
+    if (!button || typeof button.addEventListener !== 'function') {
+      continue;
+    }
+
+    if (button.dataset && button.dataset.checkoutBound === 'true') {
+      continue;
+    }
+
+    if (button.dataset) {
+      button.dataset.checkoutBound = 'true';
+    }
+
+    button.addEventListener('click', (event) => {
+      if (event && typeof event.preventDefault === 'function') {
+        event.preventDefault();
+      }
+      if (button.disabled) {
+        return;
+      }
+      return startCheckout(button, elements);
+    });
+  }
+}
+
+function updateCheckoutAvailability(elements, enabled) {
+  setCheckoutButtonsDisabled(elements, !enabled);
+  if (!enabled) {
+    setCheckoutLoading(elements.checkoutLoading, false);
+    setErrorMessage(elements.checkoutError, null);
+  }
 }
 
 export function initializeDonatePage(doc = document) {
@@ -190,6 +364,7 @@ export function initializeDonatePage(doc = document) {
   }
 
   const elements = collectElements(doc);
+  attachCheckoutHandlers(doc, elements);
   const state = resolveSession(doc);
 
   switch (state.status) {
@@ -206,6 +381,7 @@ export function initializeDonatePage(doc = document) {
       });
       setErrorMessage(elements.errorField, null);
       setAuthState(doc.body, 'signed-in');
+      updateCheckoutAvailability(elements, true);
       break;
     }
     case 'error': {
@@ -218,6 +394,7 @@ export function initializeDonatePage(doc = document) {
       });
       setErrorMessage(elements.errorField, AUTH_ERROR_MESSAGE);
       setAuthState(doc.body, 'error');
+      updateCheckoutAvailability(elements, false);
       break;
     }
     default: {
@@ -230,6 +407,7 @@ export function initializeDonatePage(doc = document) {
       });
       setErrorMessage(elements.errorField, null);
       setAuthState(doc.body, 'signed-out');
+      updateCheckoutAvailability(elements, false);
     }
   }
 }
@@ -248,4 +426,5 @@ export const __test__ = {
   base64UrlDecode,
   parseSessionCookieValue,
   resolveSession,
+  getCheckoutTarget,
 };
