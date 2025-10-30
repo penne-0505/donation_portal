@@ -49,7 +49,7 @@ function resolveBaseUrl(request: Request, env: CheckoutEnv): string | undefined 
   try {
     const url = new URL(request.url);
     return url.origin;
-  } catch (_error) {
+  } catch {
     return undefined;
   }
 }
@@ -233,7 +233,7 @@ export const onRequestPost: PagesFunction<CheckoutEnv> = async (context) => {
   let requestBody: CheckoutRequestBody;
   try {
     requestBody = (await request.json()) as CheckoutRequestBody;
-  } catch (_error) {
+  } catch {
     return errorResponse(400, 'bad_request', 'JSON ボディを解析できませんでした。');
   }
 

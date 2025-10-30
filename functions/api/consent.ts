@@ -21,7 +21,7 @@ interface ErrorBody {
 async function readJson(request: Request): Promise<ConsentRequestBody | null> {
   try {
     return (await request.json()) as ConsentRequestBody;
-  } catch (_error) {
+  } catch {
     return null;
   }
 }
