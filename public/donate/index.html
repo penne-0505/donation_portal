@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Donation Portal | Donate</title>
+    <meta
+      name="description"
+      content="Donation Portal の寄附受付ページです。Discord ログインと掲示同意の管理が行えます。"
+    />
+    <link rel="stylesheet" href="/styles/base.css" />
+  </head>
+  <body>
+    <main class="donation-container" aria-labelledby="page-title">
+      <header class="donation-header">
+        <h1 id="page-title">寄附のご案内</h1>
+        <p class="donation-lead">
+          Donation Portal は Discord コミュニティの運営費を支える任意の寄附を受け付けています。Discord でログインし、掲示への同意を設定してください。
+        </p>
+      </header>
+
+      <section class="auth-card" aria-labelledby="auth-section-title">
+        <h2 id="auth-section-title">Discord ログイン</h2>
+        <p id="auth-description">
+          Stripe Checkout で寄附を進める前に、Discord アカウントでログインして掲示同意を確認します。
+        </p>
+        <div class="auth-actions">
+          <a
+            id="auth-login"
+            class="button button--primary"
+            href="/oauth/start"
+            aria-describedby="auth-description"
+          >Discord でログイン</a>
+          <a id="auth-logout" class="button button--secondary" href="/oauth/logout" hidden>ログアウト</a>
+        </div>
+        <p id="auth-status" class="auth-status" role="status" aria-live="polite">
+          Discord へのログインが必要です。
+        </p>
+        <div id="auth-error" class="auth-error" role="alert" aria-live="assertive" hidden></div>
+      </section>
+
+      <section class="consent-card" aria-labelledby="consent-section-title">
+        <h2 id="consent-section-title">掲示への同意</h2>
+        <p id="consent-explanation">
+          同意した場合、Donors ページに Discord の表示名を掲載します（寄附額は表示されません）。
+        </p>
+        <div class="consent-control">
+          <input
+            type="checkbox"
+            id="consent-public"
+            name="consent_public"
+            value="1"
+            aria-describedby="consent-explanation consent-note"
+            disabled
+          />
+          <label for="consent-public">Donors ページに表示名を掲載することに同意します</label>
+        </div>
+        <p id="consent-note" class="consent-note">
+          Discord でログインすると同意の状態を変更できます。寄附後でも撤回が可能です。
+        </p>
+      </section>
+
+      <section class="info-card" aria-labelledby="info-section-title">
+        <h2 id="info-section-title">これからの流れ</h2>
+        <ol class="info-steps">
+          <li>Discord でログインし、掲示への同意を確認します。</li>
+          <li>同意内容を決めたら Stripe Checkout で寄附を行います。</li>
+          <li>寄附が完了するとサンクスページへ遷移します。</li>
+        </ol>
+        <p class="info-disclaimer">
+          いただいた寄附はコミュニティ運営にのみ利用し、対価の提供は行いません。
+        </p>
+      </section>
+
+      <section class="checkout-card" aria-labelledby="checkout-section-title">
+        <h2 id="checkout-section-title">寄附メニュー</h2>
+        <p id="checkout-description" class="checkout-description">
+          Stripe Checkout で寄附を行います。カード決済のみ対応し、すべて税込の金額です。
+        </p>
+        <div id="checkout-error" class="checkout-error" role="alert" aria-live="assertive" hidden></div>
+        <div class="checkout-actions" role="group" aria-labelledby="checkout-section-title">
+          <button
+            id="donate-onetime"
+            class="button button--primary"
+            type="button"
+            data-mode="payment"
+            data-variant="fixed300"
+            data-interval=""
+            aria-describedby="checkout-description checkout-note"
+            disabled
+          >単発寄附 ¥300</button>
+          <button
+            id="donate-monthly"
+            class="button button--primary"
+            type="button"
+            data-mode="subscription"
+            data-variant="fixed300"
+            data-interval="monthly"
+            aria-describedby="checkout-description checkout-note"
+            disabled
+          >毎月の寄附 ¥300</button>
+          <button
+            id="donate-yearly"
+            class="button button--primary"
+            type="button"
+            data-mode="subscription"
+            data-variant="fixed3000"
+            data-interval="yearly"
+            aria-describedby="checkout-description checkout-note"
+            disabled
+          >毎年の寄附 ¥3,000</button>
+        </div>
+        <p id="checkout-note" class="checkout-note">
+          寄附ボタンを押すと Stripe Checkout に移動します。完了後は自動的にサンクスページへ戻ります。
+        </p>
+        <div id="checkout-loading" class="checkout-loading" role="status" aria-live="polite" hidden>
+          Stripe Checkout を準備しています…
+        </div>
+      </section>
+    </main>
+    <script type="module" src="/donate/app.js"></script>
+  </body>
+</html>

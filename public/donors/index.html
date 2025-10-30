@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Donation Portal | Donors</title>
+    <meta
+      name="description"
+      content="Donation Portal の Donors ページです。同意済みの寄附者を表示し、掲示の撤回が行えます。"
+    />
+    <link rel="stylesheet" href="/styles/base.css" />
+  </head>
+  <body>
+    <main class="donors-container" aria-labelledby="page-title">
+      <header class="donors-header">
+        <h1 id="page-title">Donors の皆さま</h1>
+        <p class="donors-lead">
+          Discord で掲示に同意いただいた寄附者の表示名を掲載しています。寄附額や回数は公開していません。
+        </p>
+      </header>
+
+      <section class="donors-section" aria-labelledby="donors-section-title">
+        <div class="donors-section-header">
+          <h2 id="donors-section-title">掲示中の Donors</h2>
+          <p id="donors-status" class="donors-status" role="status" aria-live="polite">
+            Donors 情報を読み込み中です…
+          </p>
+          <div id="donors-error" class="donors-error" role="alert" aria-live="assertive" hidden></div>
+          <p class="donors-count">
+            現在 <span id="donor-count">0</span> 名の Donor を掲載しています。
+          </p>
+          <button id="donors-reload" class="button button--secondary" type="button">最新の情報に更新</button>
+        </div>
+        <ul id="donors-list" class="donors-list" aria-live="polite" aria-describedby="donors-status"></ul>
+        <p class="donors-note">
+          * Donors 情報は 60 秒間キャッシュされます。同意の更新が反映されるまで時間がかかる場合があります。
+        </p>
+      </section>
+
+      <section class="consent-section" aria-labelledby="consent-section-title">
+        <div class="consent-section-header">
+          <h2 id="consent-section-title">掲示の同意を管理する</h2>
+          <p id="consent-description">
+            Discord でログイン済みの場合、ここから Donors 掲載の同意を撤回できます。寄附後でもいつでも変更可能です。
+          </p>
+        </div>
+        <div class="consent-actions">
+          <a
+            id="consent-login"
+            class="button button--primary"
+            href="/donate"
+            aria-describedby="consent-description"
+            hidden
+            >Discord でログイン</a
+          >
+          <button
+            id="consent-revoke"
+            class="button button--secondary"
+            type="button"
+            aria-describedby="consent-description consent-note"
+            hidden
+          >Donors 掲示を撤回する</button>
+        </div>
+        <p id="consent-note" class="consent-note">
+          掲示を撤回すると Donors ページから表示名が削除されます。再度寄附ページで同意すると再掲示されます。
+        </p>
+        <div id="consent-status" class="consent-status" role="status" aria-live="polite"></div>
+        <div id="consent-error" class="consent-error" role="alert" aria-live="assertive" hidden></div>
+      </section>
+    </main>
+    <script type="module" src="/donors/app.js"></script>
+  </body>
+</html>

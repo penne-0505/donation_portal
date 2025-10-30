@@ -1,3 +1,28 @@
+---
+title: 'Donation Portal 実装計画 v0'
+domain: 'donation-portal'
+status: 'draft'
+version: '0.1.0'
+created: '2025-10-29'
+updated: '2025-10-29'
+related_issues: []
+related_prs: []
+references:
+  - docs/draft/requirements_definition.md
+  - docs/draft/interface_definition.md
+state: 'exploring'
+hypothesis:
+  - 'Phase 1 アプローチが後続フェーズでも差し支えない'
+options: []
+open_questions:
+  - 'Stripe CLI を CI にどう組み込むか'
+next_action_by: 'engineering-lead'
+review_due: '2025-11-28'
+ttl_days: 30
+---
+
+# Donation Portal 実装計画 v0
+
 ## 1. スコープ確定（再掲・確認用）
 
 * 寄附：単発/定期（カードのみ）。Checkout→`/thanks`。独自メールなし（Stripeレシートのみ）。

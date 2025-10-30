@@ -1,0 +1,27 @@
+{
+  "name": "donation-portal",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Donation Portal Cloudflare Pages foundation",
+  "type": "module",
+  "engines": {
+    "node": "^18.18.0 || ^20.0.0"
+  },
+  "scripts": {
+    "lint": "node scripts/run-eslint.cjs .",
+    "test": "rm -rf dist && node scripts/run-tsc.cjs --project tsconfig.json && node --test \"dist/tests/**/*.js\"",
+    "typecheck": "node scripts/run-tsc.cjs --noEmit",
+    "build": "node scripts/run-wrangler-build.cjs",
+    "format": "node scripts/run-prettier.cjs --check \"src/**/*.ts\" \"tests/**/*.ts\" \"functions/**/*.ts\" \"public/**/*.{html,css}\" \"docs/guide/**/*.md\" README.md",
+    "format:write": "node scripts/run-prettier.cjs --write \"src/**/*.ts\" \"tests/**/*.ts\" \"functions/**/*.ts\" \"public/**/*.{html,css}\" \"docs/guide/**/*.md\" README.md",
+    "dev": "node scripts/run-wrangler-dev.cjs"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.7.0",
+    "@typescript-eslint/parser": "^8.7.0",
+    "eslint": "^9.11.1",
+    "prettier": "^3.3.3",
+    "typescript": "^5.6.3",
+    "wrangler": "^3.77.0"
+  }
+}

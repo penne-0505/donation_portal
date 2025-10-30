@@ -1,0 +1,378 @@
+:root {
+  color-scheme: light dark;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  line-height: 1.6;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
+  color: #1f2933;
+}
+
+main {
+  max-width: 720px;
+  margin: 3.5rem auto;
+  padding: 0 1.5rem 2.5rem;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.08);
+}
+
+.donors-container {
+  max-width: 760px;
+}
+
+.donors-header {
+  padding-bottom: 1.5rem;
+}
+
+.donors-lead {
+  font-size: 1.05rem;
+  color: #475569;
+}
+
+h1 {
+  margin-top: 0;
+  padding-top: 2.5rem;
+}
+
+section {
+  padding: 1.75rem 0;
+}
+
+section + section {
+  border-top: 1px solid #e2e8f0;
+}
+
+.donors-section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.donors-status {
+  font-weight: 600;
+}
+
+.donors-error,
+.consent-error {
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background-color: rgba(220, 38, 38, 0.12);
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.donors-count {
+  margin: 0;
+  font-weight: 600;
+}
+
+.donors-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+
+.donors-list li {
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  font-weight: 600;
+}
+
+.donors-note {
+  margin-top: 1.25rem;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.consent-section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.consent-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1.25rem 0 0.5rem;
+}
+
+.consent-status {
+  margin-top: 0.75rem;
+  font-weight: 600;
+}
+
+.consent-error {
+  margin-top: 0.75rem;
+}
+
+p,
+ul,
+ol {
+  margin: 1rem 0;
+}
+
+a {
+  color: inherit;
+}
+
+.donation-header {
+  padding-bottom: 0.5rem;
+}
+
+.donation-lead {
+  font-size: 1.05rem;
+}
+
+.auth-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.65rem 1.1rem;
+  border-radius: 999px;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.button:focus-visible {
+  outline: 3px solid #94a3b8;
+  outline-offset: 2px;
+}
+
+.button--primary {
+  background: linear-gradient(135deg, #5865f2, #4752c4);
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(88, 101, 242, 0.35);
+}
+
+.button--primary:hover,
+.button--primary:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 22px rgba(88, 101, 242, 0.4);
+}
+
+.button--secondary {
+  background-color: #e2e8f0;
+  color: #1f2933;
+}
+
+.button--secondary:hover,
+.button--secondary:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.12);
+}
+
+.auth-status {
+  margin-top: 1rem;
+  font-weight: 600;
+}
+
+.auth-error {
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background-color: rgba(220, 38, 38, 0.12);
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.consent-control {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.consent-control input[type='checkbox'] {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-top: 0.2rem;
+}
+
+.consent-note {
+  margin-top: 0.75rem;
+  font-size: 0.95rem;
+  color: #475569;
+}
+
+.info-steps {
+  padding-left: 1.25rem;
+}
+
+.info-disclaimer {
+  font-size: 0.95rem;
+  color: #475569;
+}
+
+.checkout-card {
+  border-top: 1px solid #e2e8f0;
+}
+
+.checkout-description {
+  margin-bottom: 1.25rem;
+}
+
+.checkout-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.checkout-actions .button {
+  min-width: 12rem;
+}
+
+.checkout-actions .button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.65;
+  box-shadow: none;
+}
+
+.checkout-note {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  color: #475569;
+}
+
+.checkout-error {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background-color: rgba(220, 38, 38, 0.12);
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.checkout-loading {
+  margin-top: 1rem;
+  font-weight: 600;
+}
+
+body[data-auth-state='signed-in'] .consent-note {
+  color: #1f2933;
+}
+
+.thanks-container {
+  max-width: 720px;
+  margin: 4rem auto;
+  padding: 2.5rem 1.5rem 2.75rem;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.08);
+  text-align: left;
+}
+
+.thanks-note {
+  font-size: 0.95rem;
+  color: #475569;
+}
+
+.thanks-link {
+  margin-top: 2rem;
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  main {
+    margin: 2.5rem 1rem;
+    padding: 0 1.25rem 2rem;
+  }
+
+  .auth-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .button {
+    width: 100%;
+  }
+
+  .checkout-actions {
+    flex-direction: column;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #0f172a;
+    color: #e2e8f0;
+  }
+
+  main {
+    background-color: #1e293b;
+    box-shadow: 0 18px 32px rgba(2, 6, 23, 0.5);
+  }
+
+  section + section {
+    border-top-color: #334155;
+  }
+
+  .button--primary {
+    box-shadow: 0 8px 18px rgba(88, 101, 242, 0.45);
+  }
+
+  .button--secondary {
+    background-color: #334155;
+    color: #e2e8f0;
+  }
+
+  .button--secondary:hover,
+  .button--secondary:focus-visible {
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.45);
+  }
+
+  .auth-error {
+    background-color: rgba(248, 113, 113, 0.18);
+    color: #fecaca;
+  }
+
+  .checkout-card {
+    border-top-color: #334155;
+  }
+
+  .consent-note,
+  .info-disclaimer,
+  .checkout-note {
+    color: #94a3b8;
+  }
+
+  .checkout-error {
+    background-color: rgba(248, 113, 113, 0.18);
+    color: #fecaca;
+  }
+
+  .thanks-container {
+    background-color: #1e293b;
+    box-shadow: 0 18px 32px rgba(2, 6, 23, 0.5);
+  }
+
+  .thanks-note {
+    color: #94a3b8;
+  }
+}

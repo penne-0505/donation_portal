@@ -1,6 +1,6 @@
 # TODO
 
-Next ID No: 1
+Next ID No: 10
 **(連番は全カテゴリで通し番号)**
 
 --- 
