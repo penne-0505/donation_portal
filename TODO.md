@@ -22,20 +22,6 @@ Definitions to suppress Markdown warnings
 
 ## Backlog
 
-### [Feature] Donors 掲載 & 同意管理実装 (Phase 4)
-- **ID**: UI/UX-Feature-4
-- **Priority**: P1
-- **Size**: M
-- **Area**: UI/UX
-- **Dependencies**: Core-Feature-3
-- **Goal**: Donorsページで同意者の表示名のみ掲示し、同意/撤回操作でStripe metadataが更新される状態にする。
-- **Steps**:
-  1. `docs/plan/donation-portal/phase-04-donors/plan.md` を基に `GET /api/donors` と `POST /api/consent` を実装する。
-  2. `/donors` ページを完成させ、撤回リンクとキャッシュ制御(max-age=60)を組み込む。
-  3. OAuth→寄附→撤回までのE2Eテストを行い、APIドキュメント草案を更新する。
-- **Description**: Donation Portal MVP Phase 4の実装。同意者のみ表示するDonors体験とConsent更新APIを提供する。
-- **Plan**: [`docs/plan/donation-portal/phase-04-donors/plan.md`](docs/plan/donation-portal/phase-04-donors/plan.md)
-
 ### [Feature] Stripe Webhook & 運用整備 (Phase 5)
 - **ID**: Core-Feature-5
 - **Priority**: P1
