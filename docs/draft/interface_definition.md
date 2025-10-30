@@ -1,7 +1,7 @@
 ---
 title: '寄附受付 I/F仕様'
 domain: 'donation-portal'
-status: 'draft'
+status: 'superseded'
 version: '1.0.0'
 created: '2025-10-29'
 updated: '2025-10-29'
@@ -9,6 +9,7 @@ related_issues: []
 related_prs: []
 references:
   - docs/draft/requirements_definition.md
+  - docs/intent/donation-portal/mvp-architecture-and-phases.md
 state: 'exploring'
 hypothesis:
   - '主要エンドポイント構成が Phase 2 以降でも有効である'
@@ -18,7 +19,12 @@ open_questions:
 next_action_by: 'engineering-lead'
 review_due: '2025-11-28'
 ttl_days: 30
+superseded_by: docs/intent/donation-portal/mvp-architecture-and-phases.md
 ---
+
+# 本ドキュメントの位置付け
+
+本仕様は intent ドキュメント `docs/intent/donation-portal/mvp-architecture-and-phases.md` に引き継がれました。詳細検討が必要な場合は intent を参照してください。
 
 # I/F仕様 — 寄附受付（Cloudflare Pages＋Functions, TypeScript） v1.0
 

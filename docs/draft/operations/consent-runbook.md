@@ -1,7 +1,7 @@
 ---
 title: "Donors 掲示同意 Runbook (Draft)"
 domain: "donation-portal"
-status: "draft"
+status: "superseded"
 version: "0.1.0"
 created: "2025-10-30"
 updated: "2025-10-30"
@@ -10,6 +10,7 @@ related_prs: []
 references:
   - docs/reference/api/consent.md
   - docs/reference/api/donors.md
+  - docs/intent/donation-portal/mvp-architecture-and-phases.md
 state: "paused"
 hypothesis:
   - "Donors 掲示に関する問い合わせは 3 パターン（撤回依頼、再同意、掲示遅延）に集約できる"
@@ -21,7 +22,12 @@ open_questions:
 next_action_by: "support-lead"
 review_due: "2025-11-15"
 ttl_days: 30
+superseded_by: docs/intent/donation-portal/mvp-architecture-and-phases.md
 ---
+
+# 本ドキュメントの位置付け
+
+運用方針は intent ドキュメント `docs/intent/donation-portal/mvp-architecture-and-phases.md` に集約されました。具体的な手順は intent を参照のうえ、必要に応じてガイドドキュメントへ反映してください。
 
 # Donors 掲示同意 Runbook (Draft)
 

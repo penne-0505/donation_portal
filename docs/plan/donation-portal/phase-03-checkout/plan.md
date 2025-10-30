@@ -1,7 +1,7 @@
 ---
 title: "Donation Portal Phase 3 — Checkout & Metadata 計画"
 domain: "donation-portal"
-status: "draft"
+status: "superseded"
 version: "0.1.0"
 created: "2025-10-29"
 updated: "2025-10-29"
@@ -11,6 +11,7 @@ references:
   - docs/plan/donation-portal/mvp/plan.md
   - docs/draft/interface_definition.md
   - docs/draft/impl_plan_v0.md
+  - docs/intent/donation-portal/mvp-architecture-and-phases.md
 scope:
   - "Stripe Checkout を用いた単発/定期寄附フローを実装する。"
   - "`POST /api/checkout/session` で Stripe Customer metadata を SSOT として更新する。"
@@ -68,7 +69,12 @@ acceptance_criteria:
   - "ユーザ向けエラー表示とログ記録が実装されている。"
 owners:
   - "@donation-portal-core"
+superseded_by: docs/intent/donation-portal/mvp-architecture-and-phases.md
 ---
+
+# 本ドキュメントの位置付け
+
+Checkout の実装方針は intent ドキュメント `docs/intent/donation-portal/mvp-architecture-and-phases.md` に統合されています。本 Plan は参考用として残しています。
 
 # Phase 3 — Checkout & Metadata 計画
 

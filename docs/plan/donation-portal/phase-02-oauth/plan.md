@@ -1,7 +1,7 @@
 ---
 title: "Donation Portal Phase 2 — OAuth & Session 計画"
 domain: "donation-portal"
-status: "active"
+status: "superseded"
 version: "0.1.1"
 created: "2025-10-29"
 updated: "2025-10-31"
@@ -10,6 +10,7 @@ related_prs: []
 references:
   - docs/plan/donation-portal/mvp/plan.md
   - docs/draft/interface_definition.md
+  - docs/intent/donation-portal/mvp-architecture-and-phases.md
 scope:
   - "Discord OAuth を利用した表示名取得と掲示同意フローを実装する。"
   - "署名付き state Cookie と sess Cookie による短期セッション管理を実現する。"
@@ -69,7 +70,12 @@ acceptance_criteria:
   - "Pages プレビューでも同様の挙動を確認できる。"
 owners:
   - "@donation-portal-core"
+superseded_by: docs/intent/donation-portal/mvp-architecture-and-phases.md
 ---
+
+# 本ドキュメントの位置付け
+
+OAuth フローに関する確定判断は intent ドキュメント `docs/intent/donation-portal/mvp-architecture-and-phases.md` にまとめられています。本 Plan は参照目的で保持されています。
 
 # Phase 2 — OAuth & Session 計画
 

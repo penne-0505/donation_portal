@@ -1,7 +1,7 @@
 ---
 title: "Donation Portal Phase 4 — Donors & Consent 計画"
 domain: "donation-portal"
-status: "draft"
+status: "superseded"
 version: "0.1.0"
 created: "2025-10-29"
 updated: "2025-10-29"
@@ -10,6 +10,7 @@ related_prs: []
 references:
   - docs/plan/donation-portal/mvp/plan.md
   - docs/draft/interface_definition.md
+  - docs/intent/donation-portal/mvp-architecture-and-phases.md
 scope:
   - "`GET /api/donors` と `POST /api/consent` を実装し、Stripe metadata を掲示・更新できるようにする。"
   - "`/donors` ページで同意者の表示名のみを掲示し、撤回導線を提供する。"
@@ -71,7 +72,12 @@ acceptance_criteria:
   - "API ドキュメント草案が docs/reference に追加されている。"
 owners:
   - "@donation-portal-core"
+superseded_by: docs/intent/donation-portal/mvp-architecture-and-phases.md
 ---
+
+# 本ドキュメントの位置付け
+
+Donors/Consent に関する設計判断は intent ドキュメント `docs/intent/donation-portal/mvp-architecture-and-phases.md` に統合済みです。本 Plan は履歴確認用に保管しています。
 
 # Phase 4 — Donors & Consent 計画
 
