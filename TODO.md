@@ -36,22 +36,6 @@ Definitions to suppress Markdown warnings
 - **Description**: Donation Portal MVP Phase 5の実装。Stripeイベントの受信体制と軽量な運用監視を整備する。
 - **Plan**: [`docs/plan/donation-portal/phase-05-webhook/plan.md`](docs/plan/donation-portal/phase-05-webhook/plan.md)
 
-### [Chore] QA & 本番リリース準備 (Phase 6)
-- **ID**: DevOps-Chore-6
-- **Priority**: P1
-- **Size**: M
-- **Area**: DevOps
-- **Dependencies**: Core-Feature-5
-- **Goal**: MVP全体の総合テストを完了し、Stripe Liveキー投入と本番デプロイが安全に実施されること。
-- **Steps**:
-  1. `docs/plan/donation-portal/phase-06-qa/plan.md` の総合テスト計画に従い、単発/定期フロー・Donors・Webhook・Consentを検証する。
-  2. Liveキー・Webhook設定・Pages本番デプロイを手順通りに実施し、少額寄附でスモークテストを行う。
-  3. Runbook/FAQ/CHANGELOGを更新し、リリース結果と監視体制を共有する。
-- **Description**: Donation Portal MVP Phase 6の実装。QAと本番ローンチ、運用引き継ぎの最終準備を行う。
-- **Plan**: [`docs/plan/donation-portal/phase-06-qa/plan.md`](docs/plan/donation-portal/phase-06-qa/plan.md)
-
----
-
 ## Ready
 
 ---
