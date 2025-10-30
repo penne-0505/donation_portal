@@ -4,11 +4,12 @@ domain: 'donation-portal'
 status: 'active'
 version: '1.0.0'
 created: '2025-11-02'
-updated: '2025-11-02'
+updated: '2025-11-03'
 related_issues: []
 related_prs: []
 references:
   - ./phase-06-qa-release.md
+  - ./cloudflare-pages-troubleshooting.md
   - ../development/setup.md
   - ../payments/stripe-setup.md
   - ../payments/stripe-webhook-operations.md
@@ -58,73 +59,54 @@ QA 手順やローンチ後の運用監視は [Phase 6 QA & Release Runbook](./p
 3. **Production branch** を `main` に設定し、必要に応じて Preview ブランチに `dev` を追加します。
 4. セットアップ後、Pages が自動で初回ビルドを実行するため、完了を待ってから Secrets の登録に進みます。
 
-## 本番 Secrets / 環境変数の登録
+## トラブルシューティング
 
-1. Cloudflare Pages の対象プロジェクトで **Settings → Functions → Environment variables (Secrets)** を開きます。
-2. 下表の値を Production / Preview の両方に登録します。Live 専用値は Production のみに登録してください。
+Cloudflare Pages のデプロイ時に `npm error enoent Could not read package.json` が発生した場合、ルートディレクトリ設定が誤っている可能性があります。設定手順や再デプロイ方法は [Cloudflare Pages トラブルシューティングガイド](./cloudflare-pages-troubleshooting.md) を参照してください。
 
-| キー | 種別 | Production | Preview | 備考 |
-| --- | --- | --- | --- | --- |
-| `STRIPE_SECRET_KEY` | Secret | Live 用 `sk_live_*` | Test 用 `sk_test_*` | Live/Test の切替に合わせて更新 |
-| `STRIPE_WEBHOOK_SECRET` | Secret | Live 用 Signing secret | Test 用 Signing secret | Stripe Dashboard の endpoint ごとに取得 |
-| `PRICE_ONE_TIME_300` | Secret | Live Price ID | Test Price ID | 金額・通貨を事前に Dashboard で作成 |
-| `PRICE_SUB_MONTHLY_300` | Secret | Live Price ID | Test Price ID | 月額プラン |
-| `PRICE_SUB_YEARLY_3000` | Secret | Live Price ID | Test Price ID | 年額プラン |
-| `DISCORD_CLIENT_ID` | Secret | 本番アプリの Client ID | Test アプリの Client ID | OAuth 連携用 |
-| `DISCORD_CLIENT_SECRET` | Secret | 本番アプリの Secret | Test アプリの Secret | 再生成時は即時更新 |
-| `DISCORD_REDIRECT_URI` | Env | `https://<project>.pages.dev/oauth/callback` | `https://<project>-<hash>.pages.dev/oauth/callback` | Discord Portal 側と一致させる |
-| `APP_BASE_URL` | Env | `https://<project>.pages.dev` | `https://<project>-<hash>.pages.dev` | Functions のリダイレクト基準 |
-| `COOKIE_SIGN_KEY` | Secret | 32 文字以上のランダム英数 | 任意のランダム英数 | 切替時は古い Cookie を破棄 |
+## Secrets（環境変数）の登録
 
-3. 変更は 2 名以上でペアレビューし、手順書やチケットに記録を残します。
-4. Secrets 登録後に **Save** を押し、Preview/Production それぞれで再デプロイを行います。
+1. Cloudflare Pages ダッシュボードで **Settings → Functions → Environment variables (Secrets)** を開きます。
+2. `.env.example` を参照し、Preview / Production それぞれに必要な値を登録します。
+3. Stripe / Discord の Live 切替は本番リリース直前に実施し、Preview 環境が Test モードを維持していることを確認します。
+4. 変更後は **Deployments → Retry deployment** で Functions へ値を反映させます。
 
-## Stripe Live 設定
+## Stripe Live モード切替
 
-1. Stripe Dashboard の **Products** で本番用 Price（単発・月額・年額）を事前に作成し、上表の ID を取得します。
-2. **Developers → API keys** で `sk_live_*` を発行し、Cloudflare Pages の Production Secret に登録します。
-3. **Developers → Webhooks** で Production endpoint（例: `https://<project>.pages.dev/api/webhooks/stripe`）を追加し、`payment_intent.succeeded` と `invoice.paid` を選択します。
-4. 表示された Signing secret を `STRIPE_WEBHOOK_SECRET`（Production）として登録します。
-5. CLI から `stripe login` → `stripe trigger payment_intent.succeeded --livemode` を実行し、`200 OK` のレスポンスと Cloudflare Logs の `env=production` を確認します。
+1. Stripe Dashboard の **Developers → API keys** で `sk_live_*` を取得し、Cloudflare Pages Production Secrets に登録します。
+2. Checkout の Price ID (`PRICE_*`) を Live 用に差し替え、Webhook Signing secret (`whsec_*`) も本番用を登録します。
+3. デプロイ完了後に `stripe trigger payment_intent.succeeded` を用いた Live Webhook テストは行えないため、テストカードで最小決済を行い、Cloudflare Logs で `200` 応答を確認します。
 
 ## Discord OAuth 本番設定
 
-1. Discord Developer Portal で本番用アプリケーションを開き、`Redirects` に `https://<project>.pages.dev/oauth/callback` を登録します。
-2. `Client ID` / `Client Secret` を取得し、Cloudflare Pages に Secrets として登録します。
-3. OAuth Consent の文言・アイコンが公開に問題ないか確認し、`Default Authorization Link` を本番 URL に設定します。
-4. 既存の Test アプリから Live へ切り替える場合は、Discord 側での審査や権限設定が必要なため、必要に応じて 1〜2 週間の余裕を確保します。
+1. Discord Developer Portal で本番アプリケーションの `Client ID` / `Client Secret` を取得し、Pages の Secrets に登録します。
+2. **OAuth2 → Redirects** に `https://<project>.pages.dev/oauth/callback` を追加し、`Preview` 用の URL は残したままにします。
+3. 認可フローの整合性を保つため、Test 環境の Bot 権限とスコープを流用する場合でも、Live 用に再確認してください。
 
-## 移行・ローンチ手順
+## リリース前検証
 
-1. **リリース候補確定**: `main` ブランチに Phase 6 完成版をマージし、Preview で最終確認を行います。
-2. **変更凍結**: リリースウィンドウ中は `main` / `dev` への直接コミットを制限し、緊急修正はホットフィックス手順に従います。
-3. **Secrets 切替**: 上記手順で Live 用 Secrets を登録し、`wrangler pages deploy` または GitHub トリガーで Production デプロイを実行します。
-4. **QA 実施**: [Phase 6 QA & Release Runbook](./phase-06-qa-release.md#3-qa-チェックリスト) の QA-01〜QA-10 を Production で抜粋実施（Live 決済は少額テストを実施）。
-5. **Donors 同意移行**: Test 環境の同意データは Stripe Metadata（Customer）に保存されているため、Live 環境では新規寄附者のみが表示されます。既存テストデータは削除・アーカイブし、本番での初回寄附をもって掲載を開始します。
-6. **アナウンス**: 寄附受付開始をコミュニティへ告知し、Stripe レシートと `/thanks` ページの案内を共有します。
+- `/donate` → Checkout → `/thanks` の完了までのフローを Live Secrets で検証
+- `/api/donors` が `consent_public=true` の顧客のみを返すことを確認
+- Webhook ログに `payment_intent.succeeded` と `invoice.paid` が記録され、エラーが無いことを確認
+- Discord OAuth で取得した表示名が Stripe Customer metadata に反映されることを確認
 
 ## ロールバック手順
 
-1. Cloudflare Pages ダッシュボードで **Deployments → Rollback** を実行し、直前の安定版へ戻します。
-2. Stripe Dashboard の Webhook endpoint を一時停止し、不要な Live 決済の再送を防止します。
-3. Secrets を Test 用に差し戻し、再発防止策をまとめてから再リリースを計画します。
-4. 寄附者への影響がある場合は、Slack / Discord で状況説明と対応見込みを共有します。
+1. Cloudflare Pages ダッシュボードで **Deployments → Rollback** を実行し、直前の安定版デプロイに戻します。
+2. 必要に応じて `wrangler pages publish --branch=<stable>` で安定ブランチを再デプロイします。
+3. Stripe / Discord Secrets を元の Test 値に戻し、Preview 環境での QA が継続できるようにします。
 
-## リリース後の初動監視
+## 監視と運用
 
-| 項目 | 監視方法 | 判定基準 | 対応 |
+| 項目 | チェック場所 | 基準 | アクション |
 | --- | --- | --- | --- |
-| Stripe Webhook 成功率 | Stripe Dashboard > Events | 失敗率 0%（再送含む） | 失敗発生時は Webhook ガイドの初動対応へ |
-| Functions レイテンシ | Cloudflare Pages > Analytics > Functions | P95 < 200ms | 閾値超過時はログ確認と再デプロイ検討 |
-| エラー監視 | Sentry / Cloudflare Logs | 致命エラー 0 件 | エラー検知時は Issue 登録と暫定対応 |
-| 寄附件数 | Stripe Dashboard > Payments | 基準値から急減なし | 異常時はコミュニティ周知・フォーム確認 |
+| Functions エラー率 | Cloudflare Pages > Analytics > Functions | 0% 近辺 | エラー率が上昇した場合はログを確認し、必要に応じてロールバック |
+| Checkout 成功率 | Stripe Dashboard > Payments | 失敗率 < 1% | 失敗が増加した場合は Stripe 側のアラートと合わせて原因調査 |
+| Discord OAuth エラー | Cloudflare Pages Logs (`oauth/*`) | エラー無し | エラー発生時は Discord アプリ設定と Redirect URI を再確認 |
 
-監視結果はローンチ当日から 1 週間は日次で共有し、その後は週次レポートへ移行します。
+## 関連資料
 
-## 関連ドキュメント
-
-- [開発環境セットアップガイド](../development/setup.md)
-- [Stripe Webhook 運用ガイド](../payments/stripe-webhook-operations.md)
-- [Stripe Checkout 設定ガイド](../payments/stripe-setup.md)
-- [Discord OAuth フロー運用ガイド](../auth/discord-oauth.md)
 - [Phase 6 QA & Release Runbook](./phase-06-qa-release.md)
+- [Cloudflare Pages トラブルシューティングガイド](./cloudflare-pages-troubleshooting.md)
+- [Stripe Webhook 運用ガイド](../payments/stripe-webhook-operations.md)
+- [Discord OAuth 運用ガイド](../auth/discord-oauth.md)
+
