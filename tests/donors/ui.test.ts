@@ -19,14 +19,22 @@ class FakeElement {
   public hidden = false;
   public disabled = false;
   public textContent = '';
-  public dataset: Record<string, string> = {};
   public attributes = new Map<string, string>();
   public href = '';
   public children: FakeElement[] = [];
   public parent: FakeElement | null = null;
   private readonly listeners = new Map<string, Array<(event: { preventDefault: () => void }) => unknown>>();
+  #dataset: Record<string, string> = {};
 
   constructor(public readonly tagName: string, public id = '') {}
+
+  public get dataset(): Record<string, string> {
+    return this.#dataset;
+  }
+
+  public set dataset(_value: Record<string, string>) {
+    throw new TypeError('dataset is read-only');
+  }
 
   get firstChild(): FakeElement | null {
     return this.children[0] ?? null;
@@ -87,7 +95,6 @@ class FakeDocument {
 
   constructor(elements: FakeElement[]) {
     this.body = new FakeElement('body');
-    this.body.dataset = {};
     for (const element of elements) {
       this.register(element);
     }
@@ -241,6 +248,7 @@ describe('donors UI script', () => {
     assert.ok(elements.consentStatus.textContent.includes('撤回しました'));
     assert.equal(elements.donorsList.children.length, 1);
     assert.equal(elements.donorsList.children[0]?.textContent, 'Delta');
+    assert.equal(elements.donorsCount.textContent, '1');
   });
 
   it('Donors API が失敗した場合はエラーメッセージを表示する', async () => {
