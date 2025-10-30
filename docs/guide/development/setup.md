@@ -1,20 +1,23 @@
 ---
 title: 'Donation Portal 開発環境セットアップガイド'
 domain: 'donation-portal'
-status: 'draft'
-version: '0.1.0'
+status: 'active'
+version: '1.0.0'
 created: '2025-10-29'
-updated: '2025-10-30'
+updated: '2025-11-01'
 related_issues: []
 related_prs: []
 references:
   - docs/plan/donation-portal/phase-01-foundation/plan.md
   - docs/guide/auth/discord-oauth.md
+  - docs/guide/payments/stripe-webhook-operations.md
 ---
 
 ## 概要
 
-Cloudflare Pages 上で Donation Portal を開発するためのローカル環境セットアップ手順をまとめています。Phase 1 時点では Functions/API の開発基盤と CI 実行を目的とした最小構成です。
+Cloudflare Pages 上で Donation Portal を開発するための初期セットアップ手順をまとめています。新規メンバーがローカル環境を整備し、Stripe/Discord のサンドボックスを用いて基本的な動作確認を行うまでをカバーします。
+
+> **本番環境の準備について**: 本ガイドは開発環境に特化しています。本番デプロイや Secrets の Live 切替手順は [本番環境セットアップ & 移行ガイド](../operations/production-deployment.md) を参照してください。
 
 ## 前提条件
 
@@ -22,6 +25,8 @@ Cloudflare Pages 上で Donation Portal を開発するためのローカル環�
 - npm 10 以降
 - GitHub リポジトリへのアクセス権
 - Cloudflare アカウント（Pages プロジェクトを作成するため）
+- Stripe テストモードの API キー（Dashboard から取得）
+- Discord Developer Portal のアプリケーション（OAuth クライアント ID/Secret を取得）
 
 > **補足**: 現在の開発コンテナでは npm レジストリへのアクセスが制限されており、一部パッケージを取得できません。社内ネットワークから利用する場合はプロキシ設定やミラーリポジトリの利用をご検討ください。
 
@@ -52,6 +57,8 @@ Cloudflare Pages 上で Donation Portal を開発するためのローカル環�
    ```
    - `COOKIE_SIGN_KEY` は OAuth state Cookie の HMAC 署名に利用する秘密鍵です。32 文字以上のランダムな英数字を生成し、
      漏洩しないよう Secrets 管理してください。
+   - Stripe/Discord のテストクレデンシャルをセットし、`APP_BASE_URL` は `http://localhost:8788` を指定します。
+
 5. 静的アセットと Functions を含むローカル開発サーバを起動します。
 
    ```bash
@@ -59,6 +66,17 @@ Cloudflare Pages 上で Donation Portal を開発するためのローカル環�
    ```
 
    - `wrangler` が未インストールの場合はエラーになるため、`npm install wrangler --save-dev` または `npm install -g wrangler` で導入してください。
+   - 開発サーバは `http://localhost:8788` で立ち上がり、`/donate`・`/thanks`・`/donors` の 3 ページを提供します。
+
+6. 別ターミナルで主要チェックを実行し、環境が正しく構築できているかを確認します。
+
+   ```bash
+   npm run lint
+   npm run typecheck
+   npm test
+   ```
+
+   - いずれかが失敗した場合は `node_modules` の再インストールや `.env` の設定漏れを再確認してください。
 
 ## 環境変数と Secrets 管理
 
@@ -85,13 +103,13 @@ Cloudflare Pages 上で Donation Portal を開発するためのローカル環�
 
 ## 開発用コマンド
 
-| コマンド            | 目的                                             | 備考                                                                                                                         |
-| ------------------- | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
-| `npm run lint`      | ESLint による静的解析                            | `scripts/run-eslint.cjs` がグローバル `eslint` を呼び出します。TypeScript 用プラグインが未導入の場合は警告のみ出力されます。 |
-| `npm run format`    | Prettier によるフォーマットチェック              | `scripts/run-prettier.cjs` がグローバル `prettier` を利用します。                                                            |
-| `npm run typecheck` | TypeScript コンパイルチェック                    | グローバル `tsc` を利用します。                                                                                              |
-| `npm test`          | Node.js 標準テストランナーでユニットテストを実行 | Phase 1 では `src/lib` 配下のモジュールを対象にしています。                                                                  |
-| `npm run build`     | Functions のビルド検証                           | `wrangler` がインストールされていない場合はスキップメッセージを表示します。                                                  |
+| コマンド | 目的 | 備考 |
+| --- | --- | --- |
+| `npm run lint` | ESLint による静的解析 | `scripts/run-eslint.cjs` がグローバル `eslint` を呼び出します。TypeScript 用プラグインが未導入の場合は警告のみ表示されます。 |
+| `npm run format` | Prettier によるフォーマットチェック | `scripts/run-prettier.cjs` がグローバル `prettier` を利用します。 |
+| `npm run typecheck` | TypeScript コンパイルチェック | グローバル `tsc` を利用し、型エラーを検出します。 |
+| `npm test` | Node.js 標準テストランナーでユニットテストを実行 | OAuth／Checkout／Donors／Webhook の主要ユースケースが 52 件のテストで検証されます。 |
+| `npm run build` | Functions のビルド検証 | `wrangler` がインストールされていない場合はスキップメッセージを表示します。 |
 
 ## Cloudflare Pages との連携
 
@@ -108,4 +126,5 @@ Cloudflare Pages 上で Donation Portal を開発するためのローカル環�
 
 ## 次のステップ
 
-- Phase 2 以降で Discord OAuth を実装する際は、`docs/plan/donation-portal/phase-02-oauth/plan.md` を参照し、必要な環境変数を `.env.example` に追記してください。
+- Discord OAuth の動作検証を行う場合は、`docs/plan/donation-portal/phase-02-oauth/plan.md` に沿って Discord アプリケーションのリダイレクト URI とスコープを設定し、`docs/guide/auth/discord-oauth.md` のチェックリストで同意画面を確認してください。
+- Stripe Webhook の疎通確認は、`docs/guide/payments/stripe-webhook-operations.md` の手順に従って `stripe listen` コマンドを利用し、ローカル Functions にイベントを転送します。
