@@ -22,20 +22,6 @@ Definitions to suppress Markdown warnings
 
 ## Backlog
 
-### [Feature] Stripe Webhook & 運用整備 (Phase 5)
-- **ID**: Core-Feature-5
-- **Priority**: P1
-- **Size**: M
-- **Area**: Core
-- **Dependencies**: UI/UX-Feature-4
-- **Goal**: Stripe Webhookが署名検証・冪等化され、Healthエンドポイントと運用手順が整備されていること。
-- **Steps**:
-  1. `docs/plan/donation-portal/phase-05-webhook/plan.md` に従い `POST /api/webhooks/stripe` と `GET /health` を実装する。
-  2. Stripe CLIで署名成功/失敗/再送をテストし、Cloudflare Logsでイベントを確認する。
-  3. Webhook運用手順と監視プロセスをドキュメントに記録する。
-- **Description**: Donation Portal MVP Phase 5の実装。Stripeイベントの受信体制と軽量な運用監視を整備する。
-- **Plan**: [`docs/plan/donation-portal/phase-05-webhook/plan.md`](docs/plan/donation-portal/phase-05-webhook/plan.md)
-
 ### [Chore] QA & 本番リリース準備 (Phase 6)
 - **ID**: DevOps-Chore-6
 - **Priority**: P1
