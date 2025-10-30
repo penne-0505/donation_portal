@@ -10,12 +10,14 @@ related_prs: []
 references:
   - docs/reference/api/consent.md
   - docs/reference/api/donors.md
-state: "drafting"
+state: "paused"
 hypothesis:
   - "Donors 掲示に関する問い合わせは 3 パターン（撤回依頼、再同意、掲示遅延）に集約できる"
-options: []
+options:
+  - "docs/guide/operations/phase-06-qa-release.md に正式版 Runbook を統合する"
 open_questions:
   - "Cloudflare Pages プレビューでのキャッシュクリア手順を自動化するか"
+  - "本 Runbook を正式版へ昇格するタイミング（Phase 6 Runbook で暫定対応中）"
 next_action_by: "support-lead"
 review_due: "2025-11-15"
 ttl_days: 30
@@ -26,6 +28,8 @@ ttl_days: 30
 > **対象**: サポート担当・当番の運用メンバー
 >
 > **目的**: Donors 掲示の同意/撤回に関する問い合わせへ迅速に対応するための暫定フローをまとめる。
+
+> **更新状況**: Phase 6 の正式運用手順は [`docs/guide/operations/phase-06-qa-release.md`](../../guide/operations/phase-06-qa-release.md) の「コミュニケーション & ドキュメント更新」で管理されています。本ドラフトは詳細フロー整理のたたき台として保持します。
 
 ## 1. 想定シナリオと一次回答
 
