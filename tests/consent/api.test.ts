@@ -1,7 +1,7 @@
 import { after, beforeEach, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { createSignedCookie } from '../../src/lib/auth/cookie.js';
+import { createSignedCookie, verifySignedCookie } from '../../src/lib/auth/cookie.js';
 import { onRequestPost } from '../../functions/api/consent.js';
 
 const COOKIE_SIGN_KEY = 'test-cookie-secret';
@@ -75,6 +75,16 @@ describe('functions/api/consent', () => {
 
   it('Stripe metadata を更新して 204 を返す', async () => {
     const cookie = await createSessionCookie(true);
+    const originalValue = cookie.split('=')[1] ?? '';
+    const originalSession = await verifySignedCookie({
+      name: 'sess',
+      cookie: originalValue,
+      keySource: { COOKIE_SIGN_KEY },
+    });
+    const originalPayload = JSON.parse(originalSession.value) as {
+      readonly exp: number;
+    };
+
     const context = createContext({ consent_public: false }, cookie);
 
     const calls: Array<{ url: string; method?: string; body?: URLSearchParams }> = [];
@@ -100,6 +110,23 @@ describe('functions/api/consent', () => {
 
     assert.equal(response.status, 204);
     assert.equal(response.headers.get('cache-control'), 'no-store');
+    const setCookie = response.headers.get('Set-Cookie');
+    assert.ok(setCookie);
+    assert.match(setCookie ?? '', /Max-Age=\d+/);
+    const sessionValue = setCookie?.split(';')[0]?.split('=')[1] ?? '';
+    assert.ok(sessionValue);
+    const verifiedSession = await verifySignedCookie({
+      name: 'sess',
+      cookie: sessionValue,
+      keySource: { COOKIE_SIGN_KEY },
+    });
+    const payload = JSON.parse(verifiedSession.value) as {
+      readonly consent_public: boolean;
+      readonly exp: number;
+    };
+    assert.equal(payload.consent_public, false);
+    assert.ok(payload.exp <= originalPayload.exp);
+    assert.ok(payload.exp >= originalPayload.exp - 1);
     assert.equal(calls.length, 2);
     assert.equal(calls[0]?.method, 'GET');
     const searchUrl = new URL(calls[0]?.url ?? '');

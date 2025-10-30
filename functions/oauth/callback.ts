@@ -1,11 +1,9 @@
-import {
-  createSignedCookie,
-  verifySignedCookie,
-} from '../../src/lib/auth/cookie.js';
+import { verifySignedCookie } from '../../src/lib/auth/cookie.js';
 import {
   getCookieSignKey,
   type CookieKeySource,
 } from '../../src/lib/cookie/signKey.js';
+import { issueSessionCookie } from '../../src/lib/auth/sessionCookie.js';
 
 interface OAuthEnv extends CookieKeySource {
   readonly DISCORD_CLIENT_ID?: string;
@@ -33,9 +31,6 @@ const DISCORD_API_BASE = 'https://discord.com/api';
 const TOKEN_ENDPOINT = `${DISCORD_API_BASE}/oauth2/token`;
 const USER_ENDPOINT = `${DISCORD_API_BASE}/users/@me`;
 const STATE_COOKIE_NAME = 'state';
-const SESSION_COOKIE_NAME = 'sess';
-const COOKIE_TTL_SECONDS = 600;
-
 function readCookie(headerValue: string | null, name: string): string | undefined {
   if (!headerValue) {
     return undefined;
@@ -95,24 +90,6 @@ function parseStateCookie(value: string): StateCookieValue {
   } catch {
     throw new Error('State cookie payload is malformed');
   }
-}
-
-function buildCookieAttributes(
-  name: string,
-  value: string,
-  ttlSeconds: number,
-  issuedAt: number,
-): string {
-  const expires = new Date(issuedAt + ttlSeconds * 1000);
-  return [
-    `${name}=${value}`,
-    'Path=/',
-    'HttpOnly',
-    'Secure',
-    'SameSite=Lax',
-    `Max-Age=${ttlSeconds}`,
-    `Expires=${expires.toUTCString()}`,
-  ].join('; ');
 }
 
 function buildExpiredCookie(name: string): string {
@@ -256,28 +233,12 @@ export const onRequestGet: PagesFunction = async (context) => {
   }
 
   const displayName = sanitizeDisplayName(userData);
-  const now = Date.now();
-  const sessionPayload = {
-    display_name: displayName,
-    discord_id: userData.id,
-    consent_public: consentPublic,
-    exp: Math.floor((now + COOKIE_TTL_SECONDS * 1000) / 1000),
-  } satisfies Record<string, unknown>;
-
-  const signedSession = await createSignedCookie({
-    name: SESSION_COOKIE_NAME,
-    value: JSON.stringify(sessionPayload),
-    ttlSeconds: COOKIE_TTL_SECONDS,
-    now,
+  const { cookie: sessCookie } = await issueSessionCookie({
+    displayName,
+    discordId: userData.id,
+    consentPublic,
     keySource: env,
   });
-
-  const sessCookie = buildCookieAttributes(
-    SESSION_COOKIE_NAME,
-    signedSession,
-    COOKIE_TTL_SECONDS,
-    now,
-  );
 
   const stateClearCookie = buildExpiredCookie(STATE_COOKIE_NAME);
 

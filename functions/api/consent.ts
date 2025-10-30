@@ -1,4 +1,5 @@
 import { parseSessionFromCookie } from '../../src/lib/auth/session.js';
+import { issueSessionCookie } from '../../src/lib/auth/sessionCookie.js';
 import type { CookieKeySource } from '../../src/lib/cookie/signKey.js';
 
 const STRIPE_API_BASE = 'https://api.stripe.com/v1';
@@ -152,9 +153,25 @@ export const onRequestPost: PagesFunction<ConsentEnv> = async (context) => {
     }
 
     await updateConsent(env, customerId, parsedConsent.value, sessionResult.session.displayName);
+
+    const now = Date.now();
+    const remainingMs = sessionResult.raw.expiresAt - now;
+    const ttlSeconds = Math.max(1, Math.floor(remainingMs / 1000));
+    const { cookie: sessionCookie } = await issueSessionCookie({
+      displayName: sessionResult.session.displayName,
+      discordId: sessionResult.session.discordId,
+      consentPublic: parsedConsent.value,
+      ttlSeconds,
+      now,
+      keySource: env,
+    });
+
     return new Response(null, {
       status: 204,
-      headers: { 'cache-control': 'no-store' },
+      headers: {
+        'cache-control': 'no-store',
+        'Set-Cookie': sessionCookie,
+      },
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'unknown error';
