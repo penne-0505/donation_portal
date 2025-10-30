@@ -1,7 +1,7 @@
 ---
 title: "Donation Portal Phase 5 — Webhook & Operations 計画"
 domain: "donation-portal"
-status: "draft"
+status: "superseded"
 version: "0.1.0"
 created: "2025-10-29"
 updated: "2025-10-29"
@@ -10,6 +10,7 @@ related_prs: []
 references:
   - docs/plan/donation-portal/mvp/plan.md
   - docs/draft/interface_definition.md
+  - docs/intent/donation-portal/mvp-architecture-and-phases.md
 scope:
   - "`POST /api/webhooks/stripe` を実装し、Stripe イベントの検証と冪等化を行う。"
   - "`GET /health` を提供し、監視用の基本エンドポイントを整備する。"
@@ -70,7 +71,12 @@ acceptance_criteria:
   - "Health エンドポイントが監視に利用可能。"
 owners:
   - "@donation-portal-core"
+superseded_by: docs/intent/donation-portal/mvp-architecture-and-phases.md
 ---
+
+# 本ドキュメントの位置付け
+
+Webhook と運用に関する最終判断は intent ドキュメント `docs/intent/donation-portal/mvp-architecture-and-phases.md` に統合済みです。本 Plan は参照用に残しています。
 
 # Phase 5 — Webhook & Operations 計画
 

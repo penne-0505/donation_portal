@@ -1,7 +1,7 @@
 ---
 title: "Donation Portal MVP 実装計画"
 domain: "donation-portal"
-status: "draft"
+status: "superseded"
 version: "0.1.0"
 created: "2025-10-29"
 updated: "2025-10-29"
@@ -10,6 +10,7 @@ related_prs: []
 references:
   - docs/draft/interface_definition.md
   - docs/draft/impl_plan_v0.md
+  - docs/intent/donation-portal/mvp-architecture-and-phases.md
 scope:
   - "Cloudflare Pages 上で /donate・/thanks・/donors を提供し、任意の単発/定期寄附を Stripe Checkout で受け付ける。"
   - "Discord OAuth を用いた表示名取得と掲示同意フロー、Stripe Customer metadata を単一のデータソースとして扱う。"
@@ -84,7 +85,12 @@ acceptance_criteria:
   - "全画面に『対価なし』『税控除なし』が明記されている。"
 owners:
   - "@donation-portal-core"
+superseded_by: docs/intent/donation-portal/mvp-architecture-and-phases.md
 ---
+
+# 本ドキュメントの位置付け
+
+MVP 計画の最終意図は `docs/intent/donation-portal/mvp-architecture-and-phases.md` に整理されています。本 Plan は履歴参照用として保持し、最新の判断は intent を参照してください。
 
 # Donation Portal MVP 実装計画
 

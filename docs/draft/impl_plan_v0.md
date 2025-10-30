@@ -1,7 +1,7 @@
 ---
 title: 'Donation Portal 実装計画 v0'
 domain: 'donation-portal'
-status: 'draft'
+status: 'superseded'
 version: '0.1.0'
 created: '2025-10-29'
 updated: '2025-10-29'
@@ -10,6 +10,7 @@ related_prs: []
 references:
   - docs/draft/requirements_definition.md
   - docs/draft/interface_definition.md
+  - docs/intent/donation-portal/mvp-architecture-and-phases.md
 state: 'exploring'
 hypothesis:
   - 'Phase 1 アプローチが後続フェーズでも差し支えない'
@@ -19,7 +20,12 @@ open_questions:
 next_action_by: 'engineering-lead'
 review_due: '2025-11-28'
 ttl_days: 30
+superseded_by: docs/intent/donation-portal/mvp-architecture-and-phases.md
 ---
+
+# 本ドキュメントの位置付け
+
+本計画書は `docs/intent/donation-portal/mvp-architecture-and-phases.md` に統合されました。以後は intent ドキュメントを最新情報として参照してください。
 
 # Donation Portal 実装計画 v0
 

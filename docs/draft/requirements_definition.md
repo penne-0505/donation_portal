@@ -1,7 +1,7 @@
 ---
 title: '寄附受付 要件定義書'
 domain: 'donation-portal'
-status: 'draft'
+status: 'superseded'
 version: '1.0.0'
 created: '2025-10-29'
 updated: '2025-10-29'
@@ -9,6 +9,7 @@ related_issues: []
 related_prs: []
 references:
   - docs/draft/interface_definition.md
+  - docs/intent/donation-portal/mvp-architecture-and-phases.md
 state: 'exploring'
 hypothesis:
   - '定義済み要件を各フェーズ計画へ正しく落とし込める'
@@ -17,7 +18,12 @@ open_questions: []
 next_action_by: 'product-owner'
 review_due: '2025-11-28'
 ttl_days: 30
+superseded_by: docs/intent/donation-portal/mvp-architecture-and-phases.md
 ---
+
+# 本ドキュメントの位置付け
+
+要件定義は intent ドキュメント `docs/intent/donation-portal/mvp-architecture-and-phases.md` に統合済みです。背景や決定事項を確認する際は intent を参照してください。
 
 # 寄附受付（Discordコミュニティ）要件定義書 — 確定版 v1.0
 
