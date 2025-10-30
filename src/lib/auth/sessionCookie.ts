@@ -89,3 +89,17 @@ export async function issueSessionCookie({
 
   return { cookie, signedValue, payload, issuedAt, expiresAt };
 }
+
+export function buildExpiredSessionCookie(now?: Date | number): string {
+  const issuedAt = toTimestamp(now);
+  const expires = new Date(issuedAt - 86_400_000);
+  return [
+    `${SESSION_COOKIE_NAME}=`,
+    'Path=/',
+    'HttpOnly',
+    'Secure',
+    'SameSite=Lax',
+    'Max-Age=0',
+    `Expires=${expires.toUTCString()}`,
+  ].join('; ');
+}

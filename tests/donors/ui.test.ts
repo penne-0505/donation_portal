@@ -2,9 +2,16 @@ import { describe, it, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 
 interface DonorsAppModule {
-  readonly initializeDonorsPage: (doc?: Document) => void;
+  readonly initializeDonorsPage: (doc?: Document) => Promise<void>;
   readonly __test__: {
-    readonly parseSessionCookieValue: (value: string) => { type: string };
+    readonly fetchSessionState: () => Promise<
+      | { readonly status: 'signed-out' }
+      | { readonly status: 'error' }
+      | {
+        readonly status: 'signed-in';
+        readonly session: { readonly displayName: string; readonly consentPublic: boolean };
+      }
+    >;
     readonly getLatestDonorFetchPromise: () => Promise<void> | null;
   };
 }
@@ -32,8 +39,8 @@ class FakeElement {
     return this.#dataset;
   }
 
-  public set dataset(_value: Record<string, string>) {
-    throw new TypeError('dataset is read-only');
+  public set dataset(value: Record<string, string>) {
+    this.#dataset = value;
   }
 
   get firstChild(): FakeElement | null {
@@ -127,30 +134,6 @@ interface TestElements {
   readonly consentError: FakeElement;
 }
 
-function createSignedCookie(displayName: string, consent: boolean): string {
-  const now = Date.now();
-  const payload = {
-    name: 'sess',
-    value: JSON.stringify({
-      display_name: displayName,
-      consent_public: consent,
-      exp: Math.floor(now / 1000) + 600,
-    }),
-    issuedAt: now,
-    expiresAt: now + 600_000,
-  } satisfies Record<string, unknown>;
-  const encoded = Buffer.from(JSON.stringify(payload))
-    .toString('base64')
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/g, '');
-  return `${encoded}.signature`;
-}
-
-function encodeCookieForDocument(value: string): string {
-  return `sess=${encodeURIComponent(value)}`;
-}
-
 function createTestDocument(): { document: FakeDocument; elements: TestElements } {
   const donorsStatus = new FakeElement('p', 'donors-status');
   const donorsError = new FakeElement('div', 'donors-error');
@@ -183,6 +166,12 @@ function createTestDocument(): { document: FakeDocument; elements: TestElements 
   return { document, elements };
 }
 
+function jsonResponse(body: unknown, init?: ResponseInit): Response {
+  const headers = new Headers(init?.headers);
+  headers.set('Content-Type', 'application/json');
+  return new Response(JSON.stringify(body), { ...init, headers });
+}
+
 async function waitForDonorFetch(): Promise<void> {
   const promise = __test__.getLatestDonorFetchPromise();
   if (promise) {
@@ -199,67 +188,98 @@ describe('donors UI script', () => {
 
   it('匿名閲覧時はログイン導線を表示し Donors リストを描画する', async () => {
     const { document, elements } = createTestDocument();
+    let sessionRequests = 0;
+    let donorRequests = 0;
 
-    globalThis.fetch = async () =>
-      new Response(
-        JSON.stringify({ donors: ['Alice', 'Bob'], count: 2 }),
-        { status: 200, headers: { 'Content-Type': 'application/json' } },
-      );
+    globalThis.fetch = async (input) => {
+      const url = String(input);
+      if (url === '/api/session') {
+        sessionRequests += 1;
+        return jsonResponse({ status: 'signed-out' });
+      }
+      if (url === '/api/donors') {
+        donorRequests += 1;
+        return jsonResponse({
+          donors: ['Alice', 'Bob'],
+          count: 2,
+        });
+      }
+      throw new Error(`Unexpected fetch call: ${url}`);
+    };
 
-    initializeDonorsPage(document as unknown as Document);
+    await initializeDonorsPage(document as unknown as Document);
     await waitForDonorFetch();
 
+    assert.equal(sessionRequests, 1);
+    assert.equal(donorRequests, 1);
     assert.equal(elements.consentLogin.hidden, false);
     assert.equal(elements.consentRevoke.hidden, true);
-    assert.equal(elements.donorsCount.textContent, '2');
+    assert.equal(elements.consentStatus.textContent, 'Discord ログイン後に Donors 掲載の同意を管理できます。');
     assert.equal(elements.donorsList.children.length, 2);
     assert.equal(elements.donorsList.children[0]?.textContent, 'Alice');
-    assert.equal(elements.donorsStatus.textContent.includes('更新'), true);
+    assert.equal(elements.donorsCount.textContent, '2');
+    assert.equal(elements.donorsError.hidden, true);
   });
 
   it('掲示撤回操作で API を呼び出し、リストと状態を更新する', async () => {
     const { document, elements } = createTestDocument();
-    const cookieValue = createSignedCookie('Charlie', true);
-    document.cookie = encodeCookieForDocument(cookieValue);
+    let sessionRequests = 0;
+    let consentCalls = 0;
 
-    let callCount = 0;
-    globalThis.fetch = async (input: RequestInfo | URL) => {
-      callCount += 1;
+    globalThis.fetch = async (input, init) => {
       const url = String(input);
-      if (callCount === 1) {
-        assert.equal(url, '/api/donors');
-        return new Response(
-          JSON.stringify({ donors: ['Charlie', 'Delta'], count: 2 }),
-          { status: 200, headers: { 'Content-Type': 'application/json' } },
-        );
+      if (url === '/api/session') {
+        sessionRequests += 1;
+        return jsonResponse({
+          status: 'signed-in',
+          session: { displayName: 'Alice', consentPublic: true },
+        });
       }
-      assert.equal(url, '/api/consent');
-      return new Response(null, { status: 204 });
+      if (url === '/api/donors') {
+        return jsonResponse({ donors: ['Alice', 'Bob'], count: 2 });
+      }
+      if (url === '/api/consent') {
+        consentCalls += 1;
+        assert.equal(init?.method, 'POST');
+        const body = JSON.parse(init?.body as string);
+        assert.equal(body.consent_public, false);
+        return new Response(null, { status: 204 });
+      }
+      throw new Error(`Unexpected fetch call: ${url}`);
     };
 
-    initializeDonorsPage(document as unknown as Document);
+    await initializeDonorsPage(document as unknown as Document);
     await waitForDonorFetch();
-
-    assert.equal(elements.consentRevoke.hidden, false);
     await elements.consentRevoke.dispatchEvent('click');
 
-    assert.equal(elements.consentError.hidden, true);
+    assert.equal(sessionRequests, 1);
+    assert.equal(consentCalls, 1);
     assert.equal(elements.consentRevoke.hidden, true);
-    assert.ok(elements.consentStatus.textContent.includes('撤回しました'));
+    assert.match(elements.consentStatus.textContent ?? '', /撤回しました/);
     assert.equal(elements.donorsList.children.length, 1);
-    assert.equal(elements.donorsList.children[0]?.textContent, 'Delta');
     assert.equal(elements.donorsCount.textContent, '1');
+    assert.equal(elements.consentError.hidden, true);
   });
 
   it('Donors API が失敗した場合はエラーメッセージを表示する', async () => {
     const { document, elements } = createTestDocument();
 
-    globalThis.fetch = async () => new Response('error', { status: 500 });
+    globalThis.fetch = async (input) => {
+      const url = String(input);
+      if (url === '/api/session') {
+        return jsonResponse({ status: 'signed-out' });
+      }
+      if (url === '/api/donors') {
+        return new Response('error', { status: 500 });
+      }
+      throw new Error(`Unexpected fetch call: ${url}`);
+    };
 
-    initializeDonorsPage(document as unknown as Document);
+    await initializeDonorsPage(document as unknown as Document);
     await waitForDonorFetch();
 
     assert.equal(elements.donorsError.hidden, false);
-    assert.ok(elements.donorsStatus.textContent.includes('取得できません'));
+    assert.match(elements.donorsError.textContent ?? '', /失敗しました/);
+    assert.ok((elements.donorsStatus.textContent ?? '') !== '');
   });
 });

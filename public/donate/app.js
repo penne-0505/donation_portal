@@ -1,127 +1,59 @@
-const SESSION_COOKIE_NAME = 'sess';
+const SESSION_ENDPOINT = '/api/session';
 const AUTH_ERROR_MESSAGE = 'セッション情報を読み取れませんでした。お手数ですが、再度 Discord ログインをお試しください。';
 const CHECKOUT_ERROR_MESSAGE = 'Stripe Checkout の開始に失敗しました。時間をおいて再試行してください。';
 
-function base64UrlDecode(segment) {
-  let base64 = segment.replace(/-/g, '+').replace(/_/g, '/');
-  const remainder = base64.length % 4;
-  if (remainder > 0) {
-    base64 += '='.repeat(4 - remainder);
-  }
-
-  if (typeof atob === 'function') {
-    const binary = atob(base64);
-    const length = binary.length;
-    const bytes = new Uint8Array(length);
-    for (let index = 0; index < length; index += 1) {
-      bytes[index] = binary.charCodeAt(index);
-    }
-    if (typeof TextDecoder === 'function') {
-      return new TextDecoder().decode(bytes);
-    }
-    let result = '';
-    for (const byte of bytes) {
-      result += String.fromCharCode(byte);
-    }
-    return result;
-  }
-
-  if (typeof Buffer !== 'undefined') {
-    return Buffer.from(base64, 'base64').toString('utf8');
-  }
-
-  throw new Error('Base64 decode is not supported in this environment');
-}
-
-function parseSessionCookieValue(cookieValue) {
-  if (typeof cookieValue !== 'string' || cookieValue.length === 0) {
-    return { type: 'missing' };
-  }
-
-  const [encodedPayload] = cookieValue.split('.');
-  if (!encodedPayload) {
-    return { type: 'invalid' };
-  }
-
-  let payloadText;
-  try {
-    payloadText = base64UrlDecode(encodedPayload);
-  } catch (_error) {
-    return { type: 'invalid' };
-  }
-
-  let payload;
-  try {
-    payload = JSON.parse(payloadText);
-  } catch (_error) {
-    return { type: 'invalid' };
-  }
-
-  if (!payload || typeof payload !== 'object') {
-    return { type: 'invalid' };
-  }
-
-  if (payload.name !== SESSION_COOKIE_NAME || typeof payload.value !== 'string') {
-    return { type: 'invalid' };
-  }
-
-  let session;
-  try {
-    session = JSON.parse(payload.value);
-  } catch (_error) {
-    return { type: 'invalid' };
-  }
-
-  if (!session || typeof session !== 'object') {
-    return { type: 'invalid' };
-  }
-
-  const displayName = typeof session.display_name === 'string'
-    ? session.display_name.trim()
-    : '';
-  const consentPublic = session.consent_public === true;
-
-  return {
-    type: 'valid',
-    session: {
-      displayName,
-      consentPublic,
-    },
-  };
-}
-
-function getCookieValue(doc, name) {
-  if (!doc || typeof doc.cookie !== 'string' || doc.cookie.length === 0) {
-    return null;
-  }
-
-  const segments = doc.cookie.split(';');
-  for (const segment of segments) {
-    const trimmed = segment.trim();
-    if (trimmed.startsWith(`${name}=`)) {
-      const rawValue = trimmed.slice(name.length + 1);
-      try {
-        return decodeURIComponent(rawValue);
-      } catch (_error) {
-        return rawValue;
-      }
-    }
-  }
-  return null;
-}
-
-function resolveSession(doc) {
-  const cookieValue = getCookieValue(doc, SESSION_COOKIE_NAME);
-  if (!cookieValue) {
-    return { status: 'signed-out' };
-  }
-
-  const parsed = parseSessionCookieValue(cookieValue);
-  if (parsed.type !== 'valid') {
+async function fetchSessionState() {
+  if (typeof fetch !== 'function') {
     return { status: 'error' };
   }
 
-  return { status: 'signed-in', session: parsed.session };
+  try {
+    const response = await fetch(SESSION_ENDPOINT, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+      },
+      credentials: 'same-origin',
+    });
+
+    if (!response.ok) {
+      return { status: 'error' };
+    }
+
+    let payload;
+    try {
+      payload = await response.json();
+    } catch (_error) {
+      return { status: 'error' };
+    }
+
+    if (!payload || typeof payload !== 'object') {
+      return { status: 'error' };
+    }
+
+    if (payload.status === 'signed-in' && payload.session && typeof payload.session === 'object') {
+      const displayNameRaw = typeof payload.session.displayName === 'string'
+        ? payload.session.displayName
+        : '';
+      const displayName = displayNameRaw.trim();
+      const consentPublic = payload.session.consentPublic === true;
+      return {
+        status: 'signed-in',
+        session: {
+          displayName,
+          consentPublic,
+        },
+      };
+    }
+
+    if (payload.status === 'signed-out') {
+      return { status: 'signed-out' };
+    }
+
+    return { status: 'error' };
+  } catch (_error) {
+    return { status: 'error' };
+  }
 }
 
 function setVisibility(element, visible) {
@@ -358,15 +290,7 @@ function updateCheckoutAvailability(elements, enabled) {
   }
 }
 
-export function initializeDonatePage(doc = document) {
-  if (!doc || typeof doc.getElementById !== 'function') {
-    return;
-  }
-
-  const elements = collectElements(doc);
-  attachCheckoutHandlers(doc, elements);
-  const state = resolveSession(doc);
-
+function applySessionState(doc, elements, state) {
   switch (state.status) {
     case 'signed-in': {
       const displayName = state.session.displayName.length > 0
@@ -412,19 +336,33 @@ export function initializeDonatePage(doc = document) {
   }
 }
 
+async function resolveAndApplySession(doc, elements) {
+  const state = await fetchSessionState();
+  applySessionState(doc, elements, state);
+}
+
+export async function initializeDonatePage(doc = document) {
+  if (!doc || typeof doc.getElementById !== 'function') {
+    return;
+  }
+
+  const elements = collectElements(doc);
+  attachCheckoutHandlers(doc, elements);
+  applySessionState(doc, elements, { status: 'signed-out' });
+  await resolveAndApplySession(doc, elements);
+}
+
 if (typeof document !== 'undefined') {
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-      initializeDonatePage(document);
+      void initializeDonatePage(document);
     });
   } else {
-    initializeDonatePage(document);
+    void initializeDonatePage(document);
   }
 }
 
 export const __test__ = {
-  base64UrlDecode,
-  parseSessionCookieValue,
-  resolveSession,
+  fetchSessionState,
   getCheckoutTarget,
 };
