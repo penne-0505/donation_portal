@@ -107,7 +107,17 @@ function buildExpiredCookie(name: string): string {
 
 function toBasicAuth(clientId: string, clientSecret: string): string {
   const credentials = `${clientId}:${clientSecret}`;
-  const encoded = Buffer.from(credentials, 'binary').toString('base64');
+  if (typeof btoa === 'function') {
+    const encodedBytes = new TextEncoder().encode(credentials);
+    let binary = '';
+    for (const byte of encodedBytes) {
+      binary += String.fromCharCode(byte);
+    }
+    return `Basic ${btoa(binary)}`;
+  }
+
+  // Fallback for environments that provide Node.js Buffer
+  const encoded = Buffer.from(credentials, 'utf8').toString('base64');
   return `Basic ${encoded}`;
 }
 
