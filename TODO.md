@@ -22,20 +22,6 @@ Definitions to suppress Markdown warnings
 
 ## Backlog
 
-### [Feature] Stripe Checkout & Metadata 実装 (Phase 3)
-- **ID**: Core-Feature-3
-- **Priority**: P1
-- **Size**: M
-- **Area**: Core
-- **Dependencies**: Core-Feature-2
-- **Goal**: Stripe Checkoutで単発/定期寄附が完了し、Customer metadataに表示名と同意が保存されること。
-- **Steps**:
-  1. `docs/plan/donation-portal/phase-03-checkout/plan.md` に沿って `POST /api/checkout/session` を実装し、metadata更新とバリデーションを整備する。
-  2. `/donate` ページに単発/定期寄附ボタンを実装し、Checkout URLで遷移させるUIを完成させる。
-  3. `/thanks` ページとStripe Test環境でのE2Eテストを実施し、エラー時のユーザ通知を確認する。
-- **Description**: Donation Portal MVP Phase 3の実装。StripeをSSOTとして扱い、寄附フローを完成させる。
-- **Plan**: [`docs/plan/donation-portal/phase-03-checkout/plan.md`](docs/plan/donation-portal/phase-03-checkout/plan.md)
-
 ### [Feature] Donors 掲載 & 同意管理実装 (Phase 4)
 - **ID**: UI/UX-Feature-4
 - **Priority**: P1
