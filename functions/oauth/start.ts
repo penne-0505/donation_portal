@@ -55,6 +55,7 @@ export const onRequestGet: PagesFunction = async (context) => {
     stateCookieValue = result.value;
     nonce = result.nonce;
   } catch (error) {
+    console.error('[oauth/start] state_cookie_error', error);
     return new Response('OAuth configuration error', { status: 500 });
   }
 

@@ -92,7 +92,7 @@ function parseStateCookie(value: string): StateCookieValue {
   try {
     const parsed = JSON.parse(value) as StateCookieValue;
     return parsed;
-  } catch (error) {
+  } catch {
     throw new Error('State cookie payload is malformed');
   }
 }
@@ -219,7 +219,8 @@ export const onRequestGet: PagesFunction = async (context) => {
   try {
     tokenData = (await tokenResponse.json()) as DiscordTokenResponse;
   } catch (error) {
-    logError('discord_token_error', 'Invalid token response');
+    const detail = error instanceof Error ? error.message : 'Unknown token parse error';
+    logError('discord_token_error', `Invalid token response: ${detail}`);
     return redirectWithError('discord_token_error');
   }
 
@@ -244,7 +245,8 @@ export const onRequestGet: PagesFunction = async (context) => {
   try {
     userData = (await userResponse.json()) as DiscordUserResponse;
   } catch (error) {
-    logError('discord_user_error', 'Invalid user response');
+    const detail = error instanceof Error ? error.message : 'Unknown user parse error';
+    logError('discord_user_error', `Invalid user response: ${detail}`);
     return redirectWithError('discord_user_error');
   }
 

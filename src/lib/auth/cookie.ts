@@ -163,7 +163,7 @@ export async function verifySignedCookie({
   let payload: SignedCookiePayload;
   try {
     payload = JSON.parse(decoder.decode(payloadBytes)) as SignedCookiePayload;
-  } catch (error) {
+  } catch {
     throw new Error('Signed cookie payload is malformed');
   }
 

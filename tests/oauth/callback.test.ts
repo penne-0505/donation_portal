@@ -268,7 +268,7 @@ describe('functions/oauth/callback', () => {
     );
 
     let called = false;
-    globalThis.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+    globalThis.fetch = async (_input: RequestInfo | URL, _init?: RequestInit) => {
       if (!called) {
         called = true;
         return new Response(
