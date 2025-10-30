@@ -1,15 +1,16 @@
 ---
 title: "Donation Portal Phase 6 — QA & Release 計画"
 domain: "donation-portal"
-status: "draft"
-version: "0.1.0"
+status: "active"
+version: "1.0.0"
 created: "2025-10-29"
-updated: "2025-10-29"
+updated: "2025-10-31"
 related_issues: []
 related_prs: []
 references:
   - docs/plan/donation-portal/mvp/plan.md
   - docs/draft/interface_definition.md
+  - docs/guide/operations/phase-06-qa-release.md
 scope:
   - "MVP の統合テスト、ドキュメント整備、リリース準備を完了する。"
   - "Stripe Live キーへの切替と本番デプロイを実施する。"
@@ -49,6 +50,7 @@ test_plan:
   - "E2E: OAuth → Checkout（単発/定期）→ Thanks。"
   - "Webhook 再送、Donors 掲載更新、Consent 撤回のテスト。"
   - "UI 文言校閲、アクセシビリティ確認。"
+  - "実施手順は `docs/guide/operations/phase-06-qa-release.md#3-qa-チェックリスト` を参照。"
 observability:
   - "Cloudflare Logs と Stripe Dashboard の監視項目を Runbook に記載。"
   - "初期 1 週間は日次でログをレビューし、指標を記録する。"
@@ -101,6 +103,7 @@ MVP の機能群を総合テストし、本番環境へ安全にリリースす�
 - テスト結果レポート（Notion/Jira 等）とログアーカイブ。
 - 更新された Runbook/FAQ/CHANGELOG。
 - 本番デプロイ済みの Cloudflare Pages 環境。
+- `docs/guide/operations/phase-06-qa-release.md` にまとめた QA & Release Runbook。
 
 ## 5. リスクと対応
 
