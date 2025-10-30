@@ -50,6 +50,7 @@ Cookie: sess=<signed>
 
 - Stripe Customer metadata の `consent_public` が更新されました。
 - レスポンスボディはありません。ヘッダーには `Cache-Control: no-store` を付与します。
+- 最新の Discord セッション Cookie `sess` を `Set-Cookie` で返し、更新後の `consent_public` と表示名を含みます。
 
 ### エラー応答
 
