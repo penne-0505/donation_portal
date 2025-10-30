@@ -180,7 +180,6 @@ function renderDonorList(doc, listElement, donors) {
   for (const name of donors) {
     const item = doc.createElement('li');
     item.textContent = name;
-    item.dataset = item.dataset ?? {};
     item.dataset.displayName = name;
     listElement.appendChild(item);
   }
@@ -188,15 +187,18 @@ function renderDonorList(doc, listElement, donors) {
 
 function removeDonorFromList(listElement, displayName) {
   if (!listElement || !displayName) {
-    return;
+    return false;
   }
 
   const children = Array.from(listElement.children ?? []);
   for (const child of children) {
     if (child.dataset && child.dataset.displayName === displayName) {
       listElement.removeChild(child);
+      return true;
     }
   }
+
+  return false;
 }
 
 let latestDonorFetchPromise = null;
@@ -313,7 +315,17 @@ function initializeDonorsPage(doc = document) {
           throw new Error(`unexpected status: ${response.status}`);
         }
 
-        removeDonorFromList(elements.donorsList, sessionState.session.displayName);
+        const removed = removeDonorFromList(
+          elements.donorsList,
+          sessionState.session.displayName,
+        );
+        if (removed && elements.donorsList) {
+          const childNodes = elements.donorsList.children;
+          const nextCount = childNodes && typeof childNodes.length === 'number'
+            ? childNodes.length
+            : 0;
+          setText(elements.donorsCount, String(nextCount));
+        }
         sessionState.session.consentPublic = false;
         applySessionState(doc, elements, sessionState);
         setText(elements.consentStatus, 'Donors 掲示を撤回しました。反映まで最大 60 秒かかる場合があります。');
