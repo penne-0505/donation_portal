@@ -100,22 +100,28 @@ async function callStripe(
   env: CheckoutEnv,
   path: string,
   params: URLSearchParams,
+  options: { readonly method?: 'GET' | 'POST' } = {},
 ): Promise<Response> {
   const secretKey = env.STRIPE_SECRET_KEY;
   if (!secretKey) {
     throw new Error('Stripe secret key is not configured');
   }
 
-  const requestInit: RequestInit = {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${secretKey}`,
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: params.toString(),
+  const method = options.method ?? 'POST';
+  const url = new URL(`${STRIPE_API_BASE}${path}`);
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${secretKey}`,
   };
 
-  return fetch(`${STRIPE_API_BASE}${path}`, requestInit);
+  const init: RequestInit = { method, headers };
+  if (method === 'GET') {
+    url.search = params.toString();
+  } else {
+    headers['Content-Type'] = 'application/x-www-form-urlencoded';
+    init.body = params.toString();
+  }
+
+  return fetch(url.toString(), init);
 }
 
 async function ensureCustomer(
@@ -135,7 +141,7 @@ async function ensureCustomer(
     query: `metadata['discord_id']:"${escapedId}"`,
     limit: '1',
   });
-  const searchResponse = await callStripe(env, '/customers/search', searchParams);
+  const searchResponse = await callStripe(env, '/customers/search', searchParams, { method: 'GET' });
   if (!searchResponse.ok) {
     const body = await searchResponse.text();
     throw new Error(`Stripe customer search failed: status=${searchResponse.status} body=${body}`);

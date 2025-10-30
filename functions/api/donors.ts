@@ -6,6 +6,7 @@ interface DonorsEnv {
 
 interface StripeCustomerRecord {
   readonly metadata?: { readonly display_name?: unknown };
+  readonly created?: number;
 }
 
 interface StripeSearchResponse {
@@ -93,16 +94,15 @@ async function callStripe(env: DonorsEnv, params: URLSearchParams): Promise<Resp
     throw new Error('Stripe secret key is not configured');
   }
 
-  const requestInit: RequestInit = {
-    method: 'POST',
+  const url = new URL(`${STRIPE_API_BASE}/customers/search`);
+  url.search = params.toString();
+
+  return fetch(url.toString(), {
+    method: 'GET',
     headers: {
       Authorization: `Bearer ${secretKey}`,
-      'Content-Type': 'application/x-www-form-urlencoded',
     },
-    body: params.toString(),
-  };
-
-  return fetch(`${STRIPE_API_BASE}/customers/search`, requestInit);
+  });
 }
 
 function shuffle(values: readonly string[]): string[] {
@@ -126,10 +126,6 @@ async function buildResponseBody(
     limit: limit.toString(),
   });
 
-  if (order !== 'random') {
-    params.set('order', order);
-  }
-
   const response = await callStripe(env, params);
   if (!response.ok) {
     const body = await response.text();
@@ -138,14 +134,36 @@ async function buildResponseBody(
 
   const payload = (await response.json()) as StripeSearchResponse;
   const donors = (payload.data ?? [])
-    .map((entry) => sanitizeDisplayName(entry.metadata?.display_name))
-    .filter((name): name is string => Boolean(name));
+    .map((entry) => {
+      const name = sanitizeDisplayName(entry.metadata?.display_name);
+      if (!name) {
+        return null;
+      }
+      return {
+        name,
+        created: typeof entry.created === 'number' ? entry.created : null,
+      };
+    })
+    .filter((entry): entry is { readonly name: string; readonly created: number | null } => entry !== null);
 
   if (order === 'random') {
-    return { donors: shuffle(donors).slice(0, limit), count: donors.length };
+    const shuffled = shuffle(donors.map((entry) => entry.name)).slice(0, limit);
+    return { donors: shuffled, count: donors.length };
   }
 
-  return { donors, count: donors.length };
+  const sorted = donors.slice().sort((a, b) => {
+    const left = a.created ?? 0;
+    const right = b.created ?? 0;
+    if (order === 'asc') {
+      return left - right;
+    }
+    return right - left;
+  });
+
+  return {
+    donors: sorted.map((entry) => entry.name).slice(0, limit),
+    count: donors.length,
+  };
 }
 
 async function createWeakEtag(text: string): Promise<string> {
