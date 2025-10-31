@@ -4,7 +4,7 @@ domain: "donation-portal"
 status: "draft"
 version: "0.1.0"
 created: "2025-10-30"
-updated: "2025-10-30"
+updated: "2025-11-01"
 related_issues: []
 related_prs: []
 references:
@@ -71,6 +71,7 @@ Pages Dashboard の **Settings > Functions > Environment variables** から以�
 | 症状 | 原因 | 対応 |
 | --- | --- | --- |
 | Checkout 開始時に 500 エラー | Price ID または Secret Key が未設定 | Pages の環境変数を確認し再デプロイする |
+| Stripe ログに `resource_missing` で Price が存在しないと記録される | `STRIPE_SECRET_KEY` と `PRICE_*` がテスト/本番で混在している | Cloudflare Pages の Functions > Environment variables で同じモードの Price ID（Test なら `sk_test`, Live なら `sk_live`）に揃えてセットし、再デプロイする |
 | Success ページに戻らない | `APP_BASE_URL` が実環境と不一致 | Pages / `.dev.vars` の値を見直す |
 | 決済完了後も metadata が更新されない | Discord ログイン前に Checkout を実行している | `/donate` のログイン導線から再度実行する |
 
