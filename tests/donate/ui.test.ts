@@ -3,12 +3,16 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 interface DonateAppModule {
-  readonly initializeDonatePage: (doc?: Document) => void;
+  readonly initializeDonatePage: (doc?: Document) => Promise<void>;
   readonly __test__: {
-    readonly parseSessionCookieValue: (value: string) => {
-      readonly type: string;
-      readonly session: { readonly displayName: string; readonly consentPublic: boolean };
-    };
+    readonly fetchSessionState: () => Promise<
+      | { readonly status: 'signed-out' }
+      | { readonly status: 'error' }
+      | {
+        readonly status: 'signed-in';
+        readonly session: { readonly displayName: string; readonly consentPublic: boolean };
+      }
+    >;
     readonly getCheckoutTarget: (element: HTMLElement) => {
       readonly mode: string;
       readonly variant: string;
@@ -112,26 +116,6 @@ class FakeDocument {
   }
 }
 
-function createSignedCookie(displayName: string, consent: boolean): string {
-  const now = Date.now();
-  const payload = {
-    name: 'sess',
-    value: JSON.stringify({
-      display_name: displayName,
-      consent_public: consent,
-      exp: Math.floor(now / 1000) + 600,
-    }),
-    issuedAt: now,
-    expiresAt: now + 600_000,
-  } satisfies Record<string, unknown>;
-  const encoded = Buffer.from(JSON.stringify(payload))
-    .toString('base64')
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/g, '');
-  return `${encoded}.signature`;
-}
-
 function createDocument(): { document: FakeDocument; elements: TestElements } {
   const loginButton = new FakeElement('a', 'auth-login');
   const logoutLink = new FakeElement('a', 'auth-logout');
@@ -174,8 +158,10 @@ function createDocument(): { document: FakeDocument; elements: TestElements } {
   return { document, elements };
 }
 
-function encodeCookieForDocument(value: string): string {
-  return `sess=${encodeURIComponent(value)}`;
+function jsonResponse(body: unknown, init?: ResponseInit): Response {
+  const headers = new Headers(init?.headers);
+  headers.set('Content-Type', 'application/json');
+  return new Response(JSON.stringify(body), { ...init, headers });
 }
 
 describe('donate UI script', () => {
@@ -191,10 +177,15 @@ describe('donate UI script', () => {
     }
   });
 
-  it('OAuth 未ログイン状態ではログイン導線を表示し、同意は無効化される', () => {
+  it('OAuth 未ログイン状態ではログイン導線を表示し、同意は無効化される', async () => {
     const { document, elements } = createDocument();
 
-    initializeDonatePage(document as unknown as Document);
+    globalThis.fetch = async (input) => {
+      assert.equal(String(input), '/api/session');
+      return jsonResponse({ status: 'signed-out' });
+    };
+
+    await initializeDonatePage(document as unknown as Document);
 
     assert.equal(elements.loginButton.hidden, false);
     assert.equal(elements.logoutLink.hidden, true);
@@ -212,12 +203,18 @@ describe('donate UI script', () => {
     assert.equal(elements.checkoutError.hidden, true);
   });
 
-  it('有効な sess Cookie でログイン状態と同意内容が反映される', () => {
+  it('有効なセッションでログイン状態と同意内容が反映される', async () => {
     const { document, elements } = createDocument();
-    const cookieValue = createSignedCookie('テストユーザー', true);
-    document.cookie = encodeCookieForDocument(cookieValue);
 
-    initializeDonatePage(document as unknown as Document);
+    globalThis.fetch = async (input) => {
+      assert.equal(String(input), '/api/session');
+      return jsonResponse({
+        status: 'signed-in',
+        session: { displayName: 'テストユーザー', consentPublic: true },
+      });
+    };
+
+    await initializeDonatePage(document as unknown as Document);
 
     assert.equal(elements.loginButton.hidden, true);
     assert.equal(elements.logoutLink.hidden, false);
@@ -233,12 +230,18 @@ describe('donate UI script', () => {
     assert.equal(elements.checkoutYearlyButton.disabled, false);
   });
 
-  it('同意がオフの sess Cookie はチェック状態を外す', () => {
+  it('同意がオフのセッションはチェック状態を外す', async () => {
     const { document, elements } = createDocument();
-    const cookieValue = createSignedCookie('Another User', false);
-    document.cookie = encodeCookieForDocument(cookieValue);
 
-    initializeDonatePage(document as unknown as Document);
+    globalThis.fetch = async (input) => {
+      assert.equal(String(input), '/api/session');
+      return jsonResponse({
+        status: 'signed-in',
+        session: { displayName: 'Another User', consentPublic: false },
+      });
+    };
+
+    await initializeDonatePage(document as unknown as Document);
 
     assert.equal(elements.consentCheckbox.disabled, false);
     assert.equal(elements.consentCheckbox.checked, false);
@@ -249,11 +252,15 @@ describe('donate UI script', () => {
     assert.equal(elements.checkoutOnceButton.disabled, false);
   });
 
-  it('Cookie の解析に失敗した場合はエラーメッセージを表示する', () => {
+  it('セッション取得に失敗した場合はエラーメッセージを表示する', async () => {
     const { document, elements } = createDocument();
-    document.cookie = encodeCookieForDocument('invalid-cookie');
 
-    initializeDonatePage(document as unknown as Document);
+    globalThis.fetch = async (input) => {
+      assert.equal(String(input), '/api/session');
+      return jsonResponse({ status: 'error', error: { code: 'invalid_session' } });
+    };
+
+    await initializeDonatePage(document as unknown as Document);
 
     assert.equal(elements.loginButton.hidden, false);
     assert.equal(elements.logoutLink.hidden, true);
@@ -266,15 +273,20 @@ describe('donate UI script', () => {
     assert.equal(elements.checkoutError.hidden, true);
   });
 
-  it('sess Cookie の復号処理は display_name をトリムして利用する', () => {
-    const { parseSessionCookieValue } = __test__;
-    const cookieValue = createSignedCookie('  Space User  ', true);
+  it('セッション情報の表示名はトリムされる', async () => {
+    const { document, elements } = createDocument();
 
-    const result = parseSessionCookieValue(cookieValue);
+    globalThis.fetch = async (input) => {
+      assert.equal(String(input), '/api/session');
+      return jsonResponse({
+        status: 'signed-in',
+        session: { displayName: '  Space User  ', consentPublic: true },
+      });
+    };
 
-    assert.equal(result.type, 'valid');
-    assert.equal(result.session.displayName, 'Space User');
-    assert.equal(result.session.consentPublic, true);
+    await initializeDonatePage(document as unknown as Document);
+
+    assert.equal(elements.statusField.textContent, 'Space User としてログインしています。');
   });
 
   it('getCheckoutTarget は dataset の interval を null に正規化する', () => {
@@ -300,22 +312,28 @@ describe('donate UI script', () => {
 
   it('寄附ボタンのクリックで Checkout API を呼び出し URL に遷移する', async () => {
     const { document, elements } = createDocument();
-    const cookieValue = createSignedCookie('寄附ユーザー', true);
-    document.cookie = encodeCookieForDocument(cookieValue);
+    let sessionRequests = 0;
+    let checkoutRequests = 0;
 
-    let fetchCalled = 0;
-    globalThis.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
-      fetchCalled += 1;
-      assert.equal(String(input), '/api/checkout/session');
-      assert.equal(init?.method, 'POST');
-      const body = JSON.parse(init?.body as string);
-      assert.equal(body.mode, 'payment');
-      assert.equal(body.variant, 'fixed300');
-      assert.equal(body.interval, null);
-      return new Response(JSON.stringify({ url: 'https://checkout.example/session' }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      });
+    globalThis.fetch = async (input, init) => {
+      const url = String(input);
+      if (url === '/api/session') {
+        sessionRequests += 1;
+        return jsonResponse({
+          status: 'signed-in',
+          session: { displayName: '寄附ユーザー', consentPublic: true },
+        });
+      }
+      if (url === '/api/checkout/session') {
+        checkoutRequests += 1;
+        assert.equal(init?.method, 'POST');
+        const body = JSON.parse(init?.body as string);
+        assert.equal(body.mode, 'payment');
+        assert.equal(body.variant, 'fixed300');
+        assert.equal(body.interval, null);
+        return jsonResponse({ url: 'https://checkout.example/session' });
+      }
+      throw new Error(`Unexpected fetch call: ${url}`);
     };
 
     globalThis.location = {
@@ -325,10 +343,11 @@ describe('donate UI script', () => {
       },
     } as unknown as Location;
 
-    initializeDonatePage(document as unknown as Document);
+    await initializeDonatePage(document as unknown as Document);
     await elements.checkoutOnceButton.dispatchEvent('click');
 
-    assert.equal(fetchCalled, 1);
+    assert.equal(sessionRequests, 1);
+    assert.equal(checkoutRequests, 1);
     assert.equal(globalThis.location.href, 'https://checkout.example/session');
     assert.equal(elements.checkoutError.hidden, true);
     assert.equal(elements.checkoutLoading.hidden, true);
@@ -337,17 +356,24 @@ describe('donate UI script', () => {
 
   it('Checkout API が失敗した場合はエラーメッセージを表示しボタンを再び有効化する', async () => {
     const { document, elements } = createDocument();
-    const cookieValue = createSignedCookie('寄附ユーザー', true);
-    document.cookie = encodeCookieForDocument(cookieValue);
 
-    globalThis.fetch = async () => new Response(JSON.stringify({
-      error: { code: 'bad_request', message: '入力内容を確認してください。' },
-    }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    globalThis.fetch = async (input, init) => {
+      const url = String(input);
+      if (url === '/api/session') {
+        return jsonResponse({
+          status: 'signed-in',
+          session: { displayName: '寄附ユーザー', consentPublic: true },
+        });
+      }
+      if (url === '/api/checkout/session') {
+        return jsonResponse({
+          error: { code: 'bad_request', message: '入力内容を確認してください。' },
+        }, { status: 400 });
+      }
+      throw new Error(`Unexpected fetch call: ${url}`);
+    };
 
-    initializeDonatePage(document as unknown as Document);
+    await initializeDonatePage(document as unknown as Document);
     await elements.checkoutMonthlyButton.dispatchEvent('click');
 
     assert.equal(elements.checkoutError.hidden, false);
