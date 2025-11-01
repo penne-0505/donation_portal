@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 const { spawnSync } = require('node:child_process');
+const fs = require('node:fs');
 const path = require('node:path');
 
 function resolveLocalWranglerBin() {
@@ -33,13 +34,15 @@ function resolveWranglerBin() {
 function run() {
   try {
     const wranglerBin = resolveWranglerBin();
+    const defaultStaticDir = './public';
+    const builtStaticDir = fs.existsSync('.open-next/static') ? '.open-next/static' : defaultStaticDir;
     const result = spawnSync(
       'node',
       [
         wranglerBin,
         'pages',
         'dev',
-        './public',
+        builtStaticDir,
         '--local',
         'true',
         '--port',

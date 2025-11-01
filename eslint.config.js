@@ -1,6 +1,6 @@
 const configs = [
   {
-    ignores: ['dist/**'],
+    ignores: ['dist/**', '.next/**', '.open-next/**', '.vercel/**', '_temp/**'],
   },
   {
     files: ['**/*.js', '**/*.mjs', '**/*.cjs'],
@@ -33,7 +33,7 @@ try {
     languageOptions: {
       parser: tsParser.default,
       parserOptions: {
-        project: './tsconfig.json',
+        project: ['./tsconfig.json', './tsconfig.ui.json'],
         tsconfigRootDir: process.cwd(),
         ecmaVersion: 2022,
         sourceType: 'module',
