@@ -1,10 +1,10 @@
 ---
-title: "Stripe Webhook 運用ガイド"
-domain: "donation-portal"
-status: "draft"
-version: "0.1.0"
-created: "2025-10-30"
-updated: "2025-10-30"
+title: 'Stripe Webhook 運用ガイド'
+domain: 'donation-portal'
+status: 'draft'
+version: '0.1.0'
+created: '2025-10-30'
+updated: '2025-10-30'
 related_issues: []
 related_prs: []
 references:
