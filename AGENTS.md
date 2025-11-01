@@ -8,6 +8,7 @@
 - **Context7を利用する(使用可能な場合)**
 - **`git rm`やファイル削除は禁止**（ユーザーに提案し、実行は待つ）
 - **`docs/standards/documentation_guidelines.md`と`docs/standards/documentation_operations.md`に従い、積極的にドキュメント運用・記述を行う**
+- 日付確認には`date`コマンドを使用すること
 
 ## プロジェクト概要
 - **名前**: Donation Portal（Discord寄附受付）  
