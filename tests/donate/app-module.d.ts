@@ -5,9 +5,9 @@ declare module '../../public/donate/app.js' {
       | { readonly status: 'signed-out' }
       | { readonly status: 'error' }
       | {
-        readonly status: 'signed-in';
-        readonly session: { readonly displayName: string; readonly consentPublic: boolean };
-      }
+          readonly status: 'signed-in';
+          readonly session: { readonly displayName: string; readonly consentPublic: boolean };
+        }
     >;
     readonly getCheckoutTarget: (element: HTMLElement) => {
       readonly mode: string;

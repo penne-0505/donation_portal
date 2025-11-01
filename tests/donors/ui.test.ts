@@ -8,17 +8,17 @@ interface DonorsAppModule {
       | { readonly status: 'signed-out' }
       | { readonly status: 'error' }
       | {
-        readonly status: 'signed-in';
-        readonly session: { readonly displayName: string; readonly consentPublic: boolean };
-      }
+          readonly status: 'signed-in';
+          readonly session: { readonly displayName: string; readonly consentPublic: boolean };
+        }
     >;
     readonly getLatestDonorFetchPromise: () => Promise<void> | null;
   };
 }
 
-const donorsModule = await import(
+const donorsModule = (await import(
   new URL('public/donors/app.js', `file://${process.cwd()}/`).href
-) as DonorsAppModule;
+)) as DonorsAppModule;
 
 const { initializeDonorsPage, __test__ } = donorsModule;
 
@@ -30,10 +30,16 @@ class FakeElement {
   public href = '';
   public children: FakeElement[] = [];
   public parent: FakeElement | null = null;
-  private readonly listeners = new Map<string, Array<(event: { preventDefault: () => void }) => unknown>>();
+  private readonly listeners = new Map<
+    string,
+    Array<(event: { preventDefault: () => void }) => unknown>
+  >();
   #dataset: Record<string, string> = {};
 
-  constructor(public readonly tagName: string, public id = '') {}
+  constructor(
+    public readonly tagName: string,
+    public id = '',
+  ) {}
 
   public get dataset(): Record<string, string> {
     return this.#dataset;
@@ -73,7 +79,10 @@ class FakeElement {
     return child;
   }
 
-  addEventListener(type: string, listener: (event: { preventDefault: () => void }) => unknown): void {
+  addEventListener(
+    type: string,
+    listener: (event: { preventDefault: () => void }) => unknown,
+  ): void {
     const existing = this.listeners.get(type) ?? [];
     existing.push(listener);
     this.listeners.set(type, existing);
@@ -214,7 +223,10 @@ describe('donors UI script', () => {
     assert.equal(donorRequests, 1);
     assert.equal(elements.consentLogin.hidden, false);
     assert.equal(elements.consentRevoke.hidden, true);
-    assert.equal(elements.consentStatus.textContent, 'Discord ログイン後に Donors 掲載の同意を管理できます。');
+    assert.equal(
+      elements.consentStatus.textContent,
+      'Discord ログイン後に Donors 掲載の同意を管理できます。',
+    );
     assert.equal(elements.donorsList.children.length, 2);
     assert.equal(elements.donorsList.children[0]?.textContent, 'Alice');
     assert.equal(elements.donorsCount.textContent, '2');

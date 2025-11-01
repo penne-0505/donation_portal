@@ -62,7 +62,11 @@ function createContext(request: Request): Context {
   };
 }
 
-async function createSessionCookie(displayName: string, consent: boolean, discordId = '123456789'): Promise<string> {
+async function createSessionCookie(
+  displayName: string,
+  consent: boolean,
+  discordId = '123456789',
+): Promise<string> {
   const now = Date.now();
   const payload = {
     display_name: displayName,
@@ -95,7 +99,10 @@ describe('functions/api/checkout/session', () => {
 
   it('Stripe Checkout セッションを作成し URL を返す', async () => {
     const cookieHeader = await createSessionCookie('寄附ユーザー', true);
-    const request = createRequest({ mode: 'payment', interval: null, variant: 'fixed300' }, cookieHeader);
+    const request = createRequest(
+      { mode: 'payment', interval: null, variant: 'fixed300' },
+      cookieHeader,
+    );
     const context = createContext(request);
 
     let fetchCalls = 0;
@@ -112,8 +119,11 @@ describe('functions/api/checkout/session', () => {
       if (fetchCalls === 1) {
         assert.equal(method, 'GET');
         const searchUrl = new URL(url);
-        assert.equal(`${searchUrl.origin}${searchUrl.pathname}`, 'https://api.stripe.com/v1/customers/search');
-        assert.equal(searchUrl.searchParams.get('query'), "metadata['discord_id']:\"123456789\"");
+        assert.equal(
+          `${searchUrl.origin}${searchUrl.pathname}`,
+          'https://api.stripe.com/v1/customers/search',
+        );
+        assert.equal(searchUrl.searchParams.get('query'), 'metadata[\'discord_id\']:"123456789"');
         assert.equal(searchUrl.searchParams.get('limit'), '1');
         return new Response(JSON.stringify({ data: [] }), {
           status: 200,
@@ -207,7 +217,7 @@ describe('functions/api/checkout/session', () => {
     assert.equal(callHistory.length, 3);
     assert.equal(callHistory[0]?.method, 'GET');
     const searchUrl = new URL(callHistory[0]?.url ?? '');
-    assert.equal(searchUrl.searchParams.get('query'), "metadata['discord_id']:\"987654321\"");
+    assert.equal(searchUrl.searchParams.get('query'), 'metadata[\'discord_id\']:"987654321"');
     assert.equal(searchUrl.searchParams.get('limit'), '1');
     assert.equal(callHistory[1]?.url, 'https://api.stripe.com/v1/customers/cus_existing');
     assert.equal(callHistory[1]?.method, 'POST');
@@ -241,7 +251,10 @@ describe('functions/api/checkout/session', () => {
 
   it('Stripe API がエラーを返した場合は 500 を返しログ出力する', async () => {
     const cookieHeader = await createSessionCookie('障害ユーザー', true);
-    const request = createRequest({ mode: 'payment', interval: null, variant: 'fixed300' }, cookieHeader);
+    const request = createRequest(
+      { mode: 'payment', interval: null, variant: 'fixed300' },
+      cookieHeader,
+    );
     const context = createContext(request);
 
     const errors: string[] = [];

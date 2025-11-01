@@ -1,8 +1,5 @@
 import { verifySignedCookie } from '../../src/lib/auth/cookie.js';
-import {
-  getCookieSignKey,
-  type CookieKeySource,
-} from '../../src/lib/cookie/signKey.js';
+import { getCookieSignKey, type CookieKeySource } from '../../src/lib/cookie/signKey.js';
 import { issueSessionCookie } from '../../src/lib/auth/sessionCookie.js';
 
 interface OAuthEnv extends CookieKeySource {

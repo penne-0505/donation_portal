@@ -37,20 +37,22 @@ function jsonResponse(body: object, status = 200, headers?: HeadersInit): Respon
   });
 }
 
-function errorResponse(status: number, code: ErrorBody['error']['code'], message: string): Response {
-  return jsonResponse(
-    { error: { code, message } },
-    status,
-    {
-      'cache-control': 'no-store',
-    },
-  );
+function errorResponse(
+  status: number,
+  code: ErrorBody['error']['code'],
+  message: string,
+): Response {
+  return jsonResponse({ error: { code, message } }, status, {
+    'cache-control': 'no-store',
+  });
 }
 
-function parseLimit(raw: string | null): { readonly ok: true; readonly value: number } | {
-  readonly ok: false;
-  readonly message: string;
-} {
+function parseLimit(raw: string | null):
+  | { readonly ok: true; readonly value: number }
+  | {
+      readonly ok: false;
+      readonly message: string;
+    } {
   if (raw === null) {
     return { ok: true, value: 100 };
   }
@@ -67,10 +69,12 @@ function parseLimit(raw: string | null): { readonly ok: true; readonly value: nu
   return { ok: true, value: numeric };
 }
 
-function parseOrder(raw: string | null): { readonly ok: true; readonly value: Order } | {
-  readonly ok: false;
-  readonly message: string;
-} {
+function parseOrder(raw: string | null):
+  | { readonly ok: true; readonly value: Order }
+  | {
+      readonly ok: false;
+      readonly message: string;
+    } {
   if (raw === null || raw === 'desc' || raw === 'asc' || raw === 'random') {
     return { ok: true, value: (raw ?? 'desc') as Order };
   }
@@ -144,7 +148,10 @@ async function buildResponseBody(
         created: typeof entry.created === 'number' ? entry.created : null,
       };
     })
-    .filter((entry): entry is { readonly name: string; readonly created: number | null } => entry !== null);
+    .filter(
+      (entry): entry is { readonly name: string; readonly created: number | null } =>
+        entry !== null,
+    );
 
   if (order === 'random') {
     const shuffled = shuffle(donors.map((entry) => entry.name)).slice(0, limit);
@@ -205,6 +212,10 @@ export const onRequestGet: PagesFunction<DonorsEnv> = async (context) => {
   } catch (error) {
     const message = error instanceof Error ? error.message : 'unknown error';
     console.error('[donors] failed to fetch donors', message);
-    return errorResponse(500, 'internal', 'Donors 情報の取得に失敗しました。時間をおいて再度お試しください。');
+    return errorResponse(
+      500,
+      'internal',
+      'Donors 情報の取得に失敗しました。時間をおいて再度お試しください。',
+    );
   }
 };

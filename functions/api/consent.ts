@@ -37,14 +37,20 @@ function jsonResponse(body: object, status = 200): Response {
   });
 }
 
-function errorResponse(status: number, code: ErrorBody['error']['code'], message: string): Response {
+function errorResponse(
+  status: number,
+  code: ErrorBody['error']['code'],
+  message: string,
+): Response {
   return jsonResponse({ error: { code, message } }, status);
 }
 
-function parseConsentFlag(value: unknown): { readonly ok: true; readonly value: boolean } | {
-  readonly ok: false;
-  readonly message: string;
-} {
+function parseConsentFlag(value: unknown):
+  | { readonly ok: true; readonly value: boolean }
+  | {
+      readonly ok: false;
+      readonly message: string;
+    } {
   if (value === true) {
     return { ok: true, value: true };
   }
@@ -128,12 +134,20 @@ export const onRequestPost: PagesFunction<ConsentEnv> = async (context) => {
   });
 
   if (sessionResult.status === 'missing') {
-    return errorResponse(401, 'unauthorized', 'Discord ログインが必要です。再度ログインしてください。');
+    return errorResponse(
+      401,
+      'unauthorized',
+      'Discord ログインが必要です。再度ログインしてください。',
+    );
   }
 
   if (sessionResult.status === 'invalid') {
     console.error('[consent] invalid session cookie', sessionResult.reason);
-    return errorResponse(401, 'unauthorized', 'セッション情報の検証に失敗しました。Discord で再ログインしてください。');
+    return errorResponse(
+      401,
+      'unauthorized',
+      'セッション情報の検証に失敗しました。Discord で再ログインしてください。',
+    );
   }
 
   const json = await readJson(request);
@@ -149,7 +163,11 @@ export const onRequestPost: PagesFunction<ConsentEnv> = async (context) => {
   try {
     const customerId = await findCustomerId(env, sessionResult.session.discordId);
     if (!customerId) {
-      return errorResponse(404, 'not_found', '該当する寄附者情報が見つかりませんでした。寄附後に再度お試しください。');
+      return errorResponse(
+        404,
+        'not_found',
+        '該当する寄附者情報が見つかりませんでした。寄附後に再度お試しください。',
+      );
     }
 
     await updateConsent(env, customerId, parsedConsent.value, sessionResult.session.displayName);
@@ -176,6 +194,10 @@ export const onRequestPost: PagesFunction<ConsentEnv> = async (context) => {
   } catch (error) {
     const message = error instanceof Error ? error.message : 'unknown error';
     console.error('[consent] failed to update consent', message);
-    return errorResponse(500, 'internal', '同意状態の更新に失敗しました。時間をおいて再実行してください。');
+    return errorResponse(
+      500,
+      'internal',
+      '同意状態の更新に失敗しました。時間をおいて再実行してください。',
+    );
   }
 };

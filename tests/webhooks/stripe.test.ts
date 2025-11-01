@@ -23,7 +23,13 @@ type Context = {
 
 async function signPayload(rawBody: string, timestamp: number): Promise<string> {
   const payloadToSign = `${timestamp}.${rawBody}`;
-  const key = await crypto.subtle.importKey('raw', encoder.encode(SECRET), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const key = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(SECRET),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign'],
+  );
   const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(payloadToSign));
   return Array.from(new Uint8Array(signature))
     .map((byte) => byte.toString(16).padStart(2, '0'))
@@ -36,7 +42,10 @@ async function createContext(
 ): Promise<Context> {
   const timestamp = options.timestamp ?? Math.floor(Date.now() / 1000);
   const rawBody = JSON.stringify(body);
-  const signature = typeof options.signature === 'string' ? options.signature : await signPayload(rawBody, timestamp);
+  const signature =
+    typeof options.signature === 'string'
+      ? options.signature
+      : await signPayload(rawBody, timestamp);
   const headers = new Headers({
     'stripe-signature': `t=${timestamp},v1=${signature}`,
     'content-type': 'application/json',

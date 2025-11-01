@@ -92,10 +92,9 @@ describe('functions/oauth/callback', () => {
         const headers = new Headers(init?.headers);
         assert.equal(
           headers.get('Authorization'),
-          `Basic ${Buffer.from(
-            `${DISCORD_CLIENT_ID}:${DISCORD_CLIENT_SECRET}`,
-            'binary',
-          ).toString('base64')}`,
+          `Basic ${Buffer.from(`${DISCORD_CLIENT_ID}:${DISCORD_CLIENT_SECRET}`, 'binary').toString(
+            'base64',
+          )}`,
         );
         assert.equal(headers.get('Content-Type'), 'application/x-www-form-urlencoded');
         const body = new URLSearchParams(init?.body as string);
@@ -118,7 +117,11 @@ describe('functions/oauth/callback', () => {
       assert.equal(headers.get('Authorization'), 'Bearer access-token');
 
       return new Response(
-        JSON.stringify({ id: 'discord-user-id', global_name: 'Display Name', username: 'Fallback' }),
+        JSON.stringify({
+          id: 'discord-user-id',
+          global_name: 'Display Name',
+          username: 'Fallback',
+        }),
         {
           status: 200,
           headers: { 'Content-Type': 'application/json' },

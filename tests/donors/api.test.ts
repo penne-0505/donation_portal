@@ -79,7 +79,10 @@ describe('functions/api/donors', () => {
 
     assert.equal(calls.length, 1);
     const calledUrl = new URL(calls[0]?.url ?? '');
-    assert.equal(`${calledUrl.origin}${calledUrl.pathname}`, 'https://api.stripe.com/v1/customers/search');
+    assert.equal(
+      `${calledUrl.origin}${calledUrl.pathname}`,
+      'https://api.stripe.com/v1/customers/search',
+    );
     assert.equal(calls[0]?.method, 'GET');
     assert.equal(calledUrl.searchParams.get('limit'), '100');
     assert.equal(calledUrl.searchParams.get('order'), null);

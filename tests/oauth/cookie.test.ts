@@ -1,17 +1,13 @@
 import { after, beforeEach, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 
-import {
-  createSignedCookie,
-  verifySignedCookie,
-} from '../../src/lib/auth/cookie.js';
+import { createSignedCookie, verifySignedCookie } from '../../src/lib/auth/cookie.js';
 
 const ORIGINAL_KEY = (process.env as Record<string, string | undefined>).COOKIE_SIGN_KEY;
 
 describe('OAuth cookie signing', () => {
   beforeEach(() => {
-    (process.env as Record<string, string | undefined>).COOKIE_SIGN_KEY =
-      'test-cookie-secret';
+    (process.env as Record<string, string | undefined>).COOKIE_SIGN_KEY = 'test-cookie-secret';
   });
 
   after(() => {
@@ -88,9 +84,7 @@ describe('OAuth cookie signing', () => {
       now: new Date('2024-01-01T00:00:00.000Z'),
     });
 
-    const tampered = cookie.replace(/.$/, (char: string) =>
-      char === 'a' ? 'b' : 'a',
-    );
+    const tampered = cookie.replace(/.$/, (char: string) => (char === 'a' ? 'b' : 'a'));
 
     await assert.rejects(
       () =>

@@ -1,5 +1,9 @@
 import type { CookieKeySource } from '../../src/lib/cookie/signKey.js';
-import { stateCookieService, STATE_COOKIE_NAME, STATE_COOKIE_TTL_SECONDS } from '../../src/lib/oauth/stateCookie.js';
+import {
+  stateCookieService,
+  STATE_COOKIE_NAME,
+  STATE_COOKIE_TTL_SECONDS,
+} from '../../src/lib/oauth/stateCookie.js';
 import { discordOAuth } from '../../src/lib/oauth/discord.js';
 
 type OAuthEnv = CookieKeySource & {
@@ -20,7 +24,10 @@ function parseConsent(value: string | null): boolean | Response {
   return new Response('Invalid consent_public value', { status: 400 });
 }
 
-function getEnvValue(env: OAuthEnv, key: 'DISCORD_CLIENT_ID' | 'DISCORD_REDIRECT_URI'): string | undefined {
+function getEnvValue(
+  env: OAuthEnv,
+  key: 'DISCORD_CLIENT_ID' | 'DISCORD_REDIRECT_URI',
+): string | undefined {
   if (env[key]) {
     return env[key];
   }

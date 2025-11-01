@@ -130,7 +130,7 @@ describe('functions/api/consent', () => {
     assert.equal(calls.length, 2);
     assert.equal(calls[0]?.method, 'GET');
     const searchUrl = new URL(calls[0]?.url ?? '');
-    assert.equal(searchUrl.searchParams.get('query'), "metadata['discord_id']:\"9876543210\"");
+    assert.equal(searchUrl.searchParams.get('query'), 'metadata[\'discord_id\']:"9876543210"');
     assert.equal(searchUrl.searchParams.get('limit'), '1');
     assert.equal(calls[1]?.method, 'POST');
     assert.equal(calls[1]?.body?.get('metadata[consent_public]'), 'false');
@@ -182,7 +182,7 @@ describe('functions/api/consent', () => {
     const cookie = await createSessionCookie(true);
     const context = createContext({ consent_public: false }, cookie);
 
-    globalThis.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+    globalThis.fetch = async (input: RequestInfo | URL) => {
       const url = String(input);
       const parsed = new URL(url);
       if (parsed.pathname.endsWith('/customers/search')) {
