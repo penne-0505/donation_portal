@@ -3,7 +3,7 @@ compatibility_date = "2024-10-29"
 compatibility_flags = ["nodejs_compat"]
 
 [pages]
-dirs = ["public", ".open-next/static"]
+dirs = [".open-next/static"]
 
 [env.dev]
 vars = { }
