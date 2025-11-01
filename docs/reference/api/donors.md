@@ -1,8 +1,8 @@
 ---
 title: "GET /api/donors リファレンス"
 domain: "donation-portal"
-status: "draft"
-version: "0.1.0"
+status: "active"
+version: "1.0.0"
 created: "2025-10-30"
 updated: "2025-11-01"
 related_issues: []
@@ -10,6 +10,7 @@ related_prs: []
 references:
   - docs/draft/interface_definition.md
   - docs/plan/donation-portal/phase-04-donors/plan.md
+  - functions/api/donors.ts
 ---
 
 # GET /api/donors リファレンス
@@ -52,8 +53,24 @@ Stripe 上で掲示同意 (`consent_public=true`) が設定された Customer �
 ```
 
 - `donors`: 掲示対象の表示名（空白はトリム済み）。
-- `count`: 今回のレスポンスに含まれる件数。Stripe 側の件数と一致します。
-- ヘッダーには `Cache-Control: public, max-age=60` と計算済みの `ETag` を付与します。
+- `count`: Stripe から取得した **全同意済み寄附者数**（limit に関わらず常に全体カウント）。
+- ヘッダーには `Cache-Control` と計算済みの `ETag` (弱 ETag) を付与します。
+
+### キャッシュ戦略
+
+**`order=desc` または `order=asc` の場合：**
+```
+Cache-Control: public, max-age=60
+ETag: W/"<SHA256_HASH>"
+```
+60秒間キャッシュ有効。この間は CDN とブラウザがキャッシュを活用します。
+
+**`order=random` の場合：**
+```
+Cache-Control: public, max-age=0
+ETag: W/"<SHA256_HASH>"
+```
+キャッシュを無効化（毎回新しいランダム順序を生成）。ただし ETag は弱 ETag として返却し、同一ランダム結果であれば `304 Not Modified` で帯域幅を節約できます。
 
 ### エラー応答
 

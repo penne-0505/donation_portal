@@ -7,7 +7,7 @@
 - **Serenaを積極活用(projectは"ds_donation_system"とする)(使用可能な場合)**  
 - **Context7を利用する(使用可能な場合)**
 - **`git rm`やファイル削除は禁止**（ユーザーに提案し、実行は待つ）
-- **`docs/standards/documentation_guidelines.md`と`docs/standards/documentation_operations.md`に従い、積極的にドキュメント運用・記述を行う**
+- **[@docs/standards/documentation_guidelines.md](docs/standards/documentation_guidelines.md)と[@docs/standards/documentation_operations.md](docs/standards/documentation_operations.md)に従い、積極的にドキュメント運用・記述を行う**
 - 日付確認には`date`コマンドを使用すること
 
 ## プロジェクト概要
@@ -40,3 +40,8 @@
   - コミットメッセージは英語、形式例: `feat: add analytics screen`  
   - ブランチ: `feature/`, `fix/`, `chore/`（ベースは`dev`）  
   - PRタイトルも同形式、説明に目的・影響を記載  
+
+- **ドキュメンテーション**:
+  - ドキュメントを基軸として開発・運用を行う
+  - **すべての新機能・変更は関連ドキュメントを更新すること**
+  - draft | survey -> plan -> intent -> (guide | reference) の流れを遵守すること

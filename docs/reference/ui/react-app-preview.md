@@ -4,7 +4,7 @@ domain: "donation-portal"
 status: "draft"
 version: "0.2.0"
 created: "2025-11-01"
-updated: "2025-11-02"
+updated: "2025-11-01"
 related_issues: []
 related_prs: []
 references:
@@ -78,6 +78,12 @@ Next.js (App Router) を利用した React 版 UI が `/donate`・`/donors`・`/
 | `components/pages/*.tsx` | ページ固有の UI 構成 | `donate`/`donors` はクライアントコンポーネントとして hooks を利用。 |
 
 Tailwind v4 のトークン定義は `app/globals.css` に集約し、旧静的 UI は `docs/archives/legacy-static/styles/base.css` と共存させている。
+
+## テスト
+
+- `npm test` は Node.js test runner と React Testing Library を組み合わせ、`tests/donate/ui.test.ts` と `tests/donors/ui.test.ts` でコンポーネント挙動を検証する。
+- `tests/mocks/ui-hooks.ts` で UI フックと Donors フックをスタブし、`scripts/alias-loader.mjs` のオーバーライドで `next/link` など Next.js 依存をテスト用実装に差し替える。
+- Hooks (`useSession` / `useConsentMutation` / `useCheckout` / `useDonors`) をスタブ化したうえでサインイン状態や同意更新・Checkout 呼び出しが UI 上で期待どおり遷移することを確かめる。
 
 ## ローカル検証
 
