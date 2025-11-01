@@ -20,13 +20,13 @@ export function AppShell({ children, className }: AppShellProps) {
           </Link>
           <nav className="flex items-center gap-4 text-sm font-medium text-muted-foreground">
             <Link
-              href="/new/donate"
+              href="/donate"
               className="transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/30 focus-visible:ring-offset-2"
             >
               寄附
             </Link>
             <Link
-              href="/new/donors"
+              href="/donors"
               className="transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/30 focus-visible:ring-offset-2"
             >
               Donors
