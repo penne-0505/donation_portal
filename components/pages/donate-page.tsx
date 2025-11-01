@@ -56,7 +56,7 @@ export function DonatePage() {
       }
       await updateConsent(nextValue);
     },
-    [isSignedIn, updateConsent],
+    [isSignedIn, consent, updateConsent],
   );
 
   const handleCheckout = useCallback(
