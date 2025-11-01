@@ -77,7 +77,7 @@ Next.js (App Router) を利用した React 版 UI が `/donate`・`/donors`・`/
 | `components/confetti-celebration.tsx` | /thanks での祝砲演出 | `canvas-confetti` を動的 import。 |
 | `components/pages/*.tsx` | ページ固有の UI 構成 | `donate`/`donors` はクライアントコンポーネントとして hooks を利用。 |
 
-Tailwind v4 のトークン定義は `app/globals.css` に集約し、旧静的 UI の `public/styles/base.css` と共存させている。
+Tailwind v4 のトークン定義は `app/globals.css` に集約し、旧静的 UI は `docs/archives/legacy-static/styles/base.css` と共存させている。
 
 ## ローカル検証
 

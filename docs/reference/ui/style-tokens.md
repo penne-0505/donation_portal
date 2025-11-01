@@ -8,13 +8,13 @@ updated: "2025-11-01"
 related_issues: []
 related_prs: []
 references:
-  - public/styles/base.css
+  - docs/archives/legacy-static/styles/base.css
   - docs/plan/donation-portal/ui-refresh-2025/plan.md
 ---
 
 # UI デザイントークン定義
 
-Donation Portal の画面スタイルは `public/styles/base.css` に定義されたデザイントークンとユーティリティを土台に構築する。ここでは Stage 1 で導入したトークンの一覧と、主要コンポーネントへの適用ルールを整理する。
+Donation Portal の画面スタイルは `docs/archives/legacy-static/styles/base.css` に定義されたデザイントークンとユーティリティを土台に構築する。ここでは Stage 1 で導入したトークンの一覧と、主要コンポーネントへの適用ルールを整理する。
 
 ## タイポグラフィ
 
