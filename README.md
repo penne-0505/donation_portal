@@ -4,8 +4,8 @@ Discord コミュニティ向けの寄附ポータルを Cloudflare Pages 上に
 
 ## 概要
 
-- **プラットフォーム**: Cloudflare Pages（フロントエンド）/ Pages Functions（バックエンド）
-- **技術スタック**: TypeScript, Stripe SDK, Discord OAuth
+- **プラットフォーム**: Cloudflare Pages（Next.js React UI）/ Pages Functions（バックエンド）
+- **技術スタック**: TypeScript, Next.js (App Router), Stripe SDK, Discord OAuth
 - **データ管理**: Stripe Customer metadata が Single Source of Truth
 - **主要機能**:
   - `/donate` - 寄附案内ページ、同意フォーム
@@ -42,8 +42,10 @@ npm install
 
 ## ディレクトリ構成
 
-- `src/` - 共通 TypeScript モジュール（認証、ユーティリティなど）
+- `app/` - Next.js (App Router) ベースの React UI
+- `components/` - UI コンポーネントとページ共有ロジック
+- `lib/` - 共通 TypeScript モジュール（認証、ユーティリティなど）
 - `functions/` - Cloudflare Pages Functions エンドポイント
-- `public/` - 静的ページとフロントエンドスクリプト
+- `public/` - 旧来の静的ページ（後方互換のため保持）
 - `scripts/` - 開発支援スクリプト（lint、typecheck、build など）
 - `docs/` - プロジェクトドキュメント（ガイドライン、計画書、参考資料）

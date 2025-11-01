@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     default: 'Donation Portal',
     template: '%s | Donation Portal',
   },
-  description: 'Discord コミュニティ向け寄附ポータルのReact版UIプレビュー。',
+  description: 'Discord コミュニティ向け寄附ポータルの公式 React UI。',
   openGraph: {
     title: 'Donation Portal',
     description: 'Discord コミュニティ向け寄附ポータル React UI',

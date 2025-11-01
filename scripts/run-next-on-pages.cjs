@@ -61,15 +61,7 @@ function run() {
   try {
     const raw = fs.readFileSync(routesPath, 'utf8');
     const routes = JSON.parse(raw);
-    const additionalExcludes = [
-      '/api/*',
-      '/oauth/*',
-      '/health',
-      '/',
-      '/donate/*',
-      '/donors/*',
-      '/thanks/*',
-    ];
+    const additionalExcludes = ['/api/*', '/oauth/*', '/health'];
     const excludeSet = new Set([...(routes.exclude ?? []), ...additionalExcludes]);
     routes.exclude = Array.from(excludeSet);
     fs.writeFileSync(routesPath, JSON.stringify(routes));
