@@ -15,6 +15,27 @@ function resolveNpxCommand() {
   return process.platform === 'win32' ? 'npx.cmd' : 'npx';
 }
 
+function enforceWorkerCompatibility(outputDir) {
+  const workerEntryPath = path.join(outputDir, '_worker.js', 'index.js');
+  const banner =
+    "export const config = { compatibility_date: '2024-10-29', compatibility_flags: ['nodejs_compat'] };\n";
+
+  try {
+    if (!fs.existsSync(workerEntryPath)) {
+      return;
+    }
+
+    const current = fs.readFileSync(workerEntryPath, 'utf8');
+    if (current.includes('compatibility_flags')) {
+      return;
+    }
+
+    fs.writeFileSync(workerEntryPath, `${banner}\n${current}`);
+  } catch (error) {
+    console.warn(`[next-on-pages] _worker.js の互換性フラグ挿入に失敗しました: ${error.message}`);
+  }
+}
+
 function run() {
   const outputDir = path.resolve('.open-next');
   removePreviousBuild(outputDir);
@@ -68,6 +89,8 @@ function run() {
   } catch (error) {
     console.warn(`[next-on-pages] _routes.json の更新に失敗しました: ${error.message}`);
   }
+
+  enforceWorkerCompatibility(outputDir);
 }
 
 run();
