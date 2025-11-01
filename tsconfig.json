@@ -15,12 +15,13 @@
     ],
     "baseUrl": "./",
     "paths": {
+      "@/*": ["*"],
       "@src/*": ["src/*"],
       "@functions/*": ["functions/*"]
     },
     "outDir": "dist",
     "sourceMap": true
   },
-  "include": ["src", "tests", "types", "functions"],
+  "include": ["src", "tests", "types", "functions", "components", "lib/ui"],
   "exclude": ["node_modules", "dist", "build"]
 }

@@ -90,7 +90,8 @@ Legacy HTML/CSS 版から React + デザインシステムへの段階移行を�
 - `_temp/new_ui/app/donate/page.tsx` のヒーロー / グラスカード構成を `components/pages/donate-page.tsx` へ移植し、`useSession`・`useConsentMutation`・`useCheckout` を本番ロジックのまま統合した。
 - `_temp/new_ui/app/donors/page.tsx`・`_temp/new_ui/app/thanks/page.tsx`・`_temp/new_ui/app/page.tsx` のレイアウトを踏まえ、`DonorsPage`・`ThanksPage`・`HomePage` の UI を刷新、既存の API フローと整合させた。
 - Tailwind ユーティリティとしてガラス調・ホバー演出・アニメーションを `app/globals.css` に追加し、既存デザインシステムと整合させた。
-- `npm run typecheck` を実行し型検証を完了。UI テストのスナップショット更新とプレビュー確認は次のステップとして残っている。
+- `tests/mocks/ui-hooks.ts` と `scripts/alias-loader.mjs` で UI フックと Next.js 依存をスタブ化し、Node Test Runner + React Testing Library で新 UI の挙動を検証できるようにした。
+- `npm run typecheck` を実行し型検証を完了。UI テストは React 版 (`tests/donate/ui.test.ts`, `tests/donors/ui.test.ts`) へ差し替え済みで、プレビュー確認のみ残タスク。
 
 ## リスクと緩和策
 - **CSSバンドル肥大化**: `_temp` の追加クラスでバンドルサイズが増える可能性。利用していないクラスは除外し、Tailwind の `content` 設定を更新して未使用スタイルの排除を徹底する。
