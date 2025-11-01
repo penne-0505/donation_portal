@@ -255,9 +255,36 @@ describe('donors UI script', () => {
       'Discord ログイン後に Donors 掲載の同意を管理できます。',
     );
     assert.equal(elements.donorsList.children.length, 2);
-    assert.equal(elements.donorsList.children[0]?.textContent, 'Alice');
+    const firstDonor = elements.donorsList.children[0];
+    assert.equal(firstDonor?.dataset.displayName, 'Alice');
+    assert.equal(firstDonor?.children[0]?.textContent, 'Alice');
+    assert.equal(firstDonor?.children[1]?.textContent, '掲示に同意しています');
     assert.equal(elements.donorsCount.textContent, '2');
     assert.equal(elements.donorsError.hidden, true);
+  });
+
+  it('Donors が空の場合は空状態カードを表示する', async () => {
+    const { document, elements } = createTestDocument();
+
+    globalThis.fetch = async (input) => {
+      const url = String(input);
+      if (url === '/api/session') {
+        return jsonResponse({ status: 'signed-out' });
+      }
+      if (url === '/api/donors') {
+        return jsonResponse({ donors: [], count: 0 });
+      }
+      throw new Error(`Unexpected fetch call: ${url}`);
+    };
+
+    await initializeDonorsPage(document as unknown as Document);
+    await waitForDonorFetch();
+
+    assert.equal(elements.donorsList.children.length, 1);
+    const emptyState = elements.donorsList.children[0];
+    assert.equal(emptyState?.dataset.state, 'empty');
+    assert.match(emptyState?.textContent ?? '', /まだいません/);
+    assert.equal(elements.donorsCount.textContent, '0');
   });
 
   it('掲示撤回操作で API を呼び出し、リストと状態を更新する', async () => {
@@ -296,6 +323,8 @@ describe('donors UI script', () => {
     assert.equal(elements.consentRevoke.hidden, true);
     assert.match(elements.consentStatus.textContent ?? '', /撤回しました/);
     assert.equal(elements.donorsList.children.length, 1);
+    const remainingDonor = elements.donorsList.children[0];
+    assert.equal(remainingDonor?.dataset.displayName, 'Bob');
     assert.equal(elements.donorsCount.textContent, '1');
     assert.equal(elements.consentError.hidden, true);
   });

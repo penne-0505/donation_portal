@@ -11,53 +11,58 @@
     <link rel="stylesheet" href="/styles/base.css" />
   </head>
   <body>
-    <main class="donors-container" aria-labelledby="page-title">
-      <header class="donors-header">
-        <h1 id="page-title">Donors の皆さま</h1>
-        <p class="donors-lead">
+    <main class="page page--donors" aria-labelledby="page-title">
+      <header class="page-header">
+        <span class="page-eyebrow">Donation Portal</span>
+        <h1 id="page-title" class="page-title">Donors の皆さま</h1>
+        <p class="page-lead">
           Discord
           で掲示に同意いただいた寄附者の表示名を掲載しています。寄附額や回数は公開していません。
         </p>
       </header>
 
-      <section class="donors-section" aria-labelledby="donors-section-title">
-        <div class="donors-section-header">
+      <section class="card donors-section" aria-labelledby="donors-section-title">
+        <div class="section-header">
           <h2 id="donors-section-title">掲示中の Donors</h2>
-          <p id="donors-status" class="donors-status" role="status" aria-live="polite">
-            Donors 情報を読み込み中です…
-          </p>
-          <div
-            id="donors-error"
-            class="donors-error"
-            role="alert"
-            aria-live="assertive"
-            hidden
-          ></div>
-          <p class="donors-count">
-            現在 <span id="donor-count">0</span> 名の Donor を掲載しています。
-          </p>
+          <p class="section-header__lead">同意済みの表示名を最新の状態で掲載しています。</p>
+        </div>
+        <p id="donors-status" class="donors-status" role="status" aria-live="polite">
+          Donors 情報を読み込み中です…
+        </p>
+        <div
+          id="donors-error"
+          class="alert alert--error donors-error"
+          role="alert"
+          aria-live="assertive"
+          hidden
+        ></div>
+        <p class="donor-summary">
+          現在 <span id="donor-count">0</span> 名の Donor を掲載しています。
+        </p>
+        <div class="layout-cluster">
           <button id="donors-reload" class="button button--secondary" type="button">
             最新の情報に更新
           </button>
+          <span class="text-subtle">キャッシュ有効期限は最長 60 秒です</span>
         </div>
         <ul
           id="donors-list"
-          class="donors-list"
+          class="donor-grid"
           aria-live="polite"
           aria-describedby="donors-status"
         ></ul>
-        <p class="donors-note">
-          * Donors 情報は 60
+        <p class="section-note">
+          Donors 情報は 60
           秒間キャッシュされます。同意の更新が反映されるまで時間がかかる場合があります。
         </p>
       </section>
 
-      <section class="consent-section" aria-labelledby="consent-section-title">
-        <div class="consent-section-header">
+      <section class="card consent-section" aria-labelledby="consent-section-title">
+        <div class="section-header">
           <h2 id="consent-section-title">掲示の同意を管理する</h2>
-          <p id="consent-description">
-            Discord でログイン済みの場合、ここから Donors
-            掲載の同意を撤回できます。寄附後でもいつでも変更可能です。
+          <p id="consent-description" class="section-header__lead">
+            Discord でログイン済みの場合、Donors
+            掲載の同意をいつでも撤回できます。寄附後でも変更可能です。
           </p>
         </div>
         <div class="consent-actions">
@@ -67,8 +72,9 @@
             href="/donate"
             aria-describedby="consent-description"
             hidden
-            >Discord でログイン</a
           >
+            Discord でログイン
+          </a>
           <button
             id="consent-revoke"
             class="button button--secondary"
@@ -86,7 +92,7 @@
         <div id="consent-status" class="consent-status" role="status" aria-live="polite"></div>
         <div
           id="consent-error"
-          class="consent-error"
+          class="alert alert--error consent-error"
           role="alert"
           aria-live="assertive"
           hidden
