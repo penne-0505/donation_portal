@@ -23,7 +23,7 @@ export const CHECKOUT_PRESETS: readonly CheckoutPreset[] = [
     id: 'yearly-3000',
     mode: 'subscription',
     label: '毎年の寄附 ¥3,000',
-    description: '一年単位でまとめて寄附',
+    description: '一年単位でまとめて寄附(毎月換算で約¥250)',
     amount: 3000,
     interval: 'yearly',
     variant: 'fixed3000',
