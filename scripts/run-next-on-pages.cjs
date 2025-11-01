@@ -28,7 +28,7 @@ function enforceWorkerCompatibility(outputDir) {
     }
 
     const current = fs.readFileSync(workerEntryPath, 'utf8');
-    if (current.includes('compatibility_flags')) {
+    if (/export const config\s*=\s*{[^}]*compatibility_flags/.test(current)) {
       return;
     }
 
