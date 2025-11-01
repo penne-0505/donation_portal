@@ -1,6 +1,6 @@
 # TODO
 
-Next ID No: 10
+Next ID No: 17
 **(連番は全カテゴリで通し番号)**
 
 --- 
@@ -17,14 +17,114 @@ Definitions to suppress Markdown warnings
 [Chore]: #
 
 ## 後でタスク定義
+- UIをreactにする？
 
 ---
 
 ## Backlog
 
+### [Enhancement] デザイントークンとスタイル基盤の導入
+- **ID**: UI/UX-Enhancement-11
+- **Priority**: P1
+- **Size**: M
+- **Area**: UI/UX
+- **Dependencies**: UI/UX-Chore-10
+- **Goal**: 共通デザイントークンとコンポーネントスタイルが `base.css` に実装され、Dark/Light 両テーマとレスポンシブで一貫した見た目が得られる。
+- **Steps**:
+  1. 現行 UI を基にカラーパレット・スペーシング・タイポスケールを洗い出し、`:root` の CSS カスタムプロパティを定義する。
+  2. `.card`、`.section-header`、`.button` 系、`.alert--*` などの共通コンポーネントスタイルを実装し、状態ごとの視覚差分を整備する。
+  3. ブレークポイント別・Dark Mode 用トークン適用を調整し、CSS サイズとパフォーマンス予算を満たすことを確認する。
+  4. デザイントークン一覧のドラフトとして `docs/reference/ui/style-tokens.md` のひな形を作成し、トークン定義を同期する。
+- **Description**: Stage 1 の作業として、Cloudflare Pages 上の全画面で共通化できるスタイル基盤を整備し、以降のページ個別改修を容易にする。
+- **Plan**: [`docs/plan/donation-portal/ui-refresh-2025/plan.md`](docs/plan/donation-portal/ui-refresh-2025/plan.md)
+
+### [Enhancement] /donate ページのレイアウト刷新
+- **ID**: UI/UX-Enhancement-12
+- **Priority**: P1
+- **Size**: M
+- **Area**: UI/UX
+- **Dependencies**: UI/UX-Enhancement-11
+- **Goal**: `/donate` のログイン・同意・Checkout セクションが視線誘導と状態フィードバックの観点で最適化され、すべての状態で可読性を確保できる。
+- **Steps**:
+  1. 768px 以上でログイン/同意と寄附メニューを 2 カラム表示に再構成し、モバイルでは適切なスタック構造にする。
+  2. Checkout ボタン群に補助説明やタグを追加し、ローディング表示をスピナーとテキストの組み合わせに刷新する。
+  3. サインイン状態・エラー状態それぞれで ARIA ラベルとフォーカス管理を確認し、既存テストを更新する。
+- **Description**: Stage 2 の第一段として寄附導線の体験を高め、コピーと動的状態の視覚フィードバックを改善する。
+- **Plan**: [`docs/plan/donation-portal/ui-refresh-2025/plan.md`](docs/plan/donation-portal/ui-refresh-2025/plan.md)
+
+### [Enhancement] /donors ページの表示体験改善
+- **ID**: UI/UX-Enhancement-13
+- **Priority**: P1
+- **Size**: M
+- **Area**: UI/UX
+- **Dependencies**: UI/UX-Enhancement-11
+- **Goal**: `/donors` ページで Donor リスト・空/エラー状態・同意撤回導線が一貫したコンポーネントで表現され、視認性と操作性が向上する。
+- **Steps**:
+  1. Donor リストをカードレイアウト化し、空状態カードとエラーアラートを共通スタイルで実装する。
+  2. 同意撤回セクションのボタン/説明を再配置し、状態別メッセージのトーンとコントラストを調整する。
+  3. ロード中表示と再読み込みボタンのフィードバックを改善し、アクセシビリティ検証を行う。
+- **Description**: Stage 2 の第二段として Donor 掲載の読みやすさと撤回導線を強化する。
+- **Plan**: [`docs/plan/donation-portal/ui-refresh-2025/plan.md`](docs/plan/donation-portal/ui-refresh-2025/plan.md)
+
+### [Enhancement] /thanks ページのリファイン
+- **ID**: UI/UX-Enhancement-14
+- **Priority**: P2
+- **Size**: S
+- **Area**: UI/UX
+- **Dependencies**: UI/UX-Enhancement-11
+- **Goal**: `/thanks` ページが新しいスタイルガイドに揃い、感謝コピーと次アクションが明確に示される。
+- **Steps**:
+  1. ヒーローセクションの余白とタイポグラフィを調整し、補助要素（イラストプレースホルダ等）を配置する。
+  2. CTA リンクのスタイルと並び順を更新し、レスポンシブ時の配置崩れを解消する。
+  3. コントラスト比をチェックして Dark Mode/Light Mode の両方で可読性を確保する。
+- **Description**: Stage 2 の最終段としてサンクスページをブランドトーンに合わせ、導線の整合性を保つ。
+- **Plan**: [`docs/plan/donation-portal/ui-refresh-2025/plan.md`](docs/plan/donation-portal/ui-refresh-2025/plan.md)
+
+### [Testing] UIリリース前QAの実施
+- **ID**: Testing-Testing-15
+- **Priority**: P1
+- **Size**: M
+- **Area**: Testing
+- **Dependencies**: UI/UX-Enhancement-12, UI/UX-Enhancement-13, UI/UX-Enhancement-14
+- **Goal**: QA チェックリストに沿って UI 改修後の主要フローが検証され、スクリーンショットと結果が保存される。
+- **Steps**:
+  1. Stripe Test モードで `/donate → Checkout → /thanks → /donors` のフローを実施し、主要状態を記録する。
+  2. キーボード操作とスクリーンリーダでのアクセシビリティ確認を行い、問題点を Issue 化する。
+  3. 改修前後のスクリーンショットを Light/Dark・Mobile/Desktop で取得し、QA レポートに添付する。
+- **Description**: Stage 3 の一部として UI 改修の品質保証を行い、リリース判断材料を整備する。
+- **Plan**: [`docs/plan/donation-portal/ui-refresh-2025/plan.md`](docs/plan/donation-portal/ui-refresh-2025/plan.md)
+
+### [Documentation] UI改善反映のドキュメント更新
+- **ID**: Documentation-Documentation-16
+- **Priority**: P2
+- **Size**: S
+- **Area**: Documentation
+- **Dependencies**: UI/UX-Enhancement-11, UI/UX-Enhancement-12, UI/UX-Enhancement-13, UI/UX-Enhancement-14, Testing-Testing-15
+- **Goal**: UI 改善内容が関連ドキュメントに反映され、スタイルガイドと QA 手順が最新化される。
+- **Steps**:
+  1. `docs/reference/ui/style-tokens.md` に最終的なトークン定義とコンポーネントガイドを記載する。
+  2. `docs/guide/operations/phase-06-qa-release.md` の QA チェックリストに UI 項目を追記する。
+  3. スクリーンショットリンクやリリースノートの更新をまとめ、Intent ドキュメントから参照できるようにする。
+- **Description**: Stage 3 のドキュメント整備として、運用関係者と開発者が新 UI を理解できる状態を作る。
+- **Plan**: [`docs/plan/donation-portal/ui-refresh-2025/plan.md`](docs/plan/donation-portal/ui-refresh-2025/plan.md)
+
 ---
 
 ## Ready
+
+### [Chore] UI改善ベースラインの収集
+- **ID**: UI/UX-Chore-10
+- **Priority**: P1
+- **Size**: S
+- **Area**: UI/UX
+- **Dependencies**: None
+- **Goal**: 既存 UI のスクリーンショットとパフォーマンス指標が整理され、改善前のベースラインとして共有できる。
+- **Steps**:
+  1. `/donate`, `/donors`, `/thanks` の Light/Dark・Mobile/Desktop パターンでスクリーンショットを取得する。
+  2. Lighthouse などで主要 Web Vitals を計測し、結果を記録する。
+  3. 取得した成果物を共有ストレージに整理し、計画ドキュメントにリンクを追記する。
+- **Description**: Stage 0 の作業として現状把握を行い、以降の改善インパクトを測定可能にする。
+- **Plan**: [`docs/plan/donation-portal/ui-refresh-2025/plan.md`](docs/plan/donation-portal/ui-refresh-2025/plan.md)
 
 ---
 

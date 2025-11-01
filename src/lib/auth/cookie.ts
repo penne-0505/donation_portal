@@ -1,4 +1,5 @@
 import { getCookieSignKey, type CookieKeySource } from '../cookie/signKey.js';
+import { toEpochMilliseconds } from '../core/time.js';
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
@@ -55,16 +56,6 @@ function fromBase64Url(value: string): Uint8Array {
   return bytes;
 }
 
-function toTimestamp(now?: Date | number): number {
-  if (typeof now === 'number') {
-    return now;
-  }
-  if (now instanceof Date) {
-    return now.getTime();
-  }
-  return Date.now();
-}
-
 export interface CreateSignedCookieOptions {
   readonly name: string;
   readonly value: string;
@@ -84,7 +75,7 @@ export async function createSignedCookie({
     throw new Error('ttlSeconds must be a positive number');
   }
 
-  const issuedAt = toTimestamp(now);
+  const issuedAt = toEpochMilliseconds(now);
   const expiresAt = issuedAt + ttlSeconds * 1000;
 
   const payload: SignedCookiePayload = {
@@ -159,7 +150,7 @@ export async function verifySignedCookie({
     throw new Error(`Signed cookie name mismatch: expected ${name}`);
   }
 
-  const current = toTimestamp(now);
+  const current = toEpochMilliseconds(now);
   if (current > payload.expiresAt) {
     throw new Error('Signed cookie has expired');
   }

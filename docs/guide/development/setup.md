@@ -76,9 +76,11 @@ Cloudflare Pages 上で Donation Portal を開発するための初期セット�
    npm run lint
    npm run typecheck
    npm test
+   npm run test:coverage
    ```
 
    - いずれかが失敗した場合は `node_modules` の再インストールや `.env` の設定漏れを再確認してください。
+   - カバレッジレポートを確認する場合は `npm run test:coverage` を実行し、生成される `coverage` ディレクトリ内の JSON を参照してください（Node.js の `--experimental-test-coverage` を利用）。
 
 ## 環境変数と Secrets 管理
 

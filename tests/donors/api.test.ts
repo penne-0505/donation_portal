@@ -54,8 +54,8 @@ describe('functions/api/donors', () => {
       return new Response(
         JSON.stringify({
           data: [
-            { metadata: { display_name: 'Alice' }, created: 1_700_000_000 },
-            { metadata: { display_name: ' Bob ' }, created: 1_700_000_100 },
+            { livemode: true, metadata: { display_name: 'Alice' }, created: 1_700_000_000 },
+            { livemode: true, metadata: { display_name: ' Bob ' }, created: 1_700_000_100 },
           ],
         }),
         {
@@ -89,15 +89,39 @@ describe('functions/api/donors', () => {
     assert.equal(calledUrl.searchParams.get('query'), "metadata['consent_public']:'true'");
   });
 
+  it('テストモードの Donor を除外する', async () => {
+    globalThis.fetch = async () =>
+      new Response(
+        JSON.stringify({
+          data: [
+            { livemode: false, metadata: { display_name: 'テスト寄附者' }, created: 1 },
+            { livemode: true, metadata: { display_name: '本番寄附者' }, created: 2 },
+          ],
+        }),
+        {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        },
+      );
+
+    const context = createContext('https://example.com/api/donors');
+    const response = await onRequestGet(context);
+
+    assert.equal(response.status, 200);
+    const body = (await response.json()) as { donors?: string[]; count?: number };
+    assert.deepEqual(body.donors, ['本番寄附者']);
+    assert.equal(body.count, 1);
+  });
+
   it('order=random の場合はレスポンスをシャッフルして返す', async () => {
     Math.random = () => 0.1;
     globalThis.fetch = async () =>
       new Response(
         JSON.stringify({
           data: [
-            { metadata: { display_name: 'Alpha' }, created: 1 },
-            { metadata: { display_name: 'Bravo' }, created: 2 },
-            { metadata: { display_name: 'Charlie' }, created: 3 },
+            { livemode: true, metadata: { display_name: 'Alpha' }, created: 1 },
+            { livemode: true, metadata: { display_name: 'Bravo' }, created: 2 },
+            { livemode: true, metadata: { display_name: 'Charlie' }, created: 3 },
           ],
         }),
         { status: 200, headers: { 'Content-Type': 'application/json' } },

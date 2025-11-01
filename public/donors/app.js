@@ -101,7 +101,7 @@ function setVisibility(element, visible) {
 }
 
 function renderDonorList(doc, listElement, donors) {
-  if (!listElement) {
+  if (!listElement || !doc) {
     return;
   }
 
@@ -109,28 +109,69 @@ function renderDonorList(doc, listElement, donors) {
     listElement.removeChild(listElement.firstChild);
   }
 
-  for (const name of donors) {
+  const safeDonors = Array.isArray(donors) ? donors : [];
+  if (safeDonors.length === 0) {
+    const emptyState = doc.createElement('li');
+    emptyState.className = 'donor-empty';
+    emptyState.textContent = '掲示に同意している Donor はまだいません。';
+    emptyState.dataset.state = 'empty';
+    listElement.appendChild(emptyState);
+    return;
+  }
+
+  for (const name of safeDonors) {
     const item = doc.createElement('li');
-    item.textContent = name;
+    item.className = 'donor-card';
     item.dataset.displayName = name;
+
+    const displayName = doc.createElement('span');
+    displayName.className = 'donor-card__name';
+    displayName.textContent = name;
+
+    const meta = doc.createElement('span');
+    meta.className = 'donor-card__meta';
+    meta.textContent = '掲示に同意しています';
+
+    item.appendChild(displayName);
+    item.appendChild(meta);
     listElement.appendChild(item);
   }
 }
 
-function removeDonorFromList(listElement, displayName) {
-  if (!listElement || !displayName) {
+function removeDonorFromList(doc, listElement, displayName) {
+  if (!doc || !listElement || !displayName) {
     return false;
   }
 
   const children = Array.from(listElement.children ?? []);
+  let removed = false;
   for (const child of children) {
     if (child.dataset && child.dataset.displayName === displayName) {
       listElement.removeChild(child);
-      return true;
+      removed = true;
     }
   }
 
-  return false;
+  if (!removed) {
+    return false;
+  }
+
+  const remainingDonors = Array.from(listElement.children ?? []).filter((child) => {
+    return Boolean(child.dataset && child.dataset.displayName);
+  });
+
+  if (remainingDonors.length === 0) {
+    while (listElement.firstChild) {
+      listElement.removeChild(listElement.firstChild);
+    }
+    const emptyState = doc.createElement('li');
+    emptyState.className = 'donor-empty';
+    emptyState.textContent = '掲示に同意している Donor はまだいません。';
+    emptyState.dataset.state = 'empty';
+    listElement.appendChild(emptyState);
+  }
+
+  return true;
 }
 
 let latestDonorFetchPromise = null;
@@ -261,6 +302,7 @@ export async function initializeDonorsPage(doc = document) {
         }
 
         const removed = removeDonorFromList(
+          doc,
           elements.donorsList,
           sessionState.session.displayName,
         );

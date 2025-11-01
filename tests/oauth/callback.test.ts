@@ -2,6 +2,7 @@ import { after, beforeEach, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { createSignedCookie, verifySignedCookie } from '../../src/lib/auth/cookie.js';
+import { SessionCookiePayloadV2 } from '../../src/lib/auth/sessionCookie.js';
 import { onRequestGet } from '../../functions/oauth/callback.js';
 
 type Env = {
@@ -147,16 +148,11 @@ describe('functions/oauth/callback', () => {
       now: NOW,
       keySource: { COOKIE_SIGN_KEY },
     });
-    const payload = JSON.parse(verified.value) as {
-      display_name: string;
-      discord_id: string;
-      consent_public: boolean;
-      exp: number;
-    };
-
-    assert.equal(payload.display_name, 'Display Name');
-    assert.equal(payload.discord_id, 'discord-user-id');
-    assert.equal(payload.consent_public, true);
+    const payload = JSON.parse(verified.value) as SessionCookiePayloadV2;
+    assert.equal(payload.version, 2);
+    assert.equal(payload.session.display_name, 'Display Name');
+    assert.equal(payload.session.discord_id, 'discord-user-id');
+    assert.equal(payload.session.consent_public, true);
     assert.equal(payload.exp, Math.floor((NOW.getTime() + 600_000) / 1000));
     assert.equal(fetchCalls, 2);
   });

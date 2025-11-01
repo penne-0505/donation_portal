@@ -321,6 +321,24 @@ describe('donate UI script', () => {
     assert.match(fileContent, /aria-live="assertive"/);
     assert.match(fileContent, /role="status"/);
     assert.match(fileContent, /id="consent-public"/);
+    const requiredElementIds = [
+      'auth-login',
+      'auth-logout',
+      'auth-status',
+      'auth-error',
+      'consent-public',
+      'donate-onetime',
+      'donate-monthly',
+      'donate-yearly',
+      'checkout-error',
+      'checkout-loading',
+    ] as const;
+    for (const id of requiredElementIds) {
+      assert.ok(
+        fileContent.includes(`id="${id}"`),
+        `public/donate/index.html should contain id="${id}"`,
+      );
+    }
   });
 
   it('寄附ボタンのクリックで Checkout API を呼び出し URL に遷移する', async () => {

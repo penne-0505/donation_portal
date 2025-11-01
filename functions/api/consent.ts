@@ -1,8 +1,12 @@
 import { parseSessionFromCookie } from '../../src/lib/auth/session.js';
 import { issueSessionCookie } from '../../src/lib/auth/sessionCookie.js';
 import type { CookieKeySource } from '../../src/lib/cookie/signKey.js';
-
-const STRIPE_API_BASE = 'https://api.stripe.com/v1';
+import { createLogger } from '../../src/lib/core/logger.js';
+import { requireEnv } from '../../src/lib/core/env.js';
+import { errorResponse, noContent, toErrorResponse } from '../../src/lib/core/response.js';
+import { now } from '../../src/lib/core/time.js';
+import { StripeClient } from '../../src/lib/payments/stripeClient.js';
+import { buildCustomerMetadata } from '../../src/lib/payments/metadata.js';
 
 interface ConsentEnv extends CookieKeySource {
   readonly STRIPE_SECRET_KEY?: string;
@@ -12,11 +16,24 @@ interface ConsentRequestBody {
   readonly consent_public?: unknown;
 }
 
-interface ErrorBody {
-  readonly error: {
-    readonly code: 'bad_request' | 'unauthorized' | 'not_found' | 'internal';
-    readonly message: string;
-  };
+type ConsentParseResult =
+  | { readonly ok: true; readonly value: boolean }
+  | { readonly ok: false; readonly message: string };
+
+function parseConsentFlag(value: unknown): ConsentParseResult {
+  if (value === true) {
+    return { ok: true, value: true };
+  }
+  if (value === false) {
+    return { ok: true, value: false };
+  }
+  return { ok: false, message: 'consent_public は true または false を指定してください。' };
+}
+
+function createStripeClient(env: ConsentEnv, requestId: string): StripeClient {
+  const secretKey = requireEnv('STRIPE_SECRET_KEY', env, process.env);
+  const logger = createLogger('api.consent', { request_id: requestId });
+  return new StripeClient({ apiKey: secretKey, logger });
 }
 
 async function readJson(request: Request): Promise<ConsentRequestBody | null> {
@@ -27,106 +44,12 @@ async function readJson(request: Request): Promise<ConsentRequestBody | null> {
   }
 }
 
-function jsonResponse(body: object, status = 200): Response {
-  return new Response(JSON.stringify(body, null, 2), {
-    status,
-    headers: {
-      'content-type': 'application/json; charset=utf-8',
-      'cache-control': 'no-store',
-    },
-  });
-}
-
-function errorResponse(
-  status: number,
-  code: ErrorBody['error']['code'],
-  message: string,
-): Response {
-  return jsonResponse({ error: { code, message } }, status);
-}
-
-function parseConsentFlag(value: unknown):
-  | { readonly ok: true; readonly value: boolean }
-  | {
-      readonly ok: false;
-      readonly message: string;
-    } {
-  if (value === true) {
-    return { ok: true, value: true };
-  }
-  if (value === false) {
-    return { ok: true, value: false };
-  }
-  return { ok: false, message: 'consent_public は true または false を指定してください。' };
-}
-
-async function callStripe(
-  env: ConsentEnv,
-  path: string,
-  params: URLSearchParams,
-  options: { readonly method?: 'GET' | 'POST' } = {},
-): Promise<Response> {
-  const secretKey = env.STRIPE_SECRET_KEY;
-  if (!secretKey) {
-    throw new Error('Stripe secret key is not configured');
-  }
-
-  const method = options.method ?? 'POST';
-  const url = new URL(`${STRIPE_API_BASE}${path}`);
-  const headers: Record<string, string> = {
-    Authorization: `Bearer ${secretKey}`,
-  };
-
-  const init: RequestInit = { method, headers };
-  if (method === 'GET') {
-    url.search = params.toString();
-  } else {
-    headers['Content-Type'] = 'application/x-www-form-urlencoded';
-    init.body = params.toString();
-  }
-
-  return fetch(url.toString(), init);
-}
-
-async function findCustomerId(env: ConsentEnv, discordId: string): Promise<string | null> {
-  const escapedId = discordId.replace(/"/g, '\\"');
-  const params = new URLSearchParams({
-    query: `metadata['discord_id']:"${escapedId}"`,
-    limit: '1',
-  });
-  const response = await callStripe(env, '/customers/search', params, { method: 'GET' });
-  if (!response.ok) {
-    const body = await response.text();
-    throw new Error(`Stripe customer search failed: status=${response.status} body=${body}`);
-  }
-  const data = (await response.json()) as { readonly data?: Array<{ readonly id?: string }> };
-  const id = data.data?.[0]?.id;
-  if (typeof id === 'string' && id.length > 0) {
-    return id;
-  }
-  return null;
-}
-
-async function updateConsent(
-  env: ConsentEnv,
-  customerId: string,
-  consent: boolean,
-  displayName: string,
-): Promise<void> {
-  const params = new URLSearchParams({
-    'metadata[consent_public]': consent ? 'true' : 'false',
-    'metadata[display_name]': displayName,
-    'metadata[display_name_source]': 'discord',
-  });
-  const response = await callStripe(env, `/customers/${customerId}`, params);
-  if (!response.ok) {
-    const body = await response.text();
-    throw new Error(`Stripe customer update failed: status=${response.status} body=${body}`);
-  }
-}
-
 export const onRequestPost: PagesFunction<ConsentEnv> = async (context) => {
   const { request, env } = context;
+  const requestId =
+    typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : `req_${Date.now()}`;
+  const logger = createLogger('api.consent', { request_id: requestId });
+  const stripe = createStripeClient(env, requestId);
 
   const sessionResult = await parseSessionFromCookie({
     cookieHeader: request.headers.get('cookie'),
@@ -142,7 +65,7 @@ export const onRequestPost: PagesFunction<ConsentEnv> = async (context) => {
   }
 
   if (sessionResult.status === 'invalid') {
-    console.error('[consent] invalid session cookie', sessionResult.reason);
+    logger.error('invalid_session_cookie', { reason: sessionResult.reason });
     return errorResponse(
       401,
       'unauthorized',
@@ -161,7 +84,7 @@ export const onRequestPost: PagesFunction<ConsentEnv> = async (context) => {
   }
 
   try {
-    const customerId = await findCustomerId(env, sessionResult.session.discordId);
+    const customerId = await stripe.searchCustomerByDiscordId(sessionResult.session.discordId);
     if (!customerId) {
       return errorResponse(
         404,
@@ -170,34 +93,33 @@ export const onRequestPost: PagesFunction<ConsentEnv> = async (context) => {
       );
     }
 
-    await updateConsent(env, customerId, parsedConsent.value, sessionResult.session.displayName);
+    const timestamp = now();
+    const metadata = buildCustomerMetadata(
+      {
+        displayName: sessionResult.session.displayName,
+        discordId: sessionResult.session.discordId,
+        consentPublic: parsedConsent.value,
+      },
+      { consentUpdatedAt: timestamp },
+    );
+    await stripe.updateCustomerMetadata(customerId, metadata);
 
-    const now = Date.now();
-    const remainingMs = sessionResult.raw.expiresAt - now;
+    const remainingMs = sessionResult.raw.expiresAt - timestamp;
     const ttlSeconds = Math.max(1, Math.floor(remainingMs / 1000));
     const { cookie: sessionCookie } = await issueSessionCookie({
       displayName: sessionResult.session.displayName,
       discordId: sessionResult.session.discordId,
       consentPublic: parsedConsent.value,
       ttlSeconds,
-      now,
+      now: timestamp,
       keySource: env,
     });
 
-    return new Response(null, {
-      status: 204,
-      headers: {
-        'cache-control': 'no-store',
-        'Set-Cookie': sessionCookie,
-      },
-    });
+    return noContent({ headers: { 'Set-Cookie': sessionCookie } });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'unknown error';
-    console.error('[consent] failed to update consent', message);
-    return errorResponse(
-      500,
-      'internal',
-      '同意状態の更新に失敗しました。時間をおいて再実行してください。',
-    );
+    logger.error('consent_update_failed', {
+      error: error instanceof Error ? error.message : 'unknown error',
+    });
+    return toErrorResponse(error, '同意状態の更新に失敗しました。時間をおいて再実行してください。');
   }
 };

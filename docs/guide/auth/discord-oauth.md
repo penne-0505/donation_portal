@@ -45,16 +45,17 @@ Discord OAuth を利用して寄附者の表示名と掲示同意を取得し、
 
 ### sess Cookie
 
-| 項目 | 内容                                                                                                                                            |
-| ---- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| 名前 | `sess`                                                                                                                                          |
-| 値   | `{ "display_name": "<Discord 表示名>", "discord_id": "<ユーザーID>", "consent_public": true, "exp": 1730257500 }` を JSON 化し Base64URL + 署名 |
-| TTL  | 600 秒（10 分）                                                                                                                                 |
-| 属性 | `Secure`, `HttpOnly`, `SameSite=Lax`, `Path=/`, `Max-Age=600`                                                                                   |
-| 用途 | `/donate` の UI 状態管理と Stripe metadata 連携の前準備                                                                                         |
+| 項目 | 内容                                                                                                                                                                         |
+| ---- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 名前 | `sess`                                                                                                                                                                       |
+| 値   | `{ "version": 2, "session": { "display_name": "<Discord 表示名>", "discord_id": "<ユーザーID>", "consent_public": true }, "exp": 1730257500 }` を JSON 化し Base64URL + 署名 |
+| TTL  | 600 秒（10 分）                                                                                                                                                              |
+| 属性 | `Secure`, `HttpOnly`, `SameSite=Lax`, `Path=/`, `Max-Age=600`                                                                                                                |
+| 用途 | `/donate` の UI 状態管理と Stripe metadata 連携の前準備                                                                                                                      |
 
 - `display_name` には Discord の `global_name` を優先し、未設定なら `username` を保存します。
 - TTL は Phase 2 実装時点で 10 分です（Phase 3 で要件を再評価予定）。
+- バージョンフィールド (`version: 2`) により新旧フォーマットを判別し、旧バージョン (1) の Cookie も `parseSessionFromCookie` で後方互換対応します。
 - 署名方式とキーは state Cookie と同一です。ローテーション時は両 Cookie を同時に破棄します。
 
 ## エラーハンドリング

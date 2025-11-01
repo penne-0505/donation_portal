@@ -5,6 +5,7 @@ interface DonorsEnv {
 }
 
 interface StripeCustomerRecord {
+  readonly livemode?: boolean;
   readonly metadata?: { readonly display_name?: unknown };
   readonly created?: number;
 }
@@ -139,6 +140,9 @@ async function buildResponseBody(
   const payload = (await response.json()) as StripeSearchResponse;
   const donors = (payload.data ?? [])
     .map((entry) => {
+      if (entry.livemode !== true) {
+        return null;
+      }
       const name = sanitizeDisplayName(entry.metadata?.display_name);
       if (!name) {
         return null;
