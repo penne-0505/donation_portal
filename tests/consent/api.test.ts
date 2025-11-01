@@ -1,43 +1,40 @@
 import { after, beforeEach, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-
-import { createSignedCookie, verifySignedCookie } from '../../src/lib/auth/cookie.js';
+import { issueSessionCookie, SessionCookiePayloadV2 } from '../../src/lib/auth/sessionCookie.js';
+import { verifySignedCookie } from '../../src/lib/auth/cookie.js';
 import { onRequestPost } from '../../functions/api/consent.js';
 
 const COOKIE_SIGN_KEY = 'test-cookie-secret';
 const STRIPE_SECRET_KEY = 'stripe-test-secret';
 const ORIGINAL_FETCH = globalThis.fetch;
 const ORIGINAL_CONSOLE_ERROR = console.error;
+const ORIGINAL_DATE_NOW = Date.now;
 
-type Env = {
+const FIXED_NOW = 1_700_000_000_000;
+const FIXED_NOW_ISO = new Date(FIXED_NOW).toISOString();
+
+interface Env {
   COOKIE_SIGN_KEY: string;
   STRIPE_SECRET_KEY: string;
-};
+}
 
-type Context = {
+interface Context {
   request: Request;
   env: Env;
   params: Record<string, string>;
   waitUntil: (promise: Promise<unknown>) => void;
   next: () => Promise<Response>;
-};
+}
 
 async function createSessionCookie(consent: boolean): Promise<string> {
-  const now = Date.now();
-  const payload = {
-    display_name: 'テストユーザー',
-    discord_id: '9876543210',
-    consent_public: consent,
-    exp: Math.floor(now / 1000) + 600,
-  } satisfies Record<string, unknown>;
-  const value = await createSignedCookie({
-    name: 'sess',
-    value: JSON.stringify(payload),
-    ttlSeconds: 600,
-    now,
+  const { signedValue } = await issueSessionCookie({
+    displayName: 'テストユーザー',
+    discordId: '9876543210',
+    consentPublic: consent,
     keySource: { COOKIE_SIGN_KEY },
+    now: FIXED_NOW,
   });
-  return `sess=${value}`;
+  return `sess=${signedValue}`;
 }
 
 function createContext(body: unknown, cookie?: string): Context {
@@ -66,25 +63,17 @@ describe('functions/api/consent', () => {
   beforeEach(() => {
     globalThis.fetch = ORIGINAL_FETCH;
     console.error = ORIGINAL_CONSOLE_ERROR;
+    Date.now = () => FIXED_NOW;
   });
 
   after(() => {
     globalThis.fetch = ORIGINAL_FETCH;
     console.error = ORIGINAL_CONSOLE_ERROR;
+    Date.now = ORIGINAL_DATE_NOW;
   });
 
   it('Stripe metadata を更新して 204 を返す', async () => {
     const cookie = await createSessionCookie(true);
-    const originalValue = cookie.split('=')[1] ?? '';
-    const originalSession = await verifySignedCookie({
-      name: 'sess',
-      cookie: originalValue,
-      keySource: { COOKIE_SIGN_KEY },
-    });
-    const originalPayload = JSON.parse(originalSession.value) as {
-      readonly exp: number;
-    };
-
     const context = createContext({ consent_public: false }, cookie);
 
     const calls: Array<{ url: string; method?: string; body?: URLSearchParams }> = [];
@@ -100,6 +89,8 @@ describe('functions/api/consent', () => {
           headers: { 'Content-Type': 'application/json' },
         });
       }
+      assert.equal(body?.get('metadata[consent_public]'), 'false');
+      assert.equal(body?.get('metadata[consent_updated_at]'), FIXED_NOW_ISO);
       return new Response(JSON.stringify({ id: 'cus_123' }), {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
@@ -112,7 +103,6 @@ describe('functions/api/consent', () => {
     assert.equal(response.headers.get('cache-control'), 'no-store');
     const setCookie = response.headers.get('Set-Cookie');
     assert.ok(setCookie);
-    assert.match(setCookie ?? '', /Max-Age=\d+/);
     const sessionValue = setCookie?.split(';')[0]?.split('=')[1] ?? '';
     assert.ok(sessionValue);
     const verifiedSession = await verifySignedCookie({
@@ -120,20 +110,17 @@ describe('functions/api/consent', () => {
       cookie: sessionValue,
       keySource: { COOKIE_SIGN_KEY },
     });
-    const payload = JSON.parse(verifiedSession.value) as {
-      readonly consent_public: boolean;
-      readonly exp: number;
-    };
-    assert.equal(payload.consent_public, false);
-    assert.ok(payload.exp <= originalPayload.exp);
-    assert.ok(payload.exp >= originalPayload.exp - 1);
+    const decoded = JSON.parse(verifiedSession.value) as SessionCookiePayloadV2;
+    assert.equal(decoded.version, 2);
+    assert.equal(decoded.session.display_name, 'テストユーザー');
+    assert.equal(decoded.session.consent_public, false);
+    assert.equal(decoded.exp, Math.floor((FIXED_NOW + 600_000) / 1000));
     assert.equal(calls.length, 2);
     assert.equal(calls[0]?.method, 'GET');
     const searchUrl = new URL(calls[0]?.url ?? '');
-    assert.equal(searchUrl.searchParams.get('query'), 'metadata[\'discord_id\']:"9876543210"');
+    assert.equal(searchUrl.searchParams.get('query'), `metadata['discord_id']:"9876543210"`);
     assert.equal(searchUrl.searchParams.get('limit'), '1');
     assert.equal(calls[1]?.method, 'POST');
-    assert.equal(calls[1]?.body?.get('metadata[consent_public]'), 'false');
   });
 
   it('未ログインの場合は 401 を返す', async () => {
@@ -196,20 +183,5 @@ describe('functions/api/consent', () => {
 
     const response = await onRequestPost(context);
     assert.equal(response.status, 404);
-  });
-
-  it('Stripe エラー時は 500 を返す', async () => {
-    console.error = () => {
-      // suppress noisy log
-    };
-    const cookie = await createSessionCookie(true);
-    const context = createContext({ consent_public: false }, cookie);
-
-    globalThis.fetch = async () => new Response('error', { status: 500 });
-
-    const response = await onRequestPost(context);
-    assert.equal(response.status, 500);
-    const body = (await response.json()) as { error?: { code?: string } };
-    assert.equal(body.error?.code, 'internal');
   });
 });

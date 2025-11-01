@@ -45,6 +45,77 @@ function parseConsent(value: unknown): boolean {
   return value === true;
 }
 
+interface SessionCookiePayloadV1 {
+  readonly display_name?: unknown;
+  readonly discord_id?: unknown;
+  readonly consent_public?: unknown;
+  readonly exp?: unknown;
+}
+
+interface SessionCookiePayloadV2 {
+  readonly version?: unknown;
+  readonly exp?: unknown;
+  readonly session?: {
+    readonly display_name?: unknown;
+    readonly discord_id?: unknown;
+    readonly consent_public?: unknown;
+  };
+}
+
+function extractSessionFields(payload: unknown):
+  | {
+      readonly ok: true;
+      readonly displayName: string;
+      readonly discordId: string;
+      readonly consentPublic: boolean;
+      readonly exp: number;
+    }
+  | { readonly ok: false; readonly reason: string } {
+  if (!payload || typeof payload !== 'object') {
+    return { ok: false, reason: 'Session payload is not an object' };
+  }
+
+  const record = payload as Record<string, unknown>;
+  if (record.version === 2) {
+    const v2 = payload as SessionCookiePayloadV2;
+    const session = v2.session;
+    if (!session || typeof session !== 'object') {
+      return { ok: false, reason: 'Session payload is missing session object' };
+    }
+    const sessionRecord = session as Record<string, unknown>;
+    const displayName = sanitizeDisplayName(sessionRecord.display_name);
+    if (!displayName) {
+      return { ok: false, reason: 'display_name is missing' };
+    }
+    const discordId = sessionRecord.discord_id;
+    if (typeof discordId !== 'string' || discordId.length === 0) {
+      return { ok: false, reason: 'discord_id is missing' };
+    }
+    const consentPublic = parseConsent(sessionRecord.consent_public);
+    const exp = v2.exp;
+    if (typeof exp !== 'number' || !Number.isFinite(exp)) {
+      return { ok: false, reason: 'exp is not a valid number' };
+    }
+    return { ok: true, displayName, discordId, consentPublic, exp };
+  }
+
+  const legacy = payload as SessionCookiePayloadV1;
+  const displayName = sanitizeDisplayName(legacy.display_name);
+  if (!displayName) {
+    return { ok: false, reason: 'display_name is missing' };
+  }
+  const discordId = legacy.discord_id;
+  if (typeof discordId !== 'string' || discordId.length === 0) {
+    return { ok: false, reason: 'discord_id is missing' };
+  }
+  const consentPublic = parseConsent(legacy.consent_public);
+  const exp = legacy.exp;
+  if (typeof exp !== 'number' || !Number.isFinite(exp)) {
+    return { ok: false, reason: 'exp is not a valid number' };
+  }
+  return { ok: true, displayName, discordId, consentPublic, exp };
+}
+
 export async function parseSessionFromCookie({
   cookieHeader,
   keySource,
@@ -80,33 +151,17 @@ export async function parseSessionFromCookie({
     return { status: 'invalid', reason: message };
   }
 
-  if (!payload || typeof payload !== 'object') {
-    return { status: 'invalid', reason: 'Session payload is not an object' };
-  }
-
-  const displayName = sanitizeDisplayName((payload as Record<string, unknown>).display_name);
-  const discordId = (payload as Record<string, unknown>).discord_id;
-  const consentPublic = parseConsent((payload as Record<string, unknown>).consent_public);
-  const exp = (payload as Record<string, unknown>).exp;
-
-  if (!displayName) {
-    return { status: 'invalid', reason: 'display_name is missing' };
-  }
-
-  if (typeof discordId !== 'string' || discordId.length === 0) {
-    return { status: 'invalid', reason: 'discord_id is missing' };
-  }
-
-  if (typeof exp !== 'number' || !Number.isFinite(exp)) {
-    return { status: 'invalid', reason: 'exp is not a valid number' };
+  const extracted = extractSessionFields(payload);
+  if (!extracted.ok) {
+    return { status: 'invalid', reason: extracted.reason };
   }
 
   return {
     status: 'ok',
     session: {
-      displayName,
-      discordId,
-      consentPublic,
+      displayName: extracted.displayName,
+      discordId: extracted.discordId,
+      consentPublic: extracted.consentPublic,
       expiresAt: verified.expiresAt,
     },
     raw: verified,
