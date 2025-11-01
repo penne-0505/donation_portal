@@ -54,8 +54,11 @@ QA 手順やローンチ後の運用監視は [Phase 6 QA & Release Runbook](./p
    - Build command: `npm run build`
    - Build output directory: `.open-next`
    - Functions directory: `.open-next/functions`
-   - Compatibility date: `2024-10-29`
-   - 補足: `npm run build` は Next.js の成果物と既存 Pages Functions を `.open-next/` 配下に集約します。追加のコピー処理は不要です。
+
+- Compatibility date: `2024-10-29`
+- Compatibility flags: `_middleware.ts` で `nodejs_compat` を強制付与（UI 側の設定は不要）
+- 補足: `npm run build` は Next.js の成果物と既存 Pages Functions を `.open-next/` 配下に集約します。追加のコピー処理は不要です。
+
 3. **Production branch** を `main` に設定し、必要に応じて Preview ブランチに `dev` を追加します。
 4. セットアップ後、Pages が自動で初回ビルドを実行するため、完了を待ってから Secrets の登録に進みます。
 
