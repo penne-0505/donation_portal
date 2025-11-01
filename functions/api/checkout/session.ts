@@ -1,5 +1,15 @@
 import { parseSessionFromCookie } from '../../../src/lib/auth/session.js';
 import type { CookieKeySource } from '../../../src/lib/cookie/signKey.js';
+import { createLogger } from '../../../src/lib/core/logger.js';
+import { requireEnv } from '../../../src/lib/core/env.js';
+import {
+  jsonResponse,
+  errorResponse,
+  httpError,
+  toErrorResponse,
+} from '../../../src/lib/core/response.js';
+import { now } from '../../../src/lib/core/time.js';
+import { StripeClient } from '../../../src/lib/payments/stripeClient.js';
 
 interface CheckoutEnv extends CookieKeySource {
   readonly STRIPE_SECRET_KEY?: string;
@@ -15,36 +25,19 @@ interface CheckoutRequestBody {
   readonly variant?: unknown;
 }
 
-interface CheckoutSuccessBody {
-  readonly url: string;
-}
+type CheckoutEnvKey = keyof Pick<
+  CheckoutEnv,
+  'PRICE_ONE_TIME_300' | 'PRICE_SUB_MONTHLY_300' | 'PRICE_SUB_YEARLY_3000'
+>;
 
-interface ErrorBody {
-  readonly error: {
-    readonly code: 'bad_request' | 'unauthorized' | 'internal';
-    readonly message: string;
-  };
-}
-
-const STRIPE_API_BASE = 'https://api.stripe.com/v1';
-
-function jsonResponse(body: object, status = 200): Response {
-  return new Response(JSON.stringify(body, null, 2), {
-    status,
-    headers: {
-      'content-type': 'application/json; charset=utf-8',
-      'cache-control': 'no-store',
-    },
-  });
-}
-
-function errorResponse(
-  status: number,
-  code: ErrorBody['error']['code'],
-  message: string,
-): Response {
-  return jsonResponse({ error: { code, message } }, status);
-}
+type CheckoutMode =
+  | { readonly ok: true; readonly mode: 'payment'; readonly priceKey: 'PRICE_ONE_TIME_300' }
+  | {
+      readonly ok: true;
+      readonly mode: 'subscription';
+      readonly priceKey: 'PRICE_SUB_MONTHLY_300' | 'PRICE_SUB_YEARLY_3000';
+    }
+  | { readonly ok: false; readonly message: string };
 
 function resolveBaseUrl(request: Request, env: CheckoutEnv): string | undefined {
   if (env.APP_BASE_URL) {
@@ -58,14 +51,7 @@ function resolveBaseUrl(request: Request, env: CheckoutEnv): string | undefined 
   }
 }
 
-function parseBody(body: CheckoutRequestBody):
-  | { readonly ok: true; readonly mode: 'payment'; readonly priceKey: 'PRICE_ONE_TIME_300' }
-  | {
-      readonly ok: true;
-      readonly mode: 'subscription';
-      readonly priceKey: 'PRICE_SUB_MONTHLY_300' | 'PRICE_SUB_YEARLY_3000';
-    }
-  | { readonly ok: false; readonly message: string } {
+function parseBody(body: CheckoutRequestBody): CheckoutMode {
   const mode = body.mode;
   const interval = body.interval;
   const variant = body.variant;
@@ -100,143 +86,27 @@ function parseBody(body: CheckoutRequestBody):
   return { ok: true, mode, priceKey };
 }
 
-async function callStripe(
-  env: CheckoutEnv,
-  path: string,
-  params: URLSearchParams,
-  options: { readonly method?: 'GET' | 'POST' } = {},
-): Promise<Response> {
-  const secretKey = env.STRIPE_SECRET_KEY;
-  if (!secretKey) {
-    throw new Error('Stripe secret key is not configured');
+function resolvePriceId(env: CheckoutEnv, priceKey: CheckoutEnvKey): string {
+  const value = env[priceKey];
+  if (typeof value === 'string' && value.length > 0) {
+    return value;
   }
-
-  const method = options.method ?? 'POST';
-  const url = new URL(`${STRIPE_API_BASE}${path}`);
-  const headers: Record<string, string> = {
-    Authorization: `Bearer ${secretKey}`,
-  };
-
-  const init: RequestInit = { method, headers };
-  if (method === 'GET') {
-    url.search = params.toString();
-  } else {
-    headers['Content-Type'] = 'application/x-www-form-urlencoded';
-    init.body = params.toString();
-  }
-
-  return fetch(url.toString(), init);
+  throw httpError(500, 'internal', `Price id ${priceKey} is not configured`);
 }
 
-async function ensureCustomer(
-  env: CheckoutEnv,
-  {
-    displayName,
-    discordId,
-    consentPublic,
-  }: {
-    readonly displayName: string;
-    readonly discordId: string;
-    readonly consentPublic: boolean;
-  },
-): Promise<string> {
-  const escapedId = discordId.replace(/"/g, '\\"');
-  const searchParams = new URLSearchParams({
-    query: `metadata['discord_id']:"${escapedId}"`,
-    limit: '1',
-  });
-  const searchResponse = await callStripe(env, '/customers/search', searchParams, {
-    method: 'GET',
-  });
-  if (!searchResponse.ok) {
-    const body = await searchResponse.text();
-    throw new Error(`Stripe customer search failed: status=${searchResponse.status} body=${body}`);
-  }
-  const searchData = (await searchResponse.json()) as {
-    readonly data?: Array<{ readonly id?: string }>;
-  };
-  const existingCustomerId = searchData.data?.[0]?.id;
-
-  const metadataParams = new URLSearchParams({
-    'metadata[display_name]': displayName,
-    'metadata[display_name_source]': 'discord',
-    'metadata[discord_id]': discordId,
-    'metadata[consent_public]': consentPublic ? 'true' : 'false',
-  });
-
-  if (existingCustomerId) {
-    const updateResponse = await callStripe(
-      env,
-      `/customers/${existingCustomerId}`,
-      metadataParams,
-    );
-    if (!updateResponse.ok) {
-      const body = await updateResponse.text();
-      throw new Error(
-        `Stripe customer update failed: status=${updateResponse.status} body=${body}`,
-      );
-    }
-    return existingCustomerId;
-  }
-
-  metadataParams.set('name', displayName);
-  const createResponse = await callStripe(env, '/customers', metadataParams);
-  if (!createResponse.ok) {
-    const body = await createResponse.text();
-    throw new Error(
-      `Stripe customer creation failed: status=${createResponse.status} body=${body}`,
-    );
-  }
-  const created = (await createResponse.json()) as { readonly id?: string };
-  if (typeof created.id !== 'string' || created.id.length === 0) {
-    throw new Error('Stripe customer creation succeeded without an id');
-  }
-  return created.id;
-}
-
-type CheckoutEnvKey = keyof Pick<
-  CheckoutEnv,
-  'PRICE_ONE_TIME_300' | 'PRICE_SUB_MONTHLY_300' | 'PRICE_SUB_YEARLY_3000'
->;
-
-async function createCheckoutSession(
-  env: CheckoutEnv,
-  customerId: string,
-  priceKey: CheckoutEnvKey,
-  mode: 'payment' | 'subscription',
-  baseUrl: string,
-): Promise<CheckoutSuccessBody> {
-  const priceId = env[priceKey];
-  if (typeof priceId !== 'string' || priceId.length === 0) {
-    throw new Error(`Price id ${priceKey} is not configured`);
-  }
-
-  const params = new URLSearchParams({
-    mode,
-    customer: customerId,
-    success_url: `${baseUrl}/thanks`,
-    cancel_url: `${baseUrl}/donate`,
-  });
-  params.append('line_items[0][price]', priceId);
-  params.append('line_items[0][quantity]', '1');
-
-  const response = await callStripe(env, '/checkout/sessions', params);
-  if (!response.ok) {
-    const body = await response.text();
-    throw new Error(
-      `Stripe checkout session creation failed: status=${response.status} body=${body}`,
-    );
-  }
-  const data = (await response.json()) as { readonly url?: string };
-  if (typeof data.url !== 'string' || data.url.length === 0) {
-    throw new Error('Stripe checkout session returned without url');
-  }
-  return { url: data.url };
+function createStripeClient(env: CheckoutEnv, requestId: string): StripeClient {
+  const secretKey = requireEnv('STRIPE_SECRET_KEY', env, process.env);
+  const logger = createLogger('api.checkout.session', { request_id: requestId });
+  return new StripeClient({ apiKey: secretKey, logger });
 }
 
 export const onRequestPost: PagesFunction<CheckoutEnv> = async (context) => {
   const env = context.env;
   const request = context.request;
+  const requestId =
+    typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : `req_${Date.now()}`;
+  const stripe = createStripeClient(env, requestId);
+  const logger = createLogger('api.checkout.session', { request_id: requestId });
 
   const sessionResult = await parseSessionFromCookie({
     cookieHeader: request.headers.get('cookie'),
@@ -252,7 +122,7 @@ export const onRequestPost: PagesFunction<CheckoutEnv> = async (context) => {
   }
 
   if (sessionResult.status === 'invalid') {
-    console.error('[checkout/session] invalid session cookie', sessionResult.reason);
+    logger.error('invalid_session_cookie', { reason: sessionResult.reason });
     return errorResponse(
       401,
       'unauthorized',
@@ -274,7 +144,7 @@ export const onRequestPost: PagesFunction<CheckoutEnv> = async (context) => {
 
   const baseUrl = resolveBaseUrl(request, env);
   if (!baseUrl) {
-    console.error('[checkout/session] failed to resolve base URL');
+    logger.error('failed_to_resolve_base_url');
     return errorResponse(
       500,
       'internal',
@@ -282,28 +152,41 @@ export const onRequestPost: PagesFunction<CheckoutEnv> = async (context) => {
     );
   }
 
+  const timestamp = now();
   try {
-    const customerId = await ensureCustomer(env, {
-      displayName: sessionResult.session.displayName,
-      discordId: sessionResult.session.discordId,
-      consentPublic: sessionResult.session.consentPublic,
-    });
-
-    const session = await createCheckoutSession(
-      env,
-      customerId,
-      parsed.priceKey,
-      parsed.mode,
-      baseUrl,
+    const customerId = await stripe.ensureCustomer(
+      {
+        displayName: sessionResult.session.displayName,
+        discordId: sessionResult.session.discordId,
+        consentPublic: sessionResult.session.consentPublic,
+      },
+      { lastCheckoutAt: timestamp },
     );
+
+    const priceId = resolvePriceId(env, parsed.priceKey);
+
+    const params = new URLSearchParams({
+      mode: parsed.mode,
+      customer: customerId,
+      success_url: `${baseUrl}/thanks`,
+      cancel_url: `${baseUrl}/donate`,
+    });
+    params.append('line_items[0][price]', priceId);
+    params.append('line_items[0][quantity]', '1');
+
+    const session = await stripe.createCheckoutSession(params);
+    logger.info('checkout_session_created', {
+      customer_id: customerId,
+      mode: parsed.mode,
+    });
 
     return jsonResponse(session, 200);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'unknown error';
-    console.error('[checkout/session] failed to create checkout session', message);
-    return errorResponse(
-      500,
-      'internal',
+    logger.error('checkout_session_failed', {
+      error: error instanceof Error ? error.message : 'unknown error',
+    });
+    return toErrorResponse(
+      error,
       'Stripe との連携に失敗しました。時間をおいて再試行してください。',
     );
   }

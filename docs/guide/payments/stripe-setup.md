@@ -59,6 +59,23 @@ Pages Dashboard の **Settings > Functions > Environment variables** から以�
 
 `COOKIE_SIGN_KEY` や Discord OAuth のキーは Phase 2 で設定済みの前提です。未登録の場合は `docs/guide/auth/discord-oauth.md` を参照して先に登録してください。
 
+### 4.1 Stripe Customer metadata の必須フィールド
+
+Stripe Customer は寄附者情報の単一の保存場所 (SSOT) です。Pages Functions では以下の metadata を統一的に更新します。
+Dashboard から手動編集する場合も同じキーとフォーマットを維持してください。
+
+| Key                   | 値の例                     | 説明                                                 |
+| --------------------- | -------------------------- | ---------------------------------------------------- |
+| `display_name`        | `寄附ユーザー`             | Discord 表示名。エスケープ済み文字列。               |
+| `display_name_source` | `discord`                  | 表示名の取得元。今後のソース追加に備えた識別子。     |
+| `discord_id`          | `1234567890`               | Discord ユーザー ID。Webhook 連携での照合に使用。    |
+| `consent_public`      | `true` / `false`           | Donors 掲載同意フラグ。                              |
+| `last_checkout_at`    | `2025-11-01T12:34:56.000Z` | 直近で Checkout セッションを開始した時刻 (ISO8601)。 |
+| `consent_updated_at`  | `2025-11-01T12:34:56.000Z` | 掲示同意を更新した時刻 (ISO8601)。                   |
+
+`last_checkout_at` と `consent_updated_at` は Cloudflare Logs / Workers Analytics Engine でメトリクス化する際に利用します。
+運用で手動更新する場合も UTC の ISO8601 形式を守り、時刻の欠落やフォーマット崩れを避けてください。
+
 ## 5. ローカル環境での確認
 
 1. `.dev.vars` に上記のキーを追加し、ローカル用の Test Key と Price ID を設定します。

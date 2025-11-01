@@ -1,25 +1,25 @@
 import { after, beforeEach, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { createSignedCookie } from '../../src/lib/auth/cookie.js';
+import { issueSessionCookie } from '../../src/lib/auth/sessionCookie.js';
 import { onRequestPost } from '../../functions/api/checkout/session.js';
 
-type Env = {
+interface Env {
   COOKIE_SIGN_KEY?: string;
   STRIPE_SECRET_KEY?: string;
   PRICE_ONE_TIME_300?: string;
   PRICE_SUB_MONTHLY_300?: string;
   PRICE_SUB_YEARLY_3000?: string;
   APP_BASE_URL?: string;
-};
+}
 
-type Context = {
+interface Context {
   request: Request;
   env: Env;
   params: Record<string, string>;
   waitUntil: (promise: Promise<unknown>) => void;
   next: () => Promise<Response>;
-};
+}
 
 const COOKIE_SIGN_KEY = 'test-cookie-secret';
 const STRIPE_SECRET_KEY = 'stripe-test-secret';
@@ -30,6 +30,10 @@ const APP_BASE_URL = 'https://donation.example';
 
 const ORIGINAL_FETCH = globalThis.fetch;
 const ORIGINAL_CONSOLE_ERROR = console.error;
+const ORIGINAL_DATE_NOW = Date.now;
+
+const FIXED_NOW = 1_700_000_000_000;
+const FIXED_NOW_ISO = new Date(FIXED_NOW).toISOString();
 
 const DEFAULT_ENV: Env = {
   COOKIE_SIGN_KEY,
@@ -70,34 +74,27 @@ async function createSessionCookie(
   consent: boolean,
   discordId = '123456789',
 ): Promise<string> {
-  const now = Date.now();
-  const payload = {
-    display_name: displayName,
-    discord_id: discordId,
-    consent_public: consent,
-    exp: Math.floor(now / 1000) + 600,
-  } satisfies Record<string, unknown>;
-
-  const value = await createSignedCookie({
-    name: 'sess',
-    value: JSON.stringify(payload),
-    ttlSeconds: 600,
-    now,
+  const { signedValue } = await issueSessionCookie({
+    displayName,
+    discordId,
+    consentPublic: consent,
     keySource: { COOKIE_SIGN_KEY },
+    now: FIXED_NOW,
   });
-
-  return `sess=${value}`;
+  return `sess=${signedValue}`;
 }
 
 describe('functions/api/checkout/session', () => {
   beforeEach(() => {
     globalThis.fetch = ORIGINAL_FETCH;
     console.error = ORIGINAL_CONSOLE_ERROR;
+    Date.now = () => FIXED_NOW;
   });
 
   after(() => {
     globalThis.fetch = ORIGINAL_FETCH;
     console.error = ORIGINAL_CONSOLE_ERROR;
+    Date.now = ORIGINAL_DATE_NOW;
   });
 
   it('Stripe Checkout セッションを作成し URL を返す', async () => {
@@ -126,7 +123,7 @@ describe('functions/api/checkout/session', () => {
           `${searchUrl.origin}${searchUrl.pathname}`,
           'https://api.stripe.com/v1/customers/search',
         );
-        assert.equal(searchUrl.searchParams.get('query'), 'metadata[\'discord_id\']:"123456789"');
+        assert.equal(searchUrl.searchParams.get('query'), `metadata['discord_id']:"123456789"`);
         assert.equal(searchUrl.searchParams.get('limit'), '1');
         return new Response(JSON.stringify({ data: [] }), {
           status: 200,
@@ -142,6 +139,7 @@ describe('functions/api/checkout/session', () => {
         assert.equal(body.get('metadata[display_name_source]'), 'discord');
         assert.equal(body.get('metadata[discord_id]'), '123456789');
         assert.equal(body.get('metadata[consent_public]'), 'true');
+        assert.equal(body.get('metadata[last_checkout_at]'), FIXED_NOW_ISO);
         assert.equal(body.get('name'), '寄附ユーザー');
         return new Response(JSON.stringify({ id: 'cus_123' }), {
           status: 200,
@@ -199,6 +197,8 @@ describe('functions/api/checkout/session', () => {
       }
 
       if (url.endsWith('/customers/cus_existing')) {
+        assert.equal(body?.get('metadata[consent_public]'), 'false');
+        assert.equal(body?.get('metadata[last_checkout_at]'), FIXED_NOW_ISO);
         return new Response(JSON.stringify({ id: 'cus_existing' }), {
           status: 200,
           headers: { 'Content-Type': 'application/json' },
@@ -220,11 +220,10 @@ describe('functions/api/checkout/session', () => {
     assert.equal(callHistory.length, 3);
     assert.equal(callHistory[0]?.method, 'GET');
     const searchUrl = new URL(callHistory[0]?.url ?? '');
-    assert.equal(searchUrl.searchParams.get('query'), 'metadata[\'discord_id\']:"987654321"');
+    assert.equal(searchUrl.searchParams.get('query'), `metadata['discord_id']:"987654321"`);
     assert.equal(searchUrl.searchParams.get('limit'), '1');
     assert.equal(callHistory[1]?.url, 'https://api.stripe.com/v1/customers/cus_existing');
     assert.equal(callHistory[1]?.method, 'POST');
-    assert.equal(callHistory[1]?.body?.get('metadata[consent_public]'), 'false');
     assert.equal(callHistory[2]?.method, 'POST');
     assert.equal(callHistory[2]?.body?.get('line_items[0][price]'), PRICE_SUB_MONTHLY_300);
   });
@@ -262,7 +261,7 @@ describe('functions/api/checkout/session', () => {
 
     const errors: string[] = [];
     console.error = (...args: unknown[]) => {
-      errors.push(args.join(' '));
+      errors.push(args.map((value) => String(value)).join(' '));
     };
 
     globalThis.fetch = async () =>
@@ -276,7 +275,7 @@ describe('functions/api/checkout/session', () => {
     assert.equal(response.status, 500);
     const body = (await response.json()) as { error?: { code?: string } };
     assert.equal(body.error?.code, 'internal');
-    assert.ok(errors.some((entry) => entry.includes('[checkout/session]')));
+    assert.ok(errors.some((entry) => entry.includes('checkout_session_failed')));
   });
 
   it('APP_BASE_URL が未設定の場合はリクエストの Origin を利用する', async () => {
@@ -342,9 +341,7 @@ describe('functions/api/checkout/session', () => {
     let errorLogCount = 0;
     console.error = (...args: unknown[]) => {
       errorLogCount += 1;
-      errorMessages.push(
-        args.map((part) => (typeof part === 'string' ? part : String(part))).join(' '),
-      );
+      errorMessages.push(args.map((part) => String(part)).join(' '));
     };
 
     let fetchCalls = 0;
@@ -389,7 +386,7 @@ describe('functions/api/checkout/session', () => {
     assert.equal(checkoutCalled, false);
     assert.ok(errorLogCount >= 1);
     assert.ok(
-      errorMessages.some((msg) => msg.includes('Price id PRICE_ONE_TIME_300 is not configured')),
+      errorMessages.some((msg) => msg.includes('PRICE_ONE_TIME_300')),
       'console.error should report missing price id',
     );
   });
