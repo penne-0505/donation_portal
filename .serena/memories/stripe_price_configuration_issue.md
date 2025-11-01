@@ -1,0 +1,1 @@
+2025-11-01: Checkout 500 errors were traced to mismatched Stripe configuration—Pages Functions used a test secret key with live Price IDs for all donation tiers. Aligning each PRICE_* environment variable with the same mode (test vs live) as STRIPE_SECRET_KEY resolves the failure. Documented this in docs/guide/payments/stripe-setup.md troubleshooting section.

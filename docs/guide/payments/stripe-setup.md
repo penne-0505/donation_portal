@@ -1,10 +1,10 @@
 ---
-title: "Stripe Checkout 設定ガイド"
-domain: "donation-portal"
-status: "draft"
-version: "0.1.0"
-created: "2025-10-30"
-updated: "2025-10-30"
+title: 'Stripe Checkout 設定ガイド'
+domain: 'donation-portal'
+status: 'draft'
+version: '0.1.0'
+created: '2025-10-30'
+updated: '2025-11-01'
 related_issues: []
 related_prs: []
 references:
@@ -49,13 +49,13 @@ Stripe Checkout の `success_url` と `cancel_url` は Functions 側で `APP_BAS
 
 Pages Dashboard の **Settings > Functions > Environment variables** から以下を登録します（すべて Secret 扱い）。
 
-| Key | Value | 備考 |
-| --- | --- | --- |
-| `STRIPE_SECRET_KEY` | Stripe Test Secret Key (`sk_test_...`) | 本番では Live Key に置き換える |
-| `PRICE_ONE_TIME_300` | 単発寄附の Price ID | 例: `price_one_time_300` |
-| `PRICE_SUB_MONTHLY_300` | 月額寄附の Price ID | 例: `price_monthly_300` |
-| `PRICE_SUB_YEARLY_3000` | 年額寄附の Price ID | 例: `price_yearly_3000` |
-| `APP_BASE_URL` | ページのベース URL | テスト: `http://localhost:8788` / 本番: `https://<project>.pages.dev` |
+| Key                     | Value                                  | 備考                                                                  |
+| ----------------------- | -------------------------------------- | --------------------------------------------------------------------- |
+| `STRIPE_SECRET_KEY`     | Stripe Test Secret Key (`sk_test_...`) | 本番では Live Key に置き換える                                        |
+| `PRICE_ONE_TIME_300`    | 単発寄附の Price ID                    | 例: `price_one_time_300`                                              |
+| `PRICE_SUB_MONTHLY_300` | 月額寄附の Price ID                    | 例: `price_monthly_300`                                               |
+| `PRICE_SUB_YEARLY_3000` | 年額寄附の Price ID                    | 例: `price_yearly_3000`                                               |
+| `APP_BASE_URL`          | ページのベース URL                     | テスト: `http://localhost:8788` / 本番: `https://<project>.pages.dev` |
 
 `COOKIE_SIGN_KEY` や Discord OAuth のキーは Phase 2 で設定済みの前提です。未登録の場合は `docs/guide/auth/discord-oauth.md` を参照して先に登録してください。
 
@@ -68,11 +68,12 @@ Pages Dashboard の **Settings > Functions > Environment variables** から以�
 
 ## 6. トラブルシューティング
 
-| 症状 | 原因 | 対応 |
-| --- | --- | --- |
-| Checkout 開始時に 500 エラー | Price ID または Secret Key が未設定 | Pages の環境変数を確認し再デプロイする |
-| Success ページに戻らない | `APP_BASE_URL` が実環境と不一致 | Pages / `.dev.vars` の値を見直す |
-| 決済完了後も metadata が更新されない | Discord ログイン前に Checkout を実行している | `/donate` のログイン導線から再度実行する |
+| 症状                                                               | 原因                                                         | 対応                                                                                                                                                      |
+| ------------------------------------------------------------------ | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Checkout 開始時に 500 エラー                                       | Price ID または Secret Key が未設定                          | Pages の環境変数を確認し再デプロイする                                                                                                                    |
+| Stripe ログに `resource_missing` で Price が存在しないと記録される | `STRIPE_SECRET_KEY` と `PRICE_*` がテスト/本番で混在している | Cloudflare Pages の Functions > Environment variables で同じモードの Price ID（Test なら `sk_test`, Live なら `sk_live`）に揃えてセットし、再デプロイする |
+| Success ページに戻らない                                           | `APP_BASE_URL` が実環境と不一致                              | Pages / `.dev.vars` の値を見直す                                                                                                                          |
+| 決済完了後も metadata が更新されない                               | Discord ログイン前に Checkout を実行している                 | `/donate` のログイン導線から再度実行する                                                                                                                  |
 
 ## 7. 次のステップ
 

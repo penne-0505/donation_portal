@@ -60,6 +60,9 @@ describe('OAuth Functions', () => {
 
     assert.equal(startResponse.status, 500);
 
-    await assert.rejects(() => oauthCallback(context), /COOKIE_SIGN_KEY/);
+    const callbackResponse = await oauthCallback(context);
+
+    assert.equal(callbackResponse.status, 302);
+    assert.match(callbackResponse.headers.get('Location') || '', /error=/);
   });
 });

@@ -38,7 +38,11 @@ function jsonResponse(body: object, status = 200): Response {
   });
 }
 
-function errorResponse(status: number, code: ErrorBody['error']['code'], message: string): Response {
+function errorResponse(
+  status: number,
+  code: ErrorBody['error']['code'],
+  message: string,
+): Response {
   return jsonResponse({ error: { code, message } }, status);
 }
 
@@ -141,7 +145,9 @@ async function ensureCustomer(
     query: `metadata['discord_id']:"${escapedId}"`,
     limit: '1',
   });
-  const searchResponse = await callStripe(env, '/customers/search', searchParams, { method: 'GET' });
+  const searchResponse = await callStripe(env, '/customers/search', searchParams, {
+    method: 'GET',
+  });
   if (!searchResponse.ok) {
     const body = await searchResponse.text();
     throw new Error(`Stripe customer search failed: status=${searchResponse.status} body=${body}`);
@@ -159,10 +165,16 @@ async function ensureCustomer(
   });
 
   if (existingCustomerId) {
-    const updateResponse = await callStripe(env, `/customers/${existingCustomerId}`, metadataParams);
+    const updateResponse = await callStripe(
+      env,
+      `/customers/${existingCustomerId}`,
+      metadataParams,
+    );
     if (!updateResponse.ok) {
       const body = await updateResponse.text();
-      throw new Error(`Stripe customer update failed: status=${updateResponse.status} body=${body}`);
+      throw new Error(
+        `Stripe customer update failed: status=${updateResponse.status} body=${body}`,
+      );
     }
     return existingCustomerId;
   }
@@ -171,7 +183,9 @@ async function ensureCustomer(
   const createResponse = await callStripe(env, '/customers', metadataParams);
   if (!createResponse.ok) {
     const body = await createResponse.text();
-    throw new Error(`Stripe customer creation failed: status=${createResponse.status} body=${body}`);
+    throw new Error(
+      `Stripe customer creation failed: status=${createResponse.status} body=${body}`,
+    );
   }
   const created = (await createResponse.json()) as { readonly id?: string };
   if (typeof created.id !== 'string' || created.id.length === 0) {
@@ -209,7 +223,9 @@ async function createCheckoutSession(
   const response = await callStripe(env, '/checkout/sessions', params);
   if (!response.ok) {
     const body = await response.text();
-    throw new Error(`Stripe checkout session creation failed: status=${response.status} body=${body}`);
+    throw new Error(
+      `Stripe checkout session creation failed: status=${response.status} body=${body}`,
+    );
   }
   const data = (await response.json()) as { readonly url?: string };
   if (typeof data.url !== 'string' || data.url.length === 0) {
@@ -228,12 +244,20 @@ export const onRequestPost: PagesFunction<CheckoutEnv> = async (context) => {
   });
 
   if (sessionResult.status === 'missing') {
-    return errorResponse(401, 'unauthorized', 'Discord ログインが必要です。再度ログインしてください。');
+    return errorResponse(
+      401,
+      'unauthorized',
+      'Discord ログインが必要です。再度ログインしてください。',
+    );
   }
 
   if (sessionResult.status === 'invalid') {
     console.error('[checkout/session] invalid session cookie', sessionResult.reason);
-    return errorResponse(401, 'unauthorized', 'セッション情報を再取得してください。Discord でのログインからやり直してください。');
+    return errorResponse(
+      401,
+      'unauthorized',
+      'セッション情報を再取得してください。Discord でのログインからやり直してください。',
+    );
   }
 
   let requestBody: CheckoutRequestBody;
@@ -251,7 +275,11 @@ export const onRequestPost: PagesFunction<CheckoutEnv> = async (context) => {
   const baseUrl = resolveBaseUrl(request, env);
   if (!baseUrl) {
     console.error('[checkout/session] failed to resolve base URL');
-    return errorResponse(500, 'internal', '寄附を開始できませんでした。時間をおいて再度お試しください。');
+    return errorResponse(
+      500,
+      'internal',
+      '寄附を開始できませんでした。時間をおいて再度お試しください。',
+    );
   }
 
   try {
@@ -261,12 +289,22 @@ export const onRequestPost: PagesFunction<CheckoutEnv> = async (context) => {
       consentPublic: sessionResult.session.consentPublic,
     });
 
-    const session = await createCheckoutSession(env, customerId, parsed.priceKey, parsed.mode, baseUrl);
+    const session = await createCheckoutSession(
+      env,
+      customerId,
+      parsed.priceKey,
+      parsed.mode,
+      baseUrl,
+    );
 
     return jsonResponse(session, 200);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'unknown error';
     console.error('[checkout/session] failed to create checkout session', message);
-    return errorResponse(500, 'internal', 'Stripe との連携に失敗しました。時間をおいて再試行してください。');
+    return errorResponse(
+      500,
+      'internal',
+      'Stripe との連携に失敗しました。時間をおいて再試行してください。',
+    );
   }
 };

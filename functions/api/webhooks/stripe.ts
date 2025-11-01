@@ -58,14 +58,22 @@ function jsonResponse(body: object, status = 200): Response {
   });
 }
 
-function errorResponse(status: number, code: ErrorBody['error']['code'], message: string): Response {
+function errorResponse(
+  status: number,
+  code: ErrorBody['error']['code'],
+  message: string,
+): Response {
   return jsonResponse({ error: { code, message } }, status);
 }
 
-function parseStripeSignature(header: string | null): { readonly timestamp: string; readonly signatures: readonly string[] } | null {
+function parseStripeSignature(
+  header: string | null,
+): { readonly timestamp: string; readonly signatures: readonly string[] } | null {
   if (!header) {
     return null;
   }
+  // Stripe Webhook-Signature header format: "t=<timestamp>,v1=<signature>"
+  // Although Stripe typically sends one v1 signature, we handle multiple for forward compatibility
   const parts = header.split(',');
   let timestamp: string | null = null;
   const signatures: string[] = [];
@@ -88,7 +96,13 @@ let cachedKey: CryptoKey | null = null;
 
 async function computeSignature(secret: string, payload: string): Promise<string> {
   if (!cachedKey || cachedKeySecret !== secret) {
-    cachedKey = await crypto.subtle.importKey('raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+    cachedKey = await crypto.subtle.importKey(
+      'raw',
+      encoder.encode(secret),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign'],
+    );
     cachedKeySecret = secret;
   }
   const signature = await crypto.subtle.sign('HMAC', cachedKey, encoder.encode(payload));
@@ -146,7 +160,9 @@ export const onRequestPost: PagesFunction<StripeWebhookEnv> = async ({ request, 
   const rawBody = decoder.decode(rawBodyBuffer);
   const signedPayload = `${parsedSignature.timestamp}.${rawBody}`;
   const expectedSignature = await computeSignature(secret, signedPayload);
-  const signatureMatch = parsedSignature.signatures.some((signature) => secureCompare(signature, expectedSignature));
+  const signatureMatch = parsedSignature.signatures.some((signature) =>
+    secureCompare(signature, expectedSignature),
+  );
   if (!signatureMatch) {
     return errorResponse(400, 'bad_request', 'Stripe 署名の検証に失敗しました。');
   }

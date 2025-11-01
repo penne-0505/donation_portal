@@ -1,19 +1,49 @@
 # Donation Portal
 
-Donation Portal プロジェクトは Discord コミュニティ向けの寄附ポータルを Cloudflare Pages 上に構築するためのリポジトリです。Phase 1 では開発・CI/CD の土台づくりにフォーカスしています。
+Discord コミュニティ向けの寄附ポータルを Cloudflare Pages 上に構築するプロジェクトです。Stripe による単発・定期寄附を受け付け、寄附者の同意のもとで表示名を公開します。
+
+## 概要
+
+- **プラットフォーム**: Cloudflare Pages（フロントエンド）/ Pages Functions（バックエンド）
+- **技術スタック**: TypeScript, Stripe SDK, Discord OAuth
+- **データ管理**: Stripe Customer metadata が Single Source of Truth
+- **主要機能**:
+  - `/donate` - 寄附案内ページ、同意フォーム
+  - Stripe Checkout による決済処理
+  - `/thanks` - 寄附完了画面
+  - `/donors` - 同意者の表示名一覧
+  - Discord OAuth 連携
+
+## セットアップ
+
+### 前提条件
+
+- Node.js 18.x 以上
+- npm 10 以上
+- Stripeのセットアップが完了していること
+- Discord Applicationの作成が完了していること
+
+### 初期セットアップ
+
+```bash
+# リポジトリをクローン
+git clone <repo-url>
+cd donation_portal
+
+# Node.js バージョンを合わせる（nvm を使用）
+nvm install
+nvm use
+
+# 依存パッケージをインストール
+npm install
+```
+
+詳細なセットアップ手順は `docs/guide/development/setup.md` を参照してください。
 
 ## ディレクトリ構成
 
-- `src/` — 共通で再利用する TypeScript モジュール群。ビジネスロジックやユーティリティを配置します。
-- `functions/` — Cloudflare Pages Functions のエンドポイントを配置します。`functions/api` 以下に API ルートを追加します。
-- `public/` — 静的アセットやスタブページを配置します。Pages へのデプロイ時に配信対象となります。
-- `scripts/` — 開発支援用の Node.js スクリプト（lint/typecheck などのラッパー）を配置します。
-- `docs/` — ドキュメント群。標準・ガイドライン・計画書などは `docs/standards` や `docs/plan` に配置されています。
-
-## 開発環境セットアップ
-
-セットアップ手順やローカル開発の流れは `docs/guide/development/setup.md` を参照してください。
-
-## ライセンス
-
-本リポジトリのライセンスは未定義です（後続フェーズで決定します）。
+- `src/` - 共通 TypeScript モジュール（認証、ユーティリティなど）
+- `functions/` - Cloudflare Pages Functions エンドポイント
+- `public/` - 静的ページとフロントエンドスクリプト
+- `scripts/` - 開発支援スクリプト（lint、typecheck、build など）
+- `docs/` - プロジェクトドキュメント（ガイドライン、計画書、参考資料）

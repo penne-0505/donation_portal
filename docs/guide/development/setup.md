@@ -51,10 +51,12 @@ Cloudflare Pages 上で Donation Portal を開発するための初期セット�
    - `wrangler` や `@cloudflare/workers-types` が取得できない場合は、Cloudflare 公式の npm レジストリにアクセスできるネットワークから再実行してください。
 
 4. 環境変数テンプレートをコピーして編集します。
+
    ```bash
    cp .env.example .env
    # 値を自分のアカウント・テスト環境に合わせて編集
    ```
+
    - `COOKIE_SIGN_KEY` は OAuth state Cookie の HMAC 署名に利用する秘密鍵です。32 文字以上のランダムな英数字を生成し、
      漏洩しないよう Secrets 管理してください。
    - Stripe/Discord のテストクレデンシャルをセットし、`APP_BASE_URL` は `http://localhost:8788` を指定します。
@@ -82,18 +84,18 @@ Cloudflare Pages 上で Donation Portal を開発するための初期セット�
 
 `.env.example` と Cloudflare Pages の Secrets 設定の対応関係は以下の通りです。Discord OAuth に関する詳細は [Discord OAuth フロー運用ガイド](../auth/discord-oauth.md) を参照してください。
 
-| 変数 | 用途 | Pages での配置 | 備考 |
-| --- | --- | --- | --- |
-| `CLOUDFLARE_ACCOUNT_ID` | `wrangler` CLI で Pages プロジェクトを操作するためのアカウント ID | ローカル `.env` のみ | CI からデプロイする際に利用します。 |
-| `CLOUDFLARE_API_TOKEN` | `wrangler` が API 呼び出しを行う際のトークン | ローカル `.env` のみ | Pages ダッシュボードから作成。スコープは Pages デプロイに限定。 |
-| `CLOUDFLARE_PAGES_PROJECT` | デプロイ対象プロジェクト名 | ローカル `.env` のみ | 既定値 `donation-portal`。 |
-| `STRIPE_SECRET_KEY` | Checkout 作成や Customer 更新で使用 | Pages **Environment variables (Secrets)** | Test と Production で値を分け、ローカルは `.env` で管理。 |
-| `STRIPE_WEBHOOK_SECRET` | Webhook 検証用署名 | Pages **Environment variables (Secrets)** | 本番/プレビューで別 Secret を登録し、Stripe Dashboard のエンドポイントごとに紐付け。 |
-| `DISCORD_CLIENT_ID` | Discord OAuth クライアント ID | Pages **Environment variables (Secrets)** | Developer Portal で取得。 |
-| `DISCORD_CLIENT_SECRET` | Discord OAuth クライアントシークレット | Pages **Environment variables (Secrets)** | Secrets 更新時は必ず再デプロイ。 |
-| `DISCORD_REDIRECT_URI` | Discord からの Callback URL | Pages **Environment variables (Secrets)** | 本番は `https://<project>.pages.dev/oauth/callback` を指定。 |
-| `APP_BASE_URL` | Functions が生成するリダイレクト先の基準 URL | Pages **Environment variables (Secrets)** | 本番の Pages URL を設定し、ローカルでは `http://localhost:8788`。 |
-| `COOKIE_SIGN_KEY` | state/sess Cookie 署名用の HMAC キー | Pages **Environment variables (Secrets)** | 32 文字以上のランダム値。ローテーション時は古い Cookie を破棄。 |
+| 変数                       | 用途                                                              | Pages での配置                            | 備考                                                                                 |
+| -------------------------- | ----------------------------------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------ |
+| `CLOUDFLARE_ACCOUNT_ID`    | `wrangler` CLI で Pages プロジェクトを操作するためのアカウント ID | ローカル `.env` のみ                      | CI からデプロイする際に利用します。                                                  |
+| `CLOUDFLARE_API_TOKEN`     | `wrangler` が API 呼び出しを行う際のトークン                      | ローカル `.env` のみ                      | Pages ダッシュボードから作成。スコープは Pages デプロイに限定。                      |
+| `CLOUDFLARE_PAGES_PROJECT` | デプロイ対象プロジェクト名                                        | ローカル `.env` のみ                      | 既定値 `donation-portal`。                                                           |
+| `STRIPE_SECRET_KEY`        | Checkout 作成や Customer 更新で使用                               | Pages **Environment variables (Secrets)** | Test と Production で値を分け、ローカルは `.env` で管理。                            |
+| `STRIPE_WEBHOOK_SECRET`    | Webhook 検証用署名                                                | Pages **Environment variables (Secrets)** | 本番/プレビューで別 Secret を登録し、Stripe Dashboard のエンドポイントごとに紐付け。 |
+| `DISCORD_CLIENT_ID`        | Discord OAuth クライアント ID                                     | Pages **Environment variables (Secrets)** | Developer Portal で取得。                                                            |
+| `DISCORD_CLIENT_SECRET`    | Discord OAuth クライアントシークレット                            | Pages **Environment variables (Secrets)** | Secrets 更新時は必ず再デプロイ。                                                     |
+| `DISCORD_REDIRECT_URI`     | Discord からの Callback URL                                       | Pages **Environment variables (Secrets)** | 本番は `https://<project>.pages.dev/oauth/callback` を指定。                         |
+| `APP_BASE_URL`             | Functions が生成するリダイレクト先の基準 URL                      | Pages **Environment variables (Secrets)** | 本番の Pages URL を設定し、ローカルでは `http://localhost:8788`。                    |
+| `COOKIE_SIGN_KEY`          | state/sess Cookie 署名用の HMAC キー                              | Pages **Environment variables (Secrets)** | 32 文字以上のランダム値。ローテーション時は古い Cookie を破棄。                      |
 
 ### Cloudflare Pages への登録手順
 
@@ -103,13 +105,13 @@ Cloudflare Pages 上で Donation Portal を開発するための初期セット�
 
 ## 開発用コマンド
 
-| コマンド | 目的 | 備考 |
-| --- | --- | --- |
-| `npm run lint` | ESLint による静的解析 | `scripts/run-eslint.cjs` がグローバル `eslint` を呼び出します。TypeScript 用プラグインが未導入の場合は警告のみ表示されます。 |
-| `npm run format` | Prettier によるフォーマットチェック | `scripts/run-prettier.cjs` がグローバル `prettier` を利用します。 |
-| `npm run typecheck` | TypeScript コンパイルチェック | グローバル `tsc` を利用し、型エラーを検出します。 |
-| `npm test` | Node.js 標準テストランナーでユニットテストを実行 | OAuth／Checkout／Donors／Webhook の主要ユースケースが 52 件のテストで検証されます。 |
-| `npm run build` | Functions のビルド検証 | `wrangler` がインストールされていない場合はスキップメッセージを表示します。 |
+| コマンド            | 目的                                             | 備考                                                                                                                         |
+| ------------------- | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| `npm run lint`      | ESLint による静的解析                            | `scripts/run-eslint.cjs` がグローバル `eslint` を呼び出します。TypeScript 用プラグインが未導入の場合は警告のみ表示されます。 |
+| `npm run format`    | Prettier によるフォーマットチェック              | `scripts/run-prettier.cjs` がグローバル `prettier` を利用します。                                                            |
+| `npm run typecheck` | TypeScript コンパイルチェック                    | グローバル `tsc` を利用し、型エラーを検出します。                                                                            |
+| `npm test`          | Node.js 標準テストランナーでユニットテストを実行 | OAuth／Checkout／Donors／Webhook の主要ユースケースが 52 件のテストで検証されます。                                          |
+| `npm run build`     | Functions のビルド検証                           | `wrangler` がインストールされていない場合はスキップメッセージを表示します。                                                  |
 
 ## Cloudflare Pages との連携
 

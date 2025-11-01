@@ -4,7 +4,7 @@
 
 ## 原則
 - ユーザーとは**日本語**で会話  
-- **Serenaを積極活用(projectは"YATA"とする)(使用可能な場合)**  
+- **Serenaを積極活用(projectは"ds_donation_system"とする)(使用可能な場合)**  
 - **Context7を利用する(使用可能な場合)**
 - **`git rm`やファイル削除は禁止**（ユーザーに提案し、実行は待つ）
 - **`docs/standards/documentation_guidelines.md`と`docs/standards/documentation_operations.md`に従い、積極的にドキュメント運用・記述を行う**

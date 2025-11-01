@@ -9,9 +9,9 @@ interface DonateAppModule {
       | { readonly status: 'signed-out' }
       | { readonly status: 'error' }
       | {
-        readonly status: 'signed-in';
-        readonly session: { readonly displayName: string; readonly consentPublic: boolean };
-      }
+          readonly status: 'signed-in';
+          readonly session: { readonly displayName: string; readonly consentPublic: boolean };
+        }
     >;
     readonly getCheckoutTarget: (element: HTMLElement) => {
       readonly mode: string;
@@ -21,9 +21,9 @@ interface DonateAppModule {
   };
 }
 
-const donateModule = await import(
+const donateModule = (await import(
   new URL('public/donate/app.js', `file://${process.cwd()}/`).href
-) as DonateAppModule;
+)) as DonateAppModule;
 
 const { initializeDonatePage, __test__ } = donateModule;
 
@@ -48,9 +48,15 @@ class FakeElement {
   public dataset: Record<string, string> = {};
   public attributes = new Map<string, string>();
   public href = '';
-  private readonly listeners = new Map<string, Array<(event: { preventDefault: () => void }) => unknown>>();
+  private readonly listeners = new Map<
+    string,
+    Array<(event: { preventDefault: () => void }) => unknown>
+  >();
 
-  constructor(public readonly tagName: string, public id = '') {}
+  constructor(
+    public readonly tagName: string,
+    public id = '',
+  ) {}
 
   setAttribute(name: string, value: string): void {
     if (name === 'id') {
@@ -63,7 +69,10 @@ class FakeElement {
     this.attributes.delete(name);
   }
 
-  addEventListener(type: string, listener: (event: { preventDefault: () => void }) => unknown): void {
+  addEventListener(
+    type: string,
+    listener: (event: { preventDefault: () => void }) => unknown,
+  ): void {
     const existing = this.listeners.get(type) ?? [];
     existing.push(listener);
     this.listeners.set(type, existing);
@@ -135,7 +144,11 @@ function createDocument(): { document: FakeDocument; elements: TestElements } {
   checkoutOnceButton.dataset = { mode: 'payment', variant: 'fixed300', interval: '' };
   checkoutOnceButton.disabled = true;
   const checkoutMonthlyButton = new FakeElement('button', 'donate-monthly');
-  checkoutMonthlyButton.dataset = { mode: 'subscription', variant: 'fixed300', interval: 'monthly' };
+  checkoutMonthlyButton.dataset = {
+    mode: 'subscription',
+    variant: 'fixed300',
+    interval: 'monthly',
+  };
   checkoutMonthlyButton.disabled = true;
   const checkoutYearlyButton = new FakeElement('button', 'donate-yearly');
   checkoutYearlyButton.dataset = { mode: 'subscription', variant: 'fixed3000', interval: 'yearly' };
@@ -357,7 +370,7 @@ describe('donate UI script', () => {
   it('Checkout API が失敗した場合はエラーメッセージを表示しボタンを再び有効化する', async () => {
     const { document, elements } = createDocument();
 
-    globalThis.fetch = async (input, init) => {
+    globalThis.fetch = async (input) => {
       const url = String(input);
       if (url === '/api/session') {
         return jsonResponse({
@@ -366,9 +379,12 @@ describe('donate UI script', () => {
         });
       }
       if (url === '/api/checkout/session') {
-        return jsonResponse({
-          error: { code: 'bad_request', message: '入力内容を確認してください。' },
-        }, { status: 400 });
+        return jsonResponse(
+          {
+            error: { code: 'bad_request', message: '入力内容を確認してください。' },
+          },
+          { status: 400 },
+        );
       }
       throw new Error(`Unexpected fetch call: ${url}`);
     };

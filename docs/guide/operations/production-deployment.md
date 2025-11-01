@@ -40,10 +40,10 @@ QA 手順やローンチ後の運用監視は [Phase 6 QA & Release Runbook](./p
 
 ## 環境区分と URL
 
-| 環境 | Cloudflare Pages ブランチ | 代表 URL | Stripe モード | Discord アプリ | 備考 |
-| --- | --- | --- | --- | --- | --- |
-| Preview | `dev` / Pull Request | `https://<project>-<hash>.pages.dev` | Test | Test 用アプリ | QA・結合テスト用 |
-| Production | `main`（または指定ブランチ） | `https://<project>.pages.dev` | Live | 本番アプリ | 寄附受付の公開環境 |
+| 環境       | Cloudflare Pages ブランチ    | 代表 URL                             | Stripe モード | Discord アプリ | 備考               |
+| ---------- | ---------------------------- | ------------------------------------ | ------------- | -------------- | ------------------ |
+| Preview    | `dev` / Pull Request         | `https://<project>-<hash>.pages.dev` | Test          | Test 用アプリ  | QA・結合テスト用   |
+| Production | `main`（または指定ブランチ） | `https://<project>.pages.dev`        | Live          | 本番アプリ     | 寄附受付の公開環境 |
 
 > **ブランチ戦略**: Cloudflare Pages の Production ブランチは `main` を推奨しますが、運用ポリシーに応じて `dev` から直接デプロイする場合は Release Runbook と整合するよう注意してください。
 
@@ -63,18 +63,18 @@ QA 手順やローンチ後の運用監視は [Phase 6 QA & Release Runbook](./p
 1. Cloudflare Pages の対象プロジェクトで **Settings → Functions → Environment variables (Secrets)** を開きます。
 2. 下表の値を Production / Preview の両方に登録します。Live 専用値は Production のみに登録してください。
 
-| キー | 種別 | Production | Preview | 備考 |
-| --- | --- | --- | --- | --- |
-| `STRIPE_SECRET_KEY` | Secret | Live 用 `sk_live_*` | Test 用 `sk_test_*` | Live/Test の切替に合わせて更新 |
-| `STRIPE_WEBHOOK_SECRET` | Secret | Live 用 Signing secret | Test 用 Signing secret | Stripe Dashboard の endpoint ごとに取得 |
-| `PRICE_ONE_TIME_300` | Secret | Live Price ID | Test Price ID | 金額・通貨を事前に Dashboard で作成 |
-| `PRICE_SUB_MONTHLY_300` | Secret | Live Price ID | Test Price ID | 月額プラン |
-| `PRICE_SUB_YEARLY_3000` | Secret | Live Price ID | Test Price ID | 年額プラン |
-| `DISCORD_CLIENT_ID` | Secret | 本番アプリの Client ID | Test アプリの Client ID | OAuth 連携用 |
-| `DISCORD_CLIENT_SECRET` | Secret | 本番アプリの Secret | Test アプリの Secret | 再生成時は即時更新 |
-| `DISCORD_REDIRECT_URI` | Env | `https://<project>.pages.dev/oauth/callback` | `https://<project>-<hash>.pages.dev/oauth/callback` | Discord Portal 側と一致させる |
-| `APP_BASE_URL` | Env | `https://<project>.pages.dev` | `https://<project>-<hash>.pages.dev` | Functions のリダイレクト基準 |
-| `COOKIE_SIGN_KEY` | Secret | 32 文字以上のランダム英数 | 任意のランダム英数 | 切替時は古い Cookie を破棄 |
+| キー                    | 種別   | Production                                   | Preview                                             | 備考                                    |
+| ----------------------- | ------ | -------------------------------------------- | --------------------------------------------------- | --------------------------------------- |
+| `STRIPE_SECRET_KEY`     | Secret | Live 用 `sk_live_*`                          | Test 用 `sk_test_*`                                 | Live/Test の切替に合わせて更新          |
+| `STRIPE_WEBHOOK_SECRET` | Secret | Live 用 Signing secret                       | Test 用 Signing secret                              | Stripe Dashboard の endpoint ごとに取得 |
+| `PRICE_ONE_TIME_300`    | Secret | Live Price ID                                | Test Price ID                                       | 金額・通貨を事前に Dashboard で作成     |
+| `PRICE_SUB_MONTHLY_300` | Secret | Live Price ID                                | Test Price ID                                       | 月額プラン                              |
+| `PRICE_SUB_YEARLY_3000` | Secret | Live Price ID                                | Test Price ID                                       | 年額プラン                              |
+| `DISCORD_CLIENT_ID`     | Secret | 本番アプリの Client ID                       | Test アプリの Client ID                             | OAuth 連携用                            |
+| `DISCORD_CLIENT_SECRET` | Secret | 本番アプリの Secret                          | Test アプリの Secret                                | 再生成時は即時更新                      |
+| `DISCORD_REDIRECT_URI`  | Env    | `https://<project>.pages.dev/oauth/callback` | `https://<project>-<hash>.pages.dev/oauth/callback` | Discord Portal 側と一致させる           |
+| `APP_BASE_URL`          | Env    | `https://<project>.pages.dev`                | `https://<project>-<hash>.pages.dev`                | Functions のリダイレクト基準            |
+| `COOKIE_SIGN_KEY`       | Secret | 32 文字以上のランダム英数                    | 任意のランダム英数                                  | 切替時は古い Cookie を破棄              |
 
 3. 変更は 2 名以上でペアレビューし、手順書やチケットに記録を残します。
 4. Secrets 登録後に **Save** を押し、Preview/Production それぞれで再デプロイを行います。
@@ -112,12 +112,12 @@ QA 手順やローンチ後の運用監視は [Phase 6 QA & Release Runbook](./p
 
 ## リリース後の初動監視
 
-| 項目 | 監視方法 | 判定基準 | 対応 |
-| --- | --- | --- | --- |
-| Stripe Webhook 成功率 | Stripe Dashboard > Events | 失敗率 0%（再送含む） | 失敗発生時は Webhook ガイドの初動対応へ |
-| Functions レイテンシ | Cloudflare Pages > Analytics > Functions | P95 < 200ms | 閾値超過時はログ確認と再デプロイ検討 |
-| エラー監視 | Sentry / Cloudflare Logs | 致命エラー 0 件 | エラー検知時は Issue 登録と暫定対応 |
-| 寄附件数 | Stripe Dashboard > Payments | 基準値から急減なし | 異常時はコミュニティ周知・フォーム確認 |
+| 項目                  | 監視方法                                 | 判定基準              | 対応                                    |
+| --------------------- | ---------------------------------------- | --------------------- | --------------------------------------- |
+| Stripe Webhook 成功率 | Stripe Dashboard > Events                | 失敗率 0%（再送含む） | 失敗発生時は Webhook ガイドの初動対応へ |
+| Functions レイテンシ  | Cloudflare Pages > Analytics > Functions | P95 < 200ms           | 閾値超過時はログ確認と再デプロイ検討    |
+| エラー監視            | Sentry / Cloudflare Logs                 | 致命エラー 0 件       | エラー検知時は Issue 登録と暫定対応     |
+| 寄附件数              | Stripe Dashboard > Payments              | 基準値から急減なし    | 異常時はコミュニティ周知・フォーム確認  |
 
 監視結果はローンチ当日から 1 週間は日次で共有し、その後は週次レポートへ移行します。
 

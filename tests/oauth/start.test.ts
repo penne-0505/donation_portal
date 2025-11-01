@@ -42,42 +42,37 @@ describe('GET /oauth/start', () => {
     let stateOptions: CreateStateCookieOptions | undefined;
     let authorizeOptions: BuildAuthorizeUrlOptions | undefined;
 
-    const stateMock = mock.method(
-      stateCookieService,
-      'createStateCookie',
-      (async (options: CreateStateCookieOptions) => {
-        stateOptions = options;
-        return {
-          value: 'signed-cookie-value',
-          nonce: 'mock-uuid',
-        };
-      }) as unknown as (...args: unknown[]) => unknown,
-    );
+    const stateMock = mock.method(stateCookieService, 'createStateCookie', (async (
+      options: CreateStateCookieOptions,
+    ) => {
+      stateOptions = options;
+      return {
+        value: 'signed-cookie-value',
+        nonce: 'mock-uuid',
+      };
+    }) as unknown as (...args: unknown[]) => unknown);
 
-    const authorizeMock = mock.method(
-      discordOAuth,
-      'buildAuthorizeUrl',
-      ((options: BuildAuthorizeUrlOptions) => {
-        authorizeOptions = options;
-        return 'https://discord.example.com/mock-authorize';
-      }) as unknown as (...args: unknown[]) => unknown,
-    );
+    const authorizeMock = mock.method(discordOAuth, 'buildAuthorizeUrl', ((
+      options: BuildAuthorizeUrlOptions,
+    ) => {
+      authorizeOptions = options;
+      return 'https://discord.example.com/mock-authorize';
+    }) as unknown as (...args: unknown[]) => unknown);
 
-    const context = createContext(
-      'https://portal.example.com/oauth/start?consent_public=true',
-      {
-        COOKIE_SIGN_KEY: 'test-cookie-secret',
-        DISCORD_CLIENT_ID: 'discord-client-id',
-        DISCORD_REDIRECT_URI: 'https://portal.example.com/oauth/callback',
-      },
-    );
+    const context = createContext('https://portal.example.com/oauth/start?consent_public=true', {
+      COOKIE_SIGN_KEY: 'test-cookie-secret',
+      DISCORD_CLIENT_ID: 'discord-client-id',
+      DISCORD_REDIRECT_URI: 'https://portal.example.com/oauth/callback',
+    });
 
     const response = await onRequestGet(context);
 
     assert.equal(response.status, 302);
     assert.equal(response.headers.get('Location'), 'https://discord.example.com/mock-authorize');
-    assert.equal(response.headers.get('Set-Cookie'),
-      'state=signed-cookie-value; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=600');
+    assert.equal(
+      response.headers.get('Set-Cookie'),
+      'state=signed-cookie-value; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=600',
+    );
 
     assert.equal(stateMock.mock.callCount(), 1);
     assert.ok(stateOptions);
@@ -96,22 +91,22 @@ describe('GET /oauth/start', () => {
   it('consent_public が未指定なら false として処理する', async () => {
     let stateOptions: CreateStateCookieOptions | undefined;
 
-    mock.method(
-      stateCookieService,
-      'createStateCookie',
-      (async (options: CreateStateCookieOptions) => {
-        stateOptions = options;
-        return {
-          value: 'signed-cookie-value',
-          nonce: 'default-uuid',
-        };
-      }) as unknown as (...args: unknown[]) => unknown,
-    );
+    mock.method(stateCookieService, 'createStateCookie', (async (
+      options: CreateStateCookieOptions,
+    ) => {
+      stateOptions = options;
+      return {
+        value: 'signed-cookie-value',
+        nonce: 'default-uuid',
+      };
+    }) as unknown as (...args: unknown[]) => unknown);
 
     mock.method(
       discordOAuth,
       'buildAuthorizeUrl',
-      (() => 'https://discord.example.com/mock-authorize') as unknown as (...args: unknown[]) => unknown,
+      (() => 'https://discord.example.com/mock-authorize') as unknown as (
+        ...args: unknown[]
+      ) => unknown,
     );
 
     const context = createContext('https://portal.example.com/oauth/start', {
@@ -127,29 +122,24 @@ describe('GET /oauth/start', () => {
   });
 
   it('consent_public が不正な値なら 400 を返す', async () => {
-    const stateMock = mock.method(
-      stateCookieService,
-      'createStateCookie',
-      (async () => ({
-        value: 'signed-cookie-value',
-        nonce: 'unused',
-      })) as unknown as (...args: unknown[]) => unknown,
-    );
+    const stateMock = mock.method(stateCookieService, 'createStateCookie', (async () => ({
+      value: 'signed-cookie-value',
+      nonce: 'unused',
+    })) as unknown as (...args: unknown[]) => unknown);
 
     mock.method(
       discordOAuth,
       'buildAuthorizeUrl',
-      (() => 'https://discord.example.com/mock-authorize') as unknown as (...args: unknown[]) => unknown,
+      (() => 'https://discord.example.com/mock-authorize') as unknown as (
+        ...args: unknown[]
+      ) => unknown,
     );
 
-    const context = createContext(
-      'https://portal.example.com/oauth/start?consent_public=maybe',
-      {
-        COOKIE_SIGN_KEY: 'test-cookie-secret',
-        DISCORD_CLIENT_ID: 'discord-client-id',
-        DISCORD_REDIRECT_URI: 'https://portal.example.com/oauth/callback',
-      },
-    );
+    const context = createContext('https://portal.example.com/oauth/start?consent_public=maybe', {
+      COOKIE_SIGN_KEY: 'test-cookie-secret',
+      DISCORD_CLIENT_ID: 'discord-client-id',
+      DISCORD_REDIRECT_URI: 'https://portal.example.com/oauth/callback',
+    });
 
     const response = await onRequestGet(context);
 
@@ -159,19 +149,17 @@ describe('GET /oauth/start', () => {
   });
 
   it('環境変数が不足している場合は 500 を返す', async () => {
-    mock.method(
-      stateCookieService,
-      'createStateCookie',
-      (async () => ({
-        value: 'signed-cookie-value',
-        nonce: 'unused',
-      })) as unknown as (...args: unknown[]) => unknown,
-    );
+    mock.method(stateCookieService, 'createStateCookie', (async () => ({
+      value: 'signed-cookie-value',
+      nonce: 'unused',
+    })) as unknown as (...args: unknown[]) => unknown);
 
     mock.method(
       discordOAuth,
       'buildAuthorizeUrl',
-      (() => 'https://discord.example.com/mock-authorize') as unknown as (...args: unknown[]) => unknown,
+      (() => 'https://discord.example.com/mock-authorize') as unknown as (
+        ...args: unknown[]
+      ) => unknown,
     );
 
     const context = createContext('https://portal.example.com/oauth/start', {

@@ -1,8 +1,5 @@
 import { verifySignedCookie } from '../../src/lib/auth/cookie.js';
-import {
-  getCookieSignKey,
-  type CookieKeySource,
-} from '../../src/lib/cookie/signKey.js';
+import { getCookieSignKey, type CookieKeySource } from '../../src/lib/cookie/signKey.js';
 import { issueSessionCookie } from '../../src/lib/auth/sessionCookie.js';
 
 interface OAuthEnv extends CookieKeySource {
@@ -135,8 +132,24 @@ function sanitizeDisplayName(user: DiscordUserResponse): string {
 
 export const onRequestGet: PagesFunction = async (context) => {
   const env = context.env as OAuthEnv;
-  getCookieSignKey(env);
-  const { clientId, clientSecret } = ensureDiscordCredentials(env);
+
+  try {
+    getCookieSignKey(env);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown configuration error';
+    logError('config_error', message);
+    return redirectWithError('config_error');
+  }
+
+  let clientId: string;
+  let clientSecret: string;
+  try {
+    ({ clientId, clientSecret } = ensureDiscordCredentials(env));
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown configuration error';
+    logError('config_error', message);
+    return redirectWithError('config_error');
+  }
 
   const url = new URL(context.request.url);
   const code = url.searchParams.get('code');

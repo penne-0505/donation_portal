@@ -14,11 +14,7 @@ function toTimestamp(value: Date | number | undefined): number {
   return Date.now();
 }
 
-function buildCookieAttributes(
-  value: string,
-  ttlSeconds: number,
-  issuedAt: number,
-): string {
+function buildCookieAttributes(value: string, ttlSeconds: number, issuedAt: number): string {
   const expires = new Date(issuedAt + ttlSeconds * 1000);
   return [
     `${SESSION_COOKIE_NAME}=${value}`,

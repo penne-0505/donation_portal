@@ -15,7 +15,9 @@
       <header class="donation-header">
         <h1 id="page-title">寄附のご案内</h1>
         <p class="donation-lead">
-          Donation Portal は Discord コミュニティの運営費を支える任意の寄附を受け付けています。Discord でログインし、掲示への同意を設定してください。
+          Donation Portal は Discord
+          コミュニティの運営費を支える任意の寄附を受け付けています。Discord
+          でログインし、掲示への同意を設定してください。
         </p>
       </header>
 
@@ -30,8 +32,11 @@
             class="button button--primary"
             href="/oauth/start"
             aria-describedby="auth-description"
-          >Discord でログイン</a>
-          <a id="auth-logout" class="button button--secondary" href="/oauth/logout" hidden>ログアウト</a>
+            >Discord でログイン</a
+          >
+          <a id="auth-logout" class="button button--secondary" href="/oauth/logout" hidden
+            >ログアウト</a
+          >
         </div>
         <p id="auth-status" class="auth-status" role="status" aria-live="polite">
           Discord へのログインが必要です。
@@ -77,7 +82,13 @@
         <p id="checkout-description" class="checkout-description">
           Stripe Checkout で寄附を行います。カード決済のみ対応し、すべて税込の金額です。
         </p>
-        <div id="checkout-error" class="checkout-error" role="alert" aria-live="assertive" hidden></div>
+        <div
+          id="checkout-error"
+          class="checkout-error"
+          role="alert"
+          aria-live="assertive"
+          hidden
+        ></div>
         <div class="checkout-actions" role="group" aria-labelledby="checkout-section-title">
           <button
             id="donate-onetime"
@@ -88,7 +99,9 @@
             data-interval=""
             aria-describedby="checkout-description checkout-note"
             disabled
-          >単発寄附 ¥300</button>
+          >
+            単発寄附 ¥300
+          </button>
           <button
             id="donate-monthly"
             class="button button--primary"
@@ -98,7 +111,9 @@
             data-interval="monthly"
             aria-describedby="checkout-description checkout-note"
             disabled
-          >毎月の寄附 ¥300</button>
+          >
+            毎月の寄附 ¥300
+          </button>
           <button
             id="donate-yearly"
             class="button button--primary"
@@ -108,10 +123,13 @@
             data-interval="yearly"
             aria-describedby="checkout-description checkout-note"
             disabled
-          >毎年の寄附 ¥3,000</button>
+          >
+            毎年の寄附 ¥3,000
+          </button>
         </div>
         <p id="checkout-note" class="checkout-note">
-          寄附ボタンを押すと Stripe Checkout に移動します。完了後は自動的にサンクスページへ戻ります。
+          寄附ボタンを押すと Stripe Checkout
+          に移動します。完了後は自動的にサンクスページへ戻ります。
         </p>
         <div id="checkout-loading" class="checkout-loading" role="status" aria-live="polite" hidden>
           Stripe Checkout を準備しています…

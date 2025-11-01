@@ -57,13 +57,16 @@ export const onRequestGet: PagesFunction = async (context) => {
     case 'invalid': {
       const headers = new Headers();
       headers.append('Set-Cookie', buildExpiredSessionCookie());
-      return jsonResponse({
-        status: 'error',
-        error: {
-          code: 'invalid_session',
-          message: 'Session cookie is invalid or expired.',
+      return jsonResponse(
+        {
+          status: 'error',
+          error: {
+            code: 'invalid_session',
+            message: 'Session cookie is invalid or expired.',
+          },
         },
-      }, { headers });
+        { headers },
+      );
     }
     default: {
       return jsonResponse({ status: 'signed-out' });

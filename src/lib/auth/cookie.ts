@@ -16,13 +16,10 @@ function toCryptoKey(secret: string): Promise<CryptoKey> {
   let cached = keyCache.get(secret);
   if (!cached) {
     const keyData = encoder.encode(secret);
-    cached = crypto.subtle.importKey(
-      'raw',
-      keyData,
-      { name: 'HMAC', hash: 'SHA-256' },
-      false,
-      ['sign', 'verify'],
-    );
+    cached = crypto.subtle.importKey('raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, [
+      'sign',
+      'verify',
+    ]);
     keyCache.set(secret, cached);
   }
   return cached;
@@ -35,9 +32,8 @@ function toBase64Url(bytes: ArrayBuffer): string {
     binary += String.fromCharCode(byte);
   }
 
-  const base64 = typeof btoa === 'function'
-    ? btoa(binary)
-    : Buffer.from(binary, 'binary').toString('base64');
+  const base64 =
+    typeof btoa === 'function' ? btoa(binary) : Buffer.from(binary, 'binary').toString('base64');
 
   return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
 }
@@ -49,9 +45,8 @@ function fromBase64Url(value: string): Uint8Array {
     base64 += '='.repeat(4 - padding);
   }
 
-  const binary = typeof atob === 'function'
-    ? atob(base64)
-    : Buffer.from(base64, 'base64').toString('binary');
+  const binary =
+    typeof atob === 'function' ? atob(base64) : Buffer.from(base64, 'base64').toString('binary');
 
   const bytes = new Uint8Array(binary.length);
   for (let i = 0; i < binary.length; i += 1) {
@@ -105,12 +100,9 @@ export async function createSignedCookie({
   const payloadBytes = encoder.encode(JSON.stringify(payload));
   const encodedPayload = toBase64Url(payloadBytes.buffer);
   const encodedPayloadBytes = encoder.encode(encodedPayload);
-  const payloadBufferSource = encodedPayloadBytes.buffer as ArrayBuffer;
-  const signatureBuffer = await crypto.subtle.sign(
-    'HMAC',
-    key,
-    payloadBufferSource,
-  );
+  // Create new Uint8Array instance to ensure clean buffer reference without offsets
+  const payloadView = new Uint8Array(encodedPayloadBytes);
+  const signatureBuffer = await crypto.subtle.sign('HMAC', key, payloadView);
   const signature = toBase64Url(signatureBuffer);
 
   return `${encodedPayload}.${signature}`;
@@ -146,14 +138,10 @@ export async function verifySignedCookie({
 
   const signatureBytes = fromBase64Url(signaturePart);
   const encodedPayloadBytes = encoder.encode(encodedPayload);
-  const signatureBufferSource = signatureBytes.buffer as ArrayBuffer;
-  const payloadBufferSource = encodedPayloadBytes.buffer as ArrayBuffer;
-  const isValid = await crypto.subtle.verify(
-    'HMAC',
-    key,
-    signatureBufferSource,
-    payloadBufferSource,
-  );
+  // Create new Uint8Array instances to ensure clean buffer references without offsets
+  const signatureView = new Uint8Array(signatureBytes);
+  const payloadView = new Uint8Array(encodedPayloadBytes);
+  const isValid = await crypto.subtle.verify('HMAC', key, signatureView, payloadView);
 
   if (!isValid) {
     throw new Error('Signed cookie signature is invalid');
