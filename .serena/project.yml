@@ -81,3 +81,5 @@ excluded_tools: []
 initial_prompt: ""
 
 project_name: "ds_donation_system"
+
+web_dashboard_open_on_launch: false
