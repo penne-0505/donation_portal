@@ -71,14 +71,14 @@ Cloudflare Pages 上で Donation Portal を開発するための初期セット�
    - `wrangler` が未インストールの場合はエラーになるため、`npm install wrangler --save-dev` または `npm install -g wrangler` で導入してください。
    - 開発サーバは `http://localhost:8788` で立ち上がり、`/donate`・`/thanks`・`/donors` の 3 ページを提供します。
 
-6. React ベースのプレビュー UI（`/new/*`）を確認する場合は、別ターミナルで Next.js の開発サーバを起動します。
+6. React ベース UI をホットリロードで確認する場合は、別ターミナルで Next.js の開発サーバを起動します。
 
    ```bash
    npm run ui:dev
    ```
 
-   - `http://localhost:3000/new/donate` で React 版 UI をホットリロード付きで確認できます。
-   - 本番相当のビルドは `npm run build` で生成され、成果物・Functions が `.open-next/` に集約されます（Cloudflare Pages の Build output に指定）。Preview 向けに個別で SSG を生成する場合は `npm run ui:build` を利用できます。
+   - `http://localhost:3000/donate` や `http://localhost:3000/donors` で最新 UI を確認できます。
+   - Cloudflare Pages 開発サーバ (`npm run dev`) へ反映する場合は `npm run ui:build` で `.open-next/` を再生成し、`public` と並行して配信します。
    - React UI の構造と API 連携については `docs/reference/ui/react-app-preview.md` を参照してください。
 
 7. 別ターミナルで主要チェックを実行し、環境が正しく構築できているかを確認します。

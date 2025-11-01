@@ -1,17 +1,21 @@
 ---
-title: "React UI プレビュー: /new/* ルート概要"
+title: "React UI 本番: /donate, /donors, /thanks 概要"
 domain: "donation-portal"
 status: "draft"
-version: "0.1.0"
+version: "0.2.0"
 created: "2025-11-01"
-updated: "2025-11-01"
+updated: "2025-11-02"
 related_issues: []
 related_prs: []
 references:
   - docs/plan/donation-portal/react-ui-integration-2025/plan.md
-  - app/new/donate/page.tsx
-  - app/new/donors/page.tsx
-  - app/new/thanks/page.tsx
+  - docs/plan/donation-portal/react-ui-cutover-2025/plan.md
+  - app/(app-shell)/donate/page.tsx
+  - app/(app-shell)/donors/page.tsx
+  - app/(app-shell)/thanks/page.tsx
+  - components/pages/donate-page.tsx
+  - components/pages/donors-page.tsx
+  - components/pages/thanks-page.tsx
   - lib/ui/hooks/use-session.ts
   - lib/ui/hooks/use-consent.ts
   - lib/ui/hooks/use-checkout.ts
@@ -20,18 +24,18 @@ references:
 
 ## 概要
 
-Next.js (App Router) を利用した React 版 UI は `/new` プレフィックス配下で段階的に公開する。既存の Cloudflare Pages Functions (`/api/*`, OAuth フロー) をそのまま利用しつつ、クライアント側でセッション状態と同意フラグを管理する。
+Next.js (App Router) を利用した React 版 UI が `/donate`・`/donors`・`/thanks` の本番ルートで稼働している。旧 `/new/*` ルートは恒久的に本番導線へリダイレクトされ、Cloudflare Pages Functions (`/api/*`, OAuth フロー) をそのまま利用しつつ、クライアント側でセッション状態と同意フラグを管理する。
 
 ## ルーティング
 
 | ルート | ファイル | 説明 |
 | --- | --- | --- |
-| `/new` | `app/new/page.tsx` | React UI プレビューのランディング。寄附/Donors への導線を表示。 |
-| `/new/donate` | `app/new/donate/page.tsx` | Discord OAuth を前提にした寄附フロー。セッション取得・同意更新・Stripe Checkout 起動を行う。 |
-| `/new/donors` | `app/new/donors/page.tsx` | Donors 一覧取得と同意撤回を提供。 |
-| `/new/thanks` | `app/new/thanks/page.tsx` | Stripe Checkout 成功後のサンクス画面。 |
+| `/` | `app/(app-shell)/page.tsx` | React UI のランディング。寄附/Donors への導線を表示。 |
+| `/donate` | `app/(app-shell)/donate/page.tsx` | Discord OAuth を前提にした寄附フロー。セッション取得・同意更新・Stripe Checkout 起動を行う。 |
+| `/donors` | `app/(app-shell)/donors/page.tsx` | Donors 一覧取得と同意撤回を提供。 |
+| `/thanks` | `app/(app-shell)/thanks/page.tsx` | Stripe Checkout 成功後のサンクス画面。 |
 
-全ページは `app/new/layout.tsx` で共通ヘッダ (`components/app-shell.tsx`) を共有し、Cloudflare Pages の既存ルートとは独立している。
+全ページは `app/(app-shell)/layout.tsx` で共通ヘッダ (`components/app-shell.tsx`) を共有する。`app/new/*` からのアクセスは Next.js のリダイレクトで上記ルートへ転送される。
 
 ## 状態管理フロー
 
@@ -71,23 +75,24 @@ Next.js (App Router) を利用した React 版 UI は `/new` プレフィック�
 | `components/donation-impact.tsx` | 寄附プランの鼓舞コンテンツ | 選択したメニューに応じたコピー/アイコンを出し分け。 |
 | `components/donor-pill.tsx` | Donors リストのタグ表示 | Flex wrap を前提。 |
 | `components/confetti-celebration.tsx` | /thanks での祝砲演出 | `canvas-confetti` を動的 import。 |
+| `components/pages/*.tsx` | ページ固有の UI 構成 | `donate`/`donors` はクライアントコンポーネントとして hooks を利用。 |
 
 Tailwind v4 のトークン定義は `app/globals.css` に集約し、旧静的 UI の `public/styles/base.css` と共存させている。
 
-## Playwright での動作確認
+## ローカル検証
 
-ローカルで `npx next dev --port 3000` を起動し、以下のページを Playwright で巡回した。
+ローカルで `npm run ui:dev -- --port 3000` を起動し、以下のページをブラウザまたは Playwright で巡回する。
 
 | URL | 主な確認事項 |
 | --- | --- |
-| `http://127.0.0.1:3000/new/donate` | OAuth 未ログイン時の CTA、同意チェックボックスの無効状態、寄附メニューの表示。 |
-| `http://127.0.0.1:3000/new/donors` | Donors ローディング表示とログイン誘導文言。 |
-| `http://127.0.0.1:3000/new/thanks` | サンクスメッセージと遷移リンク。 |
+| `http://127.0.0.1:3000/donate` | OAuth 未ログイン時の CTA、同意チェックボックスの無効状態、寄附メニューの表示。 |
+| `http://127.0.0.1:3000/donors` | Donors ローディング表示とログイン誘導文言。 |
+| `http://127.0.0.1:3000/thanks` | サンクスメッセージと遷移リンク。 |
 
-サーバー停止忘れを防ぐため、検証終了後に `kill <PID>` で Next.js dev サーバを停止すること。
+Cloudflare Pages 開発サーバ (`npm run dev`) に反映する際は `npm run ui:build` 実行後に `npm run dev` を再起動し、`.open-next/static` が配信されていることを確認する。
 
 ## 今後の課題
 
-- `/new/donate` でセッションが `signed-in` の場合の UI ステート（Checkout ボタン有効化、同意トグル）に対する E2E テスト。
-- `npm run ui:build` の成果物を Cloudflare Pages のプレビューに組み込むラッパースクリプト整備（`.open-next/functions` の同期自動化など）。
-- 旧静的 UI からのリダイレクト戦略の検討（Phase 3 での切替手順に沿って更新予定）。
+- `/donate` でセッションが `signed-in` の場合の UI ステート（Checkout ボタン有効化、同意トグル）に対する自動 E2E テスト。
+- `npm run ui:build` の成果物同期を CI へ組み込み、Cloudflare Pages プレビューで常に React UI が利用できる状態に保つ。
+- `/new/*` リダイレクトの監視を追加し、誤って旧 UI へアクセスした場合のログを分析する。
