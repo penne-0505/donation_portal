@@ -30,6 +30,27 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-node-${{ steps.setup-node.outputs.node-version }}-${{ hashFiles('package-lock.json') }}
 
+  format:
+    name: Format Check
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+      - name: Restore node_modules cache
+        uses: actions/cache/restore@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ needs.setup.outputs.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ needs.setup.outputs.node-version }}-
+      - name: Install dependencies
+        run: npm install
+      - name: Check formatting
+        run: npm run format
+
   lint:
     name: Lint
     needs: setup
@@ -74,7 +95,7 @@ jobs:
 
   build:
     name: Build
-    needs: [lint, test]
+    needs: [format, lint, test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
