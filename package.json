@@ -9,8 +9,8 @@
   },
   "scripts": {
     "lint": "node scripts/run-eslint.cjs .",
-  "test": "rm -rf dist && node scripts/run-tsc.cjs --project tsconfig.json && node --experimental-global-webcrypto --test dist/tests",
-  "test:coverage": "rm -rf dist && node scripts/run-tsc.cjs --project tsconfig.json && node --experimental-global-webcrypto --test --experimental-test-coverage dist/tests",
+  "test": "rm -rf dist && node scripts/run-tsc.cjs --project tsconfig.json && node --experimental-global-webcrypto --test 'dist/tests/**/*.test.js'",
+  "test:coverage": "rm -rf dist && node scripts/run-tsc.cjs --project tsconfig.json && node --experimental-global-webcrypto --test --experimental-test-coverage 'dist/tests/**/*.test.js'",
     "typecheck": "node scripts/run-tsc.cjs --noEmit",
     "ui:dev": "next dev",
     "ui:build": "node scripts/run-next-on-pages.cjs",
