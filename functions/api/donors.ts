@@ -201,11 +201,16 @@ export const onRequestGet: PagesFunction<DonorsEnv> = async (context) => {
     const bodyText = JSON.stringify(body, null, 2);
     const etag = await createWeakEtag(bodyText);
 
+    // For random order, disable caching since the response is non-deterministic
+    // For other orders (asc/desc), cache for 60 seconds
+    const cacheControl =
+      orderResult.value === 'random' ? 'public, max-age=0' : 'public, max-age=60';
+
     return new Response(bodyText, {
       status: 200,
       headers: {
         'content-type': 'application/json; charset=utf-8',
-        'cache-control': 'public, max-age=60',
+        'cache-control': cacheControl,
         etag,
       },
     });

@@ -72,6 +72,8 @@ function parseStripeSignature(
   if (!header) {
     return null;
   }
+  // Stripe Webhook-Signature header format: "t=<timestamp>,v1=<signature>"
+  // Although Stripe typically sends one v1 signature, we handle multiple for forward compatibility
   const parts = header.split(',');
   let timestamp: string | null = null;
   const signatures: string[] = [];
