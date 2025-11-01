@@ -119,6 +119,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 html {
   font-family: var(--font-sans);
 }
