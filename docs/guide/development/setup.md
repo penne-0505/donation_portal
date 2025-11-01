@@ -2,7 +2,7 @@
 title: 'Donation Portal 開発環境セットアップガイド'
 domain: 'donation-portal'
 status: 'active'
-version: '1.0.0'
+version: '1.1.0'
 created: '2025-10-29'
 updated: '2025-11-01'
 related_issues: []
@@ -11,6 +11,7 @@ references:
   - docs/plan/donation-portal/phase-01-foundation/plan.md
   - docs/guide/auth/discord-oauth.md
   - docs/guide/payments/stripe-webhook-operations.md
+  - docs/plan/donation-portal/react-ui-integration-2025/plan.md
 ---
 
 ## 概要
@@ -70,7 +71,17 @@ Cloudflare Pages 上で Donation Portal を開発するための初期セット�
    - `wrangler` が未インストールの場合はエラーになるため、`npm install wrangler --save-dev` または `npm install -g wrangler` で導入してください。
    - 開発サーバは `http://localhost:8788` で立ち上がり、`/donate`・`/thanks`・`/donors` の 3 ページを提供します。
 
-6. 別ターミナルで主要チェックを実行し、環境が正しく構築できているかを確認します。
+6. React ベースのプレビュー UI（`/new/*`）を確認する場合は、別ターミナルで Next.js の開発サーバを起動します。
+
+   ```bash
+   npm run ui:dev
+   ```
+
+   - `http://localhost:3000/new/donate` で React 版 UI をホットリロード付きで確認できます。
+   - Cloudflare Pages 上で検証する際は `npm run ui:build` を実行すると `.open-next/` に Next.js のビルド成果物が生成され、`npm run dev` で Pages Functions と併せて参照できます。
+   - React UI の構造と API 連携については `docs/reference/ui/react-app-preview.md` を参照してください。
+
+7. 別ターミナルで主要チェックを実行し、環境が正しく構築できているかを確認します。
 
    ```bash
    npm run lint
@@ -79,6 +90,7 @@ Cloudflare Pages 上で Donation Portal を開発するための初期セット�
    npm run test:coverage
    ```
 
+   - Node.js 18.x または 20.x での実行を前提としています（`package.json` の `engines` を参照）。Node 25 以降では `npm test` が `dist/tests` の読み込みに失敗するため、サポートバージョンへの切り替えを行ってください。
    - いずれかが失敗した場合は `node_modules` の再インストールや `.env` の設定漏れを再確認してください。
    - カバレッジレポートを確認する場合は `npm run test:coverage` を実行し、生成される `coverage` ディレクトリ内の JSON を参照してください（Node.js の `--experimental-test-coverage` を利用）。
 

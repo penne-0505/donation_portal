@@ -9,29 +9,58 @@
   },
   "scripts": {
     "lint": "node scripts/run-eslint.cjs .",
-  "test": "rm -rf dist && node scripts/run-tsc.cjs --project tsconfig.json && node --test dist/tests",
-  "test:coverage": "rm -rf dist && node scripts/run-tsc.cjs --project tsconfig.json && node --test --experimental-test-coverage dist/tests",
+    "test": "rm -rf dist && node scripts/run-tsc.cjs --project tsconfig.json && node --test dist/tests",
+    "test:coverage": "rm -rf dist && node scripts/run-tsc.cjs --project tsconfig.json && node --test --experimental-test-coverage dist/tests",
     "typecheck": "node scripts/run-tsc.cjs --noEmit",
-    "build": "node scripts/run-wrangler-build.cjs",
-    "format": "node scripts/run-prettier.cjs --check \"src/**/*.ts\" \"tests/**/*.ts\" \"functions/**/*.ts\" \"public/**/*.{html,css}\" \"docs/guide/**/*.md\" README.md",
-    "format:write": "node scripts/run-prettier.cjs --write \"src/**/*.ts\" \"tests/**/*.ts\" \"functions/**/*.ts\" \"public/**/*.{html,css}\" \"docs/guide/**/*.md\" README.md",
+    "ui:dev": "next dev",
+    "ui:build": "node scripts/run-next-on-pages.cjs",
+    "build": "next build",
+    "cf:build": "node scripts/run-wrangler-build.cjs",
+    "format": "node scripts/run-prettier.cjs --check \"app/**/*.{ts,tsx}\" \"components/**/*.{ts,tsx}\" \"lib/**/*.ts\" \"src/**/*.ts\" \"tests/**/*.ts\" \"functions/**/*.ts\" \"public/**/*.{html,css}\" \"docs/guide/**/*.md\" README.md",
+    "format:write": "node scripts/run-prettier.cjs --write \"app/**/*.{ts,tsx}\" \"components/**/*.{ts,tsx}\" \"lib/**/*.ts\" \"src/**/*.ts\" \"tests/**/*.ts\" \"functions/**/*.ts\" \"public/**/*.{html,css}\" \"docs/guide/**/*.md\" README.md",
     "dev": "node scripts/run-wrangler-dev.cjs",
     "prepare": "husky"
   },
+  "dependencies": {
+    "canvas-confetti": "^1.9.4",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.552.0",
+    "next": "^15.5.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwind-merge": "^3.3.1"
+  },
   "devDependencies": {
+    "@cloudflare/next-on-pages": "^1.13.16",
+    "@tailwindcss/postcss": "^4.1.16",
+    "@types/canvas-confetti": "^1.9.0",
+    "@types/node": "^22.10.7",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.5",
     "@typescript-eslint/eslint-plugin": "^8.7.0",
     "@typescript-eslint/parser": "^8.7.0",
     "eslint": "^9.11.1",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.6",
+    "postcss": "^8.4.49",
     "prettier": "^3.3.3",
+    "tailwindcss": "^4.1.16",
     "typescript": "^5.6.3",
     "wrangler": "^3.77.0"
   },
   "lint-staged": {
-    "*.ts": ["npm run format:write", "npm run lint"],
-    "*.{html,css}": ["npm run format:write"],
-    "docs/guide/**/*.md": ["npm run format:write"],
-    "README.md": ["npm run format:write"]
+    "*.{ts,tsx}": [
+      "npm run format:write",
+      "npm run lint"
+    ],
+    "*.{html,css}": [
+      "npm run format:write"
+    ],
+    "docs/guide/**/*.md": [
+      "npm run format:write"
+    ],
+    "README.md": [
+      "npm run format:write"
+    ]
   }
 }

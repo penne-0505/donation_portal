@@ -96,6 +96,8 @@ temp/
 .wrangler/
 functions/_headers
 functions/_redirects
+.open-next/
+functions/new/
 
 # TypeScript
 *.tsbuildinfo
