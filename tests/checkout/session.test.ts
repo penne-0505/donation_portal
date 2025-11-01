@@ -5,12 +5,12 @@ import { createSignedCookie } from '../../src/lib/auth/cookie.js';
 import { onRequestPost } from '../../functions/api/checkout/session.js';
 
 type Env = {
-  COOKIE_SIGN_KEY: string;
-  STRIPE_SECRET_KEY: string;
-  PRICE_ONE_TIME_300: string;
-  PRICE_SUB_MONTHLY_300: string;
-  PRICE_SUB_YEARLY_3000: string;
-  APP_BASE_URL: string;
+  COOKIE_SIGN_KEY?: string;
+  STRIPE_SECRET_KEY?: string;
+  PRICE_ONE_TIME_300?: string;
+  PRICE_SUB_MONTHLY_300?: string;
+  PRICE_SUB_YEARLY_3000?: string;
+  APP_BASE_URL?: string;
 };
 
 type Context = {
@@ -31,29 +31,32 @@ const APP_BASE_URL = 'https://donation.example';
 const ORIGINAL_FETCH = globalThis.fetch;
 const ORIGINAL_CONSOLE_ERROR = console.error;
 
-function createRequest(body: unknown, cookie?: string): Request {
+const DEFAULT_ENV: Env = {
+  COOKIE_SIGN_KEY,
+  STRIPE_SECRET_KEY,
+  PRICE_ONE_TIME_300,
+  PRICE_SUB_MONTHLY_300,
+  PRICE_SUB_YEARLY_3000,
+  APP_BASE_URL,
+};
+
+function createRequest(body: unknown, cookie?: string, options: { origin?: string } = {}): Request {
   const headers = new Headers({ 'content-type': 'application/json' });
   if (cookie) {
     headers.set('cookie', cookie);
   }
-  return new Request('https://donation.example/api/checkout/session', {
+  const origin = options.origin ?? 'https://donation.example';
+  return new Request(`${origin}/api/checkout/session`, {
     method: 'POST',
     headers,
     body: JSON.stringify(body),
   });
 }
 
-function createContext(request: Request): Context {
+function createContext(request: Request, overrides: Partial<Env> = {}): Context {
   return {
     request,
-    env: {
-      COOKIE_SIGN_KEY,
-      STRIPE_SECRET_KEY,
-      PRICE_ONE_TIME_300,
-      PRICE_SUB_MONTHLY_300,
-      PRICE_SUB_YEARLY_3000,
-      APP_BASE_URL,
-    },
+    env: { ...DEFAULT_ENV, ...overrides },
     params: {},
     waitUntil: () => {
       // noop
@@ -274,5 +277,120 @@ describe('functions/api/checkout/session', () => {
     const body = (await response.json()) as { error?: { code?: string } };
     assert.equal(body.error?.code, 'internal');
     assert.ok(errors.some((entry) => entry.includes('[checkout/session]')));
+  });
+
+  it('APP_BASE_URL が未設定の場合はリクエストの Origin を利用する', async () => {
+    const cookieHeader = await createSessionCookie('フォールバックユーザー', true);
+    const origin = 'https://fallback.example';
+    const request = createRequest(
+      { mode: 'payment', interval: null, variant: 'fixed300' },
+      cookieHeader,
+      { origin },
+    );
+    const context = createContext(request, { APP_BASE_URL: undefined });
+
+    let fetchCalls = 0;
+    globalThis.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+      fetchCalls += 1;
+      const url = String(input);
+      const method = init?.method ?? (input instanceof Request ? input.method : undefined);
+
+      if (fetchCalls === 1) {
+        assert.equal(method, 'GET');
+        return new Response(JSON.stringify({ data: [] }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+
+      if (fetchCalls === 2) {
+        assert.equal(method, 'POST');
+        assert.equal(url, 'https://api.stripe.com/v1/customers');
+        return new Response(JSON.stringify({ id: 'cus_fb' }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+
+      assert.equal(fetchCalls, 3);
+      const params = new URLSearchParams(init?.body as string);
+      assert.equal(params.get('success_url'), `${origin}/thanks`);
+      assert.equal(params.get('cancel_url'), `${origin}/donate`);
+      return new Response(JSON.stringify({ url: 'https://checkout.stripe.com/fallback' }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    };
+
+    const response = await onRequestPost(context);
+
+    assert.equal(response.status, 200);
+    const body = (await response.json()) as { url?: string };
+    assert.equal(body.url, 'https://checkout.stripe.com/fallback');
+    assert.equal(fetchCalls, 3);
+  });
+
+  it('価格 ID が未設定の場合は 500 を返しエラーログを出力する', async () => {
+    const cookieHeader = await createSessionCookie('価格未設定ユーザー', true);
+    const request = createRequest(
+      { mode: 'payment', interval: null, variant: 'fixed300' },
+      cookieHeader,
+    );
+    const context = createContext(request, { PRICE_ONE_TIME_300: undefined });
+
+    const errorMessages: string[] = [];
+    let errorLogCount = 0;
+    console.error = (...args: unknown[]) => {
+      errorLogCount += 1;
+      errorMessages.push(
+        args.map((part) => (typeof part === 'string' ? part : String(part))).join(' '),
+      );
+    };
+
+    let fetchCalls = 0;
+    let checkoutCalled = false;
+    globalThis.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+      fetchCalls += 1;
+      const url = String(input);
+      const parsedUrl = new URL(url);
+      const pathname = parsedUrl.pathname;
+      const method = init?.method ?? (input instanceof Request ? input.method : undefined);
+
+      if (pathname.endsWith('/customers/search')) {
+        assert.equal(method, 'GET');
+        return new Response(JSON.stringify({ data: [] }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+
+      if (pathname.endsWith('/customers')) {
+        assert.equal(method, 'POST');
+        return new Response(JSON.stringify({ id: 'cus_missing_price' }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+
+      if (pathname.endsWith('/checkout/sessions')) {
+        checkoutCalled = true;
+        throw new Error('Checkout API should not be called when price id is missing');
+      }
+
+      throw new Error(`Unexpected fetch call: ${url}`);
+    };
+
+    const response = await onRequestPost(context);
+
+    assert.equal(response.status, 500);
+    const body = (await response.json()) as { error?: { code?: string } };
+    assert.equal(body.error?.code, 'internal');
+    assert.ok(fetchCalls >= 1);
+    assert.equal(checkoutCalled, false);
+    assert.ok(errorLogCount >= 1);
+    assert.ok(
+      errorMessages.some((msg) => msg.includes('Price id PRICE_ONE_TIME_300 is not configured')),
+      'console.error should report missing price id',
+    );
   });
 });

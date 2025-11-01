@@ -1,5 +1,6 @@
 import { describe, it, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 
 interface DonorsAppModule {
   readonly initializeDonorsPage: (doc?: Document) => Promise<void>;
@@ -193,6 +194,32 @@ describe('donors UI script', () => {
 
   beforeEach(() => {
     globalThis.fetch = ORIGINAL_FETCH;
+  });
+
+  it('HTML テンプレートに必要な要素 ID が揃っている', async () => {
+    const fileContent = await readFile(
+      new URL('public/donors/index.html', `file://${process.cwd()}/`),
+      'utf8',
+    );
+
+    const requiredElementIds = [
+      'donors-status',
+      'donors-error',
+      'donor-count',
+      'donors-list',
+      'donors-reload',
+      'consent-login',
+      'consent-revoke',
+      'consent-status',
+      'consent-error',
+    ] as const;
+
+    for (const id of requiredElementIds) {
+      assert.ok(
+        fileContent.includes(`id="${id}"`),
+        `public/donors/index.html should contain id="${id}"`,
+      );
+    }
   });
 
   it('匿名閲覧時はログイン導線を表示し Donors リストを描画する', async () => {

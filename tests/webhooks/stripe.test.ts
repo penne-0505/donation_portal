@@ -1,4 +1,4 @@
-import { beforeEach, describe, it } from 'node:test';
+import { after, beforeEach, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
@@ -8,14 +8,17 @@ import {
 
 const SECRET = 'whsec_test_secret';
 const encoder = new TextEncoder();
+const ORIGINAL_DATE_NOW = Date.now;
+const ORIGINAL_CONSOLE_INFO = console.info;
+const ORIGINAL_CONSOLE_ERROR = console.error;
 
 type Env = {
-  readonly STRIPE_WEBHOOK_SECRET: string;
+  readonly STRIPE_WEBHOOK_SECRET?: string;
 };
 
 type Context = {
   readonly request: Request;
-  readonly env: Env;
+  env: Env;
   readonly params: Record<string, string>;
   readonly waitUntil: (promise: Promise<unknown>) => void;
   readonly next: () => Promise<Response>;
@@ -38,10 +41,15 @@ async function signPayload(rawBody: string, timestamp: number): Promise<string> 
 
 async function createContext(
   body: Record<string, unknown>,
-  options: { timestamp?: number; signature?: string } = {},
+  options: {
+    timestamp?: number;
+    signature?: string;
+    rawBody?: string;
+    envOverrides?: Partial<Env>;
+  } = {},
 ): Promise<Context> {
   const timestamp = options.timestamp ?? Math.floor(Date.now() / 1000);
-  const rawBody = JSON.stringify(body);
+  const rawBody = options.rawBody ?? JSON.stringify(body);
   const signature =
     typeof options.signature === 'string'
       ? options.signature
@@ -57,7 +65,7 @@ async function createContext(
   });
   return {
     request,
-    env: { STRIPE_WEBHOOK_SECRET: SECRET },
+    env: { STRIPE_WEBHOOK_SECRET: SECRET, ...options.envOverrides },
     params: {},
     waitUntil: () => {
       // noop for tests
@@ -69,6 +77,15 @@ async function createContext(
 describe('functions/api/webhooks/stripe', () => {
   beforeEach(() => {
     __resetStripeWebhookStateForTesting();
+    Date.now = ORIGINAL_DATE_NOW;
+    console.info = ORIGINAL_CONSOLE_INFO;
+    console.error = ORIGINAL_CONSOLE_ERROR;
+  });
+
+  after(() => {
+    Date.now = ORIGINAL_DATE_NOW;
+    console.info = ORIGINAL_CONSOLE_INFO;
+    console.error = ORIGINAL_CONSOLE_ERROR;
   });
 
   it('有効な署名付きイベントを受け取り 200 を返す', async () => {
@@ -129,5 +146,90 @@ describe('functions/api/webhooks/stripe', () => {
     assert.equal(response.status, 400);
     const body = (await response.json()) as { error?: { readonly code?: string } };
     assert.equal(body.error?.code, 'bad_request');
+  });
+
+  it('Stripe Webhook secret が未設定の場合は 500 を返しエラーログを出力する', async () => {
+    const errors: unknown[] = [];
+    console.error = (...args: unknown[]) => {
+      errors.push(args);
+    };
+
+    const event = { id: 'evt_missing_secret', type: 'payment_intent.succeeded' } as const;
+    const context = await createContext(event, {
+      envOverrides: { STRIPE_WEBHOOK_SECRET: undefined },
+    });
+
+    const response = await onRequestPost(context);
+
+    assert.equal(response.status, 500);
+    const body = (await response.json()) as { error?: { readonly code?: string } };
+    assert.equal(body.error?.code, 'internal');
+    assert.ok(
+      errors.some(
+        (entry) =>
+          Array.isArray(entry) &&
+          typeof entry[0] === 'string' &&
+          entry[0].includes('[stripe-webhook] STRIPE_WEBHOOK_SECRET is not configured'),
+      ),
+      'console.error should report missing secret',
+    );
+  });
+
+  it('Stripe イベントの JSON を解析できない場合は 400 を返す', async () => {
+    const event = { id: 'evt_invalid_json', type: 'invoice.paid' } as const;
+    const rawBody = '{invalid-json}';
+    const context = await createContext(event, { rawBody });
+
+    const response = await onRequestPost(context);
+
+    assert.equal(response.status, 400);
+    const body = (await response.json()) as {
+      error?: { readonly code?: string; readonly message?: string };
+    };
+    assert.equal(body.error?.code, 'bad_request');
+    assert.match(body.error?.message ?? '', /JSON を解析できませんでした/);
+  });
+
+  it('冪等性キャッシュの TTL を超えると同一イベントを再処理する', async () => {
+    const logs: Array<{ message: string; data: unknown }> = [];
+    console.info = (message: string, data: unknown) => {
+      logs.push({ message, data });
+    };
+
+    const baseTime = 1_700_000_000_000;
+    const event = {
+      id: 'evt_ttl_test',
+      type: 'payment_intent.succeeded',
+      created: 1_700_000_002,
+      livemode: false,
+    } as const;
+
+    Date.now = () => baseTime;
+    await onRequestPost(await createContext(event, { timestamp: Math.floor(baseTime / 1000) }));
+
+    assert.ok(
+      logs.some((entry) => entry.message.includes('donation event acknowledged')),
+      'first processing should acknowledge donation event',
+    );
+
+    logs.length = 0;
+    const withinWindow = baseTime + 5 * 60 * 1000 - 1_000;
+    Date.now = () => withinWindow;
+    await onRequestPost(await createContext(event, { timestamp: Math.floor(withinWindow / 1000) }));
+
+    assert.ok(
+      logs.some((entry) => entry.message.includes('duplicate event ignored')),
+      'duplicate event within window should be ignored',
+    );
+
+    logs.length = 0;
+    const afterWindow = baseTime + 5 * 60 * 1000 + 1_000;
+    Date.now = () => afterWindow;
+    await onRequestPost(await createContext(event, { timestamp: Math.floor(afterWindow / 1000) }));
+
+    assert.ok(
+      logs.some((entry) => entry.message.includes('donation event acknowledged')),
+      'event after TTL should be processed again',
+    );
   });
 });
