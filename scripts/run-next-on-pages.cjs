@@ -7,7 +7,9 @@ function removePreviousBuild(outputDir) {
   try {
     fs.rmSync(outputDir, { recursive: true, force: true });
   } catch (error) {
-    console.warn(`[next-on-pages] 既存のビルド成果物 ${outputDir} の削除に失敗しました: ${error.message}`);
+    console.warn(
+      `[next-on-pages] 既存のビルド成果物 ${outputDir} の削除に失敗しました: ${error.message}`,
+    );
   }
 }
 
@@ -27,6 +29,12 @@ function enforceWorkerCompatibility(outputDir) {
 
     const current = fs.readFileSync(workerEntryPath, 'utf8');
     if (current.includes('compatibility_flags')) {
+      return;
+    }
+
+    const rewritten = current.replace(/^(\s*"use strict";\s*)?/, `$1${banner}`);
+    if (rewritten !== current) {
+      fs.writeFileSync(workerEntryPath, rewritten);
       return;
     }
 
