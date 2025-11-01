@@ -5,10 +5,12 @@ declare namespace NodeJS {
   }
 }
 
-declare const process: {
+interface ProcessLike {
   env: NodeJS.ProcessEnv;
   cwd(): string;
-};
+}
+
+declare const process: ProcessLike;
 
 declare module 'node:test' {
   export type TestFn = (...args: unknown[]) => unknown;
@@ -60,11 +62,15 @@ declare module 'node:assert/strict' {
   export default assert;
 }
 
-declare const Buffer: {
-  from(data: string, encoding?: 'utf8' | 'binary' | 'base64'): {
-    toString(encoding: 'base64' | 'binary' | 'utf8'): string;
-  };
-};
+interface BufferLike {
+  toString(encoding: 'base64' | 'binary' | 'utf8'): string;
+}
+
+interface BufferConstructorLike {
+  from(data: string, encoding?: 'utf8' | 'binary' | 'base64'): BufferLike;
+}
+
+declare const Buffer: BufferConstructorLike;
 
 declare module 'node:fs/promises' {
   export function readFile(path: string | URL, encoding: 'utf8'): Promise<string>;

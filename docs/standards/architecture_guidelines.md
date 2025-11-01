@@ -10,6 +10,9 @@
 - この方針は **実装済みの事実** に基づく標準であり、設計変更が決定した場合は `docs/intent/` で合意を取った上で本書を更新する。
 - レビュー責任: アーキテクチャ変更を含む PR では本書との差異を確認し、必要に応じて更新差分を同一 PR に含める。
 
+## 型定義ポリシー
+- オブジェクトの形状を定義する際は、まず interface を利用する。interface で表現できない型（Union 型など）を定義する必要がある場合に限り、type を選択する。
+
 ## システム全体像
 - **配信基盤**: Cloudflare Pages。`public/` 配下の静的ページ (`/donate`, `/thanks`, `/donors`) を配信する。
 - **サーバーサイド**: Pages Functions (`functions/`) で RESTful API と OAuth フローを提供。Node 互換 API ではなく、Cloudflare Runtime API を前提とする。
