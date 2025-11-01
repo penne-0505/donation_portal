@@ -78,7 +78,7 @@ Cloudflare Pages 上で Donation Portal を開発するための初期セット�
    ```
 
    - `http://localhost:3000/new/donate` で React 版 UI をホットリロード付きで確認できます。
-   - Cloudflare Pages 上で検証する際は `npm run ui:build` を実行すると `.open-next/` に Next.js のビルド成果物が生成され、`npm run dev` で Pages Functions と併せて参照できます。
+   - 本番相当のビルドは `npm run build` で生成され、成果物・Functions が `.open-next/` に集約されます（Cloudflare Pages の Build output に指定）。Preview 向けに個別で SSG を生成する場合は `npm run ui:build` を利用できます。
    - React UI の構造と API 連携については `docs/reference/ui/react-app-preview.md` を参照してください。
 
 7. 別ターミナルで主要チェックを実行し、環境が正しく構築できているかを確認します。
