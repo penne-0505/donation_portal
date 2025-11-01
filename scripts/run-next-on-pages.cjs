@@ -21,6 +21,8 @@ function enforceWorkerCompatibility(outputDir) {
   const workerEntryPath = path.join(outputDir, '_worker.js', 'index.js');
   const banner =
     "export const config = { compatibility_date: '2024-10-29', compatibility_flags: ['nodejs_compat'] };\n";
+  const configPattern = /export const config\s*=\s*{[^}]*}/;
+  const flagsPattern = /compatibility_flags\s*:\s*\[[^\]]*nodejs_compat[^\]]*]/;
 
   try {
     if (!fs.existsSync(workerEntryPath)) {
@@ -28,17 +30,28 @@ function enforceWorkerCompatibility(outputDir) {
     }
 
     const current = fs.readFileSync(workerEntryPath, 'utf8');
-    if (/export const config\s*=\s*{[^}]*compatibility_flags/.test(current)) {
-      return;
-    }
+    if (configPattern.test(current)) {
+      if (flagsPattern.test(current)) {
+        return;
+      }
 
-    const rewritten = current.replace(/^(\s*"use strict";\s*)?/, `$1${banner}`);
-    if (rewritten !== current) {
+      const rewritten = current.replace(configPattern, (match) => {
+        if (/compatibility_flags\s*:/.test(match)) {
+          return match.replace(/compatibility_flags\s*:\s*\[/, (m) => `${m}'nodejs_compat', `);
+        }
+        return match.replace(/}$/, ", compatibility_flags: ['nodejs_compat'] }");
+      });
+
       fs.writeFileSync(workerEntryPath, rewritten);
       return;
     }
 
-    fs.writeFileSync(workerEntryPath, `${banner}\n${current}`);
+    if (/^"use strict";/.test(current)) {
+      fs.writeFileSync(workerEntryPath, current.replace(/^"use strict";\s*/, `"use strict";\n${banner}`));
+      return;
+    }
+
+    fs.writeFileSync(workerEntryPath, `${banner}${current}`);
   } catch (error) {
     console.warn(`[next-on-pages] _worker.js の互換性フラグ挿入に失敗しました: ${error.message}`);
   }
