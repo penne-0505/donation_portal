@@ -25,6 +25,10 @@ function run() {
     ...process.env,
     NODE_ENV: process.env.NODE_ENV ?? 'production',
     NEXT_ON_PAGES_BUILD: process.env.NEXT_ON_PAGES_BUILD ?? '1',
+    NEXT_ON_PAGES_COMPATIBILITY_DATE:
+      process.env.NEXT_ON_PAGES_COMPATIBILITY_DATE ?? '2025-10-30',
+    NEXT_ON_PAGES_COMPATIBILITY_FLAGS:
+      process.env.NEXT_ON_PAGES_COMPATIBILITY_FLAGS ?? 'nodejs_compat',
   };
 
   const result = spawnSync(

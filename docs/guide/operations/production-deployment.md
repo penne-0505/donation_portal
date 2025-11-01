@@ -2,9 +2,9 @@
 title: 'Donation Portal 本番環境セットアップ & 移行ガイド'
 domain: 'donation-portal'
 status: 'active'
-version: '1.0.0'
-created: '2025-11-02'
-updated: '2025-11-02'
+version: '1.0.1'
+created: '2025-11-01'
+updated: '2025-11-01'
 related_issues: []
 related_prs: []
 references:
@@ -58,6 +58,7 @@ QA 手順やローンチ後の運用監視は [Phase 6 QA & Release Runbook](./p
 - 補足: `npm run build` は Next.js の成果物と既存 Pages Functions を `.open-next/` 配下に集約します。追加のコピー処理は不要です。
 - Compatibility date: `2025-10-30`
 - Compatibility flags: `nodejs_compat` を Cloudflare Pages の Project Settings で明示的に追加
+- Node.js 互換フラグはビルド時にも `NEXT_ON_PAGES_COMPATIBILITY_FLAGS=nodejs_compat` が付与されるよう `scripts/run-next-on-pages.cjs` に組み込んでいます。Cloudflare Pages 側でも同じフラグを Production/Preview 両環境に設定してください。
 
 > `npm run build` は Next.js 出力と Functions を `.open-next/` 配下へまとめます。互換性フラグは Cloudflare Pages 側の設定（または `wrangler.toml`）に依存するため、必要に応じて `nodejs_compat` を追加してください。
 
@@ -126,6 +127,14 @@ QA 手順やローンチ後の運用監視は [Phase 6 QA & Release Runbook](./p
 | 寄附件数              | Stripe Dashboard > Payments              | 基準値から急減なし    | 異常時はコミュニティ周知・フォーム確認  |
 
 監視結果はローンチ当日から 1 週間は日次で共有し、その後は週次レポートへ移行します。
+
+## トラブルシューティング
+
+### Node.JS Compatibility Error が表示される
+
+- 症状: ページ全体が `Node.JS Compatibility Error`（`no nodejs_compat compatibility flag set`）画面に置き換わり、Next.js の UI が表示されない。
+- 原因: Cloudflare Pages の互換フラグ `nodejs_compat` が適用されず、Workers ランタイムが Node.js API を利用できていない。2025-11-01 以前のビルドスクリプトでは `NEXT_ON_PAGES_COMPATIBILITY_FLAGS` が未設定だったため、ダッシュボード側の設定漏れがあると本事象が発生する。
+- 対処: `npm run build` が実行される環境変数で `NEXT_ON_PAGES_COMPATIBILITY_FLAGS=nodejs_compat`（および `NEXT_ON_PAGES_COMPATIBILITY_DATE=2025-10-30`）が渡っているか確認し、Cloudflare Pages の Project Settings > Functions でも同じ互換フラグを Production/Preview 双方に追加する。フラグを更新したら新しいデプロイをトリガーする。
 
 ## 関連ドキュメント
 
