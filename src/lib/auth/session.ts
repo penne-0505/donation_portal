@@ -62,9 +62,7 @@ interface SessionCookiePayloadV2 {
   };
 }
 
-function extractSessionFields(
-  payload: unknown,
-):
+function extractSessionFields(payload: unknown):
   | {
       readonly ok: true;
       readonly displayName: string;
