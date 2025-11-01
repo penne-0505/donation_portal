@@ -29,7 +29,7 @@ export function DonatePage() {
     isUpdating: isConsentUpdating,
     error: consentError,
   } = useConsentMutation({
-    onUpdated: (nextValue) => {
+    onUpdated: (nextValue: boolean | ((prevState: boolean) => boolean)) => {
       setConsent(nextValue);
       void refresh();
     },
