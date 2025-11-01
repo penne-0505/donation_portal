@@ -1,5 +1,5 @@
 export const config = {
-  compatibility_date: '2024-10-29',
+  compatibility_date: '2025-10-30',
   compatibility_flags: ['nodejs_compat'],
 };
 

@@ -56,10 +56,10 @@ QA 手順やローンチ後の運用監視は [Phase 6 QA & Release Runbook](./p
 - Build output directory: `.open-next`
 - Functions directory: `.open-next/functions`
 - 補足: `npm run build` は Next.js の成果物と既存 Pages Functions を `.open-next/` 配下に集約します。追加のコピー処理は不要です。
-- Compatibility date: `2024-10-29`
-- Compatibility flags: ビルド済み `_worker.js` に `nodejs_compat` を自動で挿入（追加の UI 設定は不要）
+- Compatibility date: `2025-10-30`
+- Compatibility flags: `nodejs_compat` を Cloudflare Pages の Project Settings で明示的に追加
 
-> `npm run build` 実行時に `scripts/run-next-on-pages.cjs` が `_worker.js/index.js` の先頭へ互換性フラグを挿入します。ローカルの `.open-next/` を削除してから再ビルドすると、Pages デプロイでも同じ設定が反映されます。
+> `npm run build` は Next.js 出力と Functions を `.open-next/` 配下へまとめます。互換性フラグは Cloudflare Pages 側の設定（または `wrangler.toml`）に依存するため、必要に応じて `nodejs_compat` を追加してください。
 
 3. **Production branch** を `main` に設定し、必要に応じて Preview ブランチに `dev` を追加します。
 4. セットアップ後、Pages が自動で初回ビルドを実行するため、完了を待ってから Secrets の登録に進みます。
