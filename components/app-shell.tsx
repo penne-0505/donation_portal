@@ -1,8 +1,10 @@
 'use client';
 
 import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { cn } from '@/lib/ui/cn';
+import { useHeroContext } from '@/lib/ui/contexts/hero-context';
 import { Button } from '@/components/ui/button';
 
 interface AppShellProps {
@@ -11,6 +13,8 @@ interface AppShellProps {
 }
 
 export function AppShell({ children, className }: AppShellProps) {
+  const { heroInView } = useHeroContext();
+
   const handleCtaClick = () => {
     // 計測イベント発火
     if (typeof window !== 'undefined' && (window as any).gtag) {
@@ -26,7 +30,7 @@ export function AppShell({ children, className }: AppShellProps) {
   };
 
   return (
-    <div className="min-h-screen bg-surface text-foreground">
+    <div className="flex min-h-screen flex-col bg-surface text-foreground">
       <header className="sticky top-0 z-20 border-b border-border/60 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
           <Link
@@ -46,16 +50,23 @@ export function AppShell({ children, className }: AppShellProps) {
             <Button
               href="/donate"
               onClick={handleCtaClick}
-              size="sm"
-              className="gap-2"
+              size="md"
+              variant={heroInView ? 'outline' : 'primary'}
+              className={cn('gap-2', heroInView && 'opacity-60 pointer-events-none')}
               aria-label="寄付をはじめる"
+              disabled={heroInView}
             >
-              寄付する
+              <span className="flex items-center gap-2">
+                寄付する
+                <ArrowRight className="h-4 w-4" aria-hidden />
+              </span>
             </Button>
           </nav>
         </div>
       </header>
-      <main className={cn('mx-auto w-full max-w-6xl px-5 py-14', className)}>{children}</main>
+      <main className={cn('flex-1 mx-auto w-full max-w-6xl px-5 py-14', className)}>
+        {children}
+      </main>
       <footer className="border-t border-border/60 py-6 text-center text-xs text-muted-foreground">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5">
           <span>© 2025 Donation Portal</span>

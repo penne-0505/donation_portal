@@ -2,10 +2,12 @@
 
 import { useCallback, useEffect, useId, useState } from 'react';
 import { AlertCircle, ArrowRight, CheckCircle2, LoaderCircle, LogIn, LogOut } from 'lucide-react';
+import { useHeroContext } from '@/lib/ui/contexts/hero-context';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ConsentToggle } from '@/components/consent-toggle';
 import { DonationImpact } from '@/components/donation-impact';
+import { DonationBadge } from '@/components/donation-badge';
 import { cn } from '@/lib/ui/cn';
 import { CHECKOUT_PRESETS } from '@/lib/ui/checkout-presets';
 import { useCheckout } from '@/lib/ui/hooks/use-checkout';
@@ -21,6 +23,7 @@ function getImpactKey(preset: CheckoutPreset): 'payment' | 'monthly' | 'yearly' 
 }
 
 export function DonatePage() {
+  const { heroRef } = useHeroContext();
   const { status, login, logout, refresh, isRefreshing } = useSession();
   const [consent, setConsent] = useState(false);
   const [selectedPreset, setSelectedPreset] = useState<CheckoutPreset | null>(null);
@@ -80,14 +83,15 @@ export function DonatePage() {
 
   return (
     <div className="space-y-12 page-enter">
-      <section className="space-y-6 text-pretty">
-        <h1 className="text-4xl font-bold tracking-tight text-foreground fade-in-up stagger-2 md:text-5xl">
-          寄附のご案内
-        </h1>
-        <p className="max-w-3xl text-lg leading-relaxed text-muted-foreground fade-in-up stagger-3">
-          Minecraft サーバーの運営費を支える任意の寄附を受け付けています。Discord
-          でログインし、掲示への同意を設定してください。
-        </p>
+      <section className="space-y-6 text-pretty py-16 sm:py-20 md:py-24" ref={heroRef}>
+        <div className="max-w-3xl mx-auto px-4">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-tight text-foreground fade-in-up stagger-2">
+            Discordコミュニティの運営を支えるための寄附
+          </h1>
+          <p className="mt-3 text-base md:text-lg leading-relaxed text-muted-foreground fade-in-up stagger-3">
+            透明性と感謝を大切に運営しています。
+          </p>
+        </div>
       </section>
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
@@ -282,17 +286,23 @@ export function DonatePage() {
                             aria-hidden
                           />
                         </div>
-                        <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
-                          {preset.mode === 'payment' ? (
-                            <span className="rounded-full bg-foreground/10 px-2 py-0.5 text-foreground">
-                              単発
-                            </span>
-                          ) : (
-                            <span className="rounded-full bg-foreground/10 px-2 py-0.5 text-foreground">
-                              {preset.interval === 'yearly' ? '年額' : '月額'}
-                            </span>
-                          )}
-                          <span>Stripe Checkout で安全に決済します</span>
+                        <div className="mt-3 flex flex-col gap-3">
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            {preset.mode === 'payment' ? (
+                              <span className="rounded-full bg-foreground/10 px-2 py-0.5 text-foreground">
+                                単発
+                              </span>
+                            ) : (
+                              <span className="rounded-full bg-foreground/10 px-2 py-0.5 text-foreground">
+                                {preset.interval === 'yearly' ? '年額' : '月額'}
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex flex-col gap-2">
+                            <DonationBadge type="stripe" />
+                            <DonationBadge type="oauth" />
+                            <DonationBadge type="list" />
+                          </div>
                         </div>
                       </button>
                     );
