@@ -157,6 +157,7 @@ owners:
 - `.transition-glass` と `--ease-glass` を追加し、主要インタラクションの遷移を 240ms・共通カーブへ統一
 - `/donors` ページも含めて glow 適用範囲を精査し、ログイン状態のフィードバックを整備
 - `tests/donate/consentToggle.test.ts` を新設し、`npm run test -- tests/donate/ui.test.ts tests/donate/consentToggle.test.ts` で検証済み
+- ヒーロー冒頭のサポートバッジ（"Discord Community Support" など各ページ共通の丸型ラベル）を撤廃し、主要見出しとメッセージへ視線を集中させる
 
 ### Tier 1: 基盤構築（優先度 ★★★★★）
 

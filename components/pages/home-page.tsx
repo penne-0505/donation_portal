@@ -5,10 +5,6 @@ export function HomePage() {
   return (
     <div className="space-y-20 py-12 page-enter">
       <section className="flex min-h-[55vh] flex-col items-center justify-center gap-8 text-center">
-        <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
-          <span className="h-1.5 w-1.5 rounded-full bg-foreground" aria-hidden />
-          Discord Community Support
-        </div>
         <h1 className="text-balance text-5xl font-bold tracking-tight text-foreground md:text-6xl">
           Donation Portal
         </h1>

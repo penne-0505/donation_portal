@@ -77,10 +77,6 @@ export function DonatePage() {
   return (
     <div className="space-y-12 page-enter">
       <section className="space-y-6 text-pretty">
-        <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground fade-in-up stagger-1">
-          <span className="h-1.5 w-1.5 rounded-full bg-foreground" aria-hidden />
-          Minecraft Community
-        </div>
         <h1 className="text-4xl font-bold tracking-tight text-foreground fade-in-up stagger-2 md:text-5xl">
           寄附のご案内
         </h1>
