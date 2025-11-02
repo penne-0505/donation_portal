@@ -71,6 +71,7 @@
     border: 1px solid rgba(255, 255, 255, 0.12);
   }
 
+  .glass,
   .glass-md {
     background: linear-gradient(
       180deg,
@@ -82,6 +83,7 @@
     border: 1px solid rgba(255, 255, 255, 0.16);
   }
 
+  .glass-strong,
   .glass-lg {
     background: linear-gradient(
       180deg,
@@ -91,14 +93,6 @@
     backdrop-filter: blur(40px) saturate(170%);
     -webkit-backdrop-filter: blur(40px) saturate(170%);
     border: 1px solid rgba(255, 255, 255, 0.2);
-  }
-
-  .glass {
-    @apply glass-md;
-  }
-
-  .glass-strong {
-    @apply glass-lg;
   }
 
   .shadow-minimal {
