@@ -2,9 +2,9 @@
 title: "UI デザイントークン定義"
 domain: "donation-portal"
 status: "draft"
-version: "0.1.1"
+version: "0.1.2"
 created: "2025-11-01"
-updated: "2025-11-03"
+updated: "2025-11-02"
 related_issues: []
 related_prs: []
 references:
@@ -106,6 +106,13 @@ Light と Dark は `prefers-color-scheme` で自動切り替えし、同一ト�
 | `.layout-cluster` | インライン要素をラップしながら等間隔に配置。ボタン群やメタ情報で使用。 | `--space-sm` |
 | `.card` | 背景・角丸・シャドウを統一。`.card--muted` はサブセクション向け薄色背景。 | `--color-surface`, `--radius-lg`, `--shadow-sm` |
 
+### Glass & Shadow ユーティリティ
+
+| クラス | 説明 | 主な用途 |
+| --- | --- | --- |
+| `.glass-card` | ラジアルハイライトを重ねたガラスカード表現。`.glass-md` / `.glass-lg` と組み合わせることで立体感を強調する。 | 寄付導線（/donate）、サンクスカード（/thanks）、支援者一覧（/donors）のセクションカード |
+| `.shadow-glass-elevated` | ガラスの透明感を維持したまま多層のドロップシャドウと内側ハイライトを付与する。 | App Shell のヘッダー／フッターなど常時表示されるガラスコンテナ |
+
 ## コンポーネントスタイル
 
 | コンポーネント | 使用トークン | 備考 |
@@ -122,6 +129,7 @@ Light と Dark は `prefers-color-scheme` で自動切り替えし、同一ト�
 - ダークモードの値を変更する際は `@media (prefers-color-scheme: dark)` 内の同名トークンだけを更新する。差分が必要な場合は `--*-soft` など補助トークンを追加する。
 - ページ単位で余白が不足する場合はまず `.page` の `padding` を調整し、局所対応はユーティリティ（`.layout-stack` 等）のギャップ調整で吸収する。
 - トークンの更新時は `docs/reference/ui/style-tokens.md` の `updated` フィールドと表の値を同期させ、関連スクリーンショットを QA レポートに添付する。
+- UI コピーは「Donors」ではなく「支援者」を既定表記とし、ヘッダー／CTA／同意トグルで統一する。
 
 ---
 本ドキュメントは UI リフレッシュ計画 Stage 1 の成果物として保持し、継続的な UI 改修の単一参照点とする。

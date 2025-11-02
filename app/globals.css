@@ -110,6 +110,43 @@
     border: 1px solid rgba(255, 255, 255, 0.12);
   }
 
+  .glass-card {
+    position: relative;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.22) 0%,
+      rgba(255, 255, 255, 0.1) 45%,
+      rgba(255, 255, 255, 0.04) 100%
+    );
+    backdrop-filter: blur(34px) saturate(165%);
+    -webkit-backdrop-filter: blur(34px) saturate(165%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow:
+      0 18px 48px rgba(15, 23, 42, 0.14),
+      0 6px 18px rgba(15, 23, 42, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    overflow: hidden;
+  }
+
+  .glass-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      circle at 20% 15%,
+      rgba(255, 255, 255, 0.45) 0%,
+      rgba(255, 255, 255, 0.15) 22%,
+      transparent 55%
+    );
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  .glass-card > * {
+    position: relative;
+    z-index: 1;
+  }
+
   .glass,
   .glass-md {
     background: linear-gradient(
@@ -142,6 +179,13 @@
 
   .shadow-inner-light {
     --shadow-inner-light: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  }
+
+  .shadow-glass-elevated {
+    box-shadow:
+      0 20px 55px rgba(15, 23, 42, 0.22),
+      0 10px 30px rgba(15, 23, 42, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.65);
   }
 
   .border-gradient-subtle {

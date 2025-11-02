@@ -32,7 +32,7 @@ export function DonorsPage() {
     if (!isSignedIn) {
       return;
     }
-    const confirmed = window.confirm('Donors 掲示を撤回しますか？');
+    const confirmed = window.confirm('支援者掲載を撤回しますか？');
     if (!confirmed) {
       return;
     }
@@ -63,10 +63,10 @@ export function DonorsPage() {
           <div className="flex flex-col gap-6 p-6 sm:p-8">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div className="space-y-1">
-                <h2 className="text-2xl font-semibold text-foreground">掲示中の Donors</h2>
+                <h2 className="text-2xl font-semibold text-foreground">掲示中の支援者</h2>
                 <p className="text-sm text-muted-foreground">
-                  現在 <span className="font-semibold text-foreground">{total}</span> 名の Donor
-                  を掲載しています。
+                  現在 <span className="font-semibold text-foreground">{total}</span>{' '}
+                  名の支援者を掲示しています。
                 </p>
               </div>
               <Button
@@ -92,7 +92,7 @@ export function DonorsPage() {
               {isLoading ? (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <RefreshCw className="h-4 w-4 animate-spin" aria-hidden />
-                  <span>Donors 情報を取得しています…</span>
+                  <span>支援者情報を取得しています…</span>
                 </div>
               ) : donors.length > 0 ? (
                 <div className="flex flex-wrap gap-3">
@@ -103,13 +103,13 @@ export function DonorsPage() {
               ) : (
                 <div className="flex flex-col items-center justify-center gap-3 py-8 text-center text-muted-foreground">
                   <Users className="h-8 w-8" aria-hidden />
-                  <p className="text-sm">まだ Donor がいません。</p>
+                  <p className="text-sm">まだ支援者の掲載がありません。</p>
                 </div>
               )}
             </div>
 
             <p className="text-xs text-muted-foreground">
-              Donors 情報は 60
+              支援者情報は 60
               秒間キャッシュされます。同意の更新が反映されるまで時間がかかる場合があります。
             </p>
           </div>
@@ -122,7 +122,7 @@ export function DonorsPage() {
                 <div className="space-y-2">
                   <h2 className="text-2xl font-semibold text-foreground">掲示の同意を管理</h2>
                   <p className="text-sm text-muted-foreground">
-                    Discord でログイン済みの場合、Donors 掲載の同意をいつでも変更できます。
+                    Discord でログイン済みの場合、支援者掲載の同意をいつでも変更できます。
                   </p>
                 </div>
 
@@ -167,7 +167,7 @@ export function DonorsPage() {
                 ) : (
                   <div className="space-y-4">
                     <p className="text-sm text-muted-foreground">
-                      Donors 掲載の同意を管理するには Discord でログインしてください。
+                      支援者掲載の同意を管理するには Discord でログインしてください。
                     </p>
                     <Button onClick={login} size="md" className="group w-full gap-2">
                       <span className="flex items-center gap-2">

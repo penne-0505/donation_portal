@@ -39,7 +39,7 @@ export function useDonors() {
       });
 
       if (!response.ok) {
-        let message = 'Donors 情報の取得に失敗しました。';
+        let message = '支援者情報の取得に失敗しました。';
         try {
           const payload = (await response.json()) as DonorsApiErrorBody;
           if (payload?.error?.message) {
@@ -57,7 +57,7 @@ export function useDonors() {
       const total = typeof payload?.count === 'number' ? payload.count : donors.length;
       setState({ donors, total, isLoading: false, error: null });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Donors 情報の取得に失敗しました。';
+      const message = error instanceof Error ? error.message : '支援者情報の取得に失敗しました。';
       setState({ donors: [], total: 0, isLoading: false, error: message });
     }
   }, []);

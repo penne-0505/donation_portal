@@ -224,7 +224,7 @@ export const onRequestGet: PagesFunction<DonorsEnv> = async (context) => {
     return errorResponse(
       500,
       'internal',
-      'Donors 情報の取得に失敗しました。時間をおいて再度お試しください。',
+      '支援者情報の取得に失敗しました。時間をおいて再度お試しください。',
     );
   }
 };
