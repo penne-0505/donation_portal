@@ -34,6 +34,14 @@ function run() {
       process.env.NEXT_ON_PAGES_COMPATIBILITY_FLAGS ?? defaultCompatibilityFlags,
   };
 
+  console.log('[debug][run-next-on-pages] build params', {
+    outputDir,
+    nodeEnv: env.NODE_ENV,
+    nextOnPagesBuild: env.NEXT_ON_PAGES_BUILD,
+    compatibilityDate: env.NEXT_ON_PAGES_COMPATIBILITY_DATE,
+    compatibilityFlags: env.NEXT_ON_PAGES_COMPATIBILITY_FLAGS,
+  });
+
   const result = spawnSync(
     resolveNpxCommand(),
     ['@cloudflare/next-on-pages', '--outdir', outputDir],
@@ -41,8 +49,15 @@ function run() {
   );
 
   if (result.status !== 0) {
+    console.error('[debug][run-next-on-pages] build failed', {
+      status: result.status,
+      signal: result.signal,
+      error: result.error?.message,
+    });
     process.exit(result.status ?? 1);
   }
+
+  console.log('[debug][run-next-on-pages] build succeeded');
 
   const staticDir = path.join(outputDir, 'static');
   try {
@@ -93,6 +108,10 @@ function run() {
   try {
     fs.mkdirSync(path.dirname(metadataPath), { recursive: true });
     fs.writeFileSync(metadataPath, `${JSON.stringify(metadata)}\n`);
+    console.log('[debug][run-next-on-pages] metadata.json written', {
+      metadataPath,
+      metadata,
+    });
   } catch (error) {
     console.warn(
       `[next-on-pages] _worker.js/metadata.json の生成に失敗しました: ${error.message}`,

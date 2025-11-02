@@ -25,16 +25,26 @@ function resolveGlobalWranglerBin() {
 function resolveWranglerBin() {
   const local = resolveLocalWranglerBin();
   if (local) {
+    console.log('[debug][wrangler-build] resolved local wrangler', { local });
     return local;
   }
+  console.log('[debug][wrangler-build] resolving global wrangler');
   return resolveGlobalWranglerBin();
 }
 
 function run() {
   try {
     const wranglerBin = resolveWranglerBin();
+    console.log('[debug][wrangler-build] executing wrangler pages functions build', {
+      wranglerBin,
+    });
     const result = spawnSync('node', [wranglerBin, 'pages', 'functions', 'build', './functions'], {
       stdio: 'inherit',
+    });
+    console.log('[debug][wrangler-build] wrangler exited', {
+      status: result.status,
+      signal: result.signal,
+      error: result.error?.message,
     });
     process.exit(result.status ?? 1);
   } catch (error) {
