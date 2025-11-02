@@ -40,11 +40,11 @@ describe('DonatePage React UI', () => {
     fireEvent.click(loginButton);
     assert.equal(loginCalls, 1);
 
-    const consentCheckbox = screen.getByLabelText(
-      'Donors ページに表示名を掲載することに同意します',
-    ) as HTMLInputElement;
-    assert.equal(consentCheckbox.disabled, true);
-    assert.equal(consentCheckbox.checked, false);
+    const consentToggle = screen.getByRole('switch', {
+      name: 'Donors ページに表示名を掲載することに同意します',
+    }) as HTMLButtonElement;
+    assert.equal(consentToggle.disabled, true);
+    assert.equal(consentToggle.getAttribute('aria-checked'), 'false');
 
     for (const preset of CHECKOUT_PRESETS) {
       const button = screen.getByRole('button', {
@@ -74,11 +74,11 @@ describe('DonatePage React UI', () => {
 
     assert.ok(screen.getByText('テストユーザー'));
 
-    const consentCheckbox = screen.getByLabelText(
-      'Donors ページに表示名を掲載することに同意します',
-    ) as HTMLInputElement;
+    const consentToggle = screen.getByRole('switch', {
+      name: 'Donors ページに表示名を掲載することに同意します',
+    }) as HTMLButtonElement;
     await waitFor(() => {
-      assert.equal(consentCheckbox.checked, true);
+      assert.equal(consentToggle.getAttribute('aria-checked'), 'true');
     });
 
     const logoutButton = screen.getByRole('button', { name: /ログアウト/ }) as HTMLButtonElement;
@@ -107,18 +107,19 @@ describe('DonatePage React UI', () => {
 
     render(createElement(DonatePage));
 
-    const consentCheckbox = screen.getByLabelText(
-      'Donors ページに表示名を掲載することに同意します',
-    ) as HTMLInputElement;
+    const consentToggle = screen.getByRole('switch', {
+      name: 'Donors ページに表示名を掲載することに同意します',
+    }) as HTMLButtonElement;
 
     await waitFor(() => {
-      assert.equal(consentCheckbox.checked, false);
+      assert.equal(consentToggle.getAttribute('aria-checked'), 'false');
     });
 
-    fireEvent.click(consentCheckbox);
+    fireEvent.click(consentToggle);
 
     await waitFor(() => {
       assert.deepEqual(consentCalls, [true]);
+      assert.equal(consentToggle.getAttribute('aria-checked'), 'true');
     });
   });
 

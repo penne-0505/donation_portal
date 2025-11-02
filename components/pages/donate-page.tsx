@@ -1,10 +1,10 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useId, useState } from 'react';
 import { AlertCircle, ArrowRight, CheckCircle2, LoaderCircle, LogIn, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
+import { ConsentToggle } from '@/components/consent-toggle';
 import { DonationImpact } from '@/components/donation-impact';
 import { cn } from '@/lib/ui/cn';
 import { CHECKOUT_PRESETS } from '@/lib/ui/checkout-presets';
@@ -49,6 +49,8 @@ export function DonatePage() {
   const displayName = status.state === 'signed-in' ? status.session.displayName : '';
 
   const presets = CHECKOUT_PRESETS;
+  const consentLabelId = useId();
+  const consentDescriptionId = useId();
 
   const handleConsentChange = useCallback(
     async (nextValue: boolean) => {
@@ -100,7 +102,7 @@ export function DonatePage() {
               </div>
 
               {status.state === 'error' ? (
-                <div className="flex items-start gap-3 rounded-xl border border-red-200/80 bg-red-50 px-4 py-3 text-sm text-red-700">
+                <div className="flex items-start gap-3 rounded-xl border border-red-200/80 bg-red-50 px-4 py-3 text-sm text-red-700 transition-glass glow-status-error">
                   <AlertCircle className="mt-0.5 h-4 w-4" aria-hidden />
                   <span>{status.message}</span>
                 </div>
@@ -109,7 +111,7 @@ export function DonatePage() {
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 {isSignedIn ? (
                   <>
-                    <div className="flex flex-1 items-center gap-3 rounded-xl glass-sm px-4 py-3 text-left text-sm text-muted-foreground shadow-minimal shadow-inner-light animate-bounce-in">
+                    <div className="flex flex-1 items-center gap-3 rounded-xl glass-sm px-4 py-3 text-left text-sm text-muted-foreground shadow-minimal shadow-inner-light transition-glass glow-status-success animate-bounce-in">
                       <CheckCircle2 className="h-5 w-5 text-foreground" aria-hidden />
                       <div className="flex flex-col">
                         <span className="font-semibold text-foreground">ログイン済み</span>
@@ -165,25 +167,38 @@ export function DonatePage() {
                 </p>
               </div>
 
-              <div className="flex items-start gap-3 rounded-xl glass-sm px-4 py-3 shadow-minimal shadow-inner-light">
-                <Checkbox
-                  aria-label="Donors ページに表示名を掲載することに同意します"
-                  checked={consent}
-                  onCheckedChange={(value: boolean) => void handleConsentChange(Boolean(value))}
-                  disabled={!isSignedIn || isConsentUpdating}
-                  className="mt-0.5"
-                />
-                <div className="text-sm text-muted-foreground">
-                  Donors ページに表示名を掲載することに同意します
+              <div className="flex flex-col gap-3 rounded-xl glass-sm px-4 py-4 shadow-minimal shadow-inner-light transition-glass">
+                <div className="flex items-start gap-4">
+                  <ConsentToggle
+                    aria-labelledby={consentLabelId}
+                    aria-describedby={consentDescriptionId}
+                    checked={consent}
+                    onCheckedChange={(value: boolean) => void handleConsentChange(value)}
+                    disabled={!isSignedIn || isConsentUpdating}
+                    className="shrink-0"
+                  />
+                  <div className="space-y-1">
+                    <span id={consentLabelId} className="text-sm font-semibold text-foreground">
+                      Donors ページに表示名を掲載することに同意します
+                    </span>
+                    <p
+                      id={consentDescriptionId}
+                      className="text-xs leading-relaxed text-muted-foreground"
+                    >
+                      Discord でログインすると同意の状態を変更できます。寄附後でも撤回が可能です。
+                    </p>
+                    {isConsentUpdating ? (
+                      <span className="inline-flex items-center gap-1 text-xs text-muted-foreground transition-glass">
+                        <LoaderCircle className="h-3 w-3 animate-spin" aria-hidden />
+                        更新中…
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
               </div>
 
-              <p className="text-xs text-muted-foreground">
-                Discord でログインすると同意の状態を変更できます。寄附後でも撤回が可能です。
-              </p>
-
               {consentError ? (
-                <div className="flex items-start gap-2 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+                <div className="flex items-start gap-2 rounded-md border border-red-200/70 bg-red-50 px-3 py-2 text-sm text-red-700 transition-glass glow-status-error">
                   <AlertCircle className="mt-0.5 h-4 w-4" aria-hidden />
                   <span>{consentError}</span>
                 </div>
@@ -233,7 +248,7 @@ export function DonatePage() {
                 </div>
 
                 {checkoutState.error ? (
-                  <div className="flex items-start gap-2 rounded-xl border border-red-200/80 bg-red-50 px-4 py-3 text-sm text-red-700">
+                  <div className="flex items-start gap-2 rounded-xl border border-red-200/80 bg-red-50 px-4 py-3 text-sm text-red-700 transition-glass glow-status-error">
                     <AlertCircle className="mt-0.5 h-4 w-4" aria-hidden />
                     <span>{checkoutState.error}</span>
                   </div>

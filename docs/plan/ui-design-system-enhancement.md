@@ -150,6 +150,14 @@ owners:
 
 ## 実装戦略
 
+### Tier 2 実装状況 (2025-11-02)
+
+- ConsentToggle を macOS 風トグルとして実装し、`/donate` に統合（`aria-labelledby`/`aria-describedby` を付与）
+- ステータスの Success/Error アラートへ `glow-status-*` ユーティリティを付与し視認性を強化
+- `.transition-glass` と `--ease-glass` を追加し、主要インタラクションの遷移を 240ms・共通カーブへ統一
+- `/donors` ページも含めて glow 適用範囲を精査し、ログイン状態のフィードバックを整備
+- `tests/donate/consentToggle.test.ts` を新設し、`npm run test -- tests/donate/ui.test.ts tests/donate/consentToggle.test.ts` で検証済み
+
 ### Tier 1: 基盤構築（優先度 ★★★★★）
 
 #### 1-1. Liquid Glass Utilities の定義

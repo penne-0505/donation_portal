@@ -86,7 +86,7 @@ export function DonorsPage() {
             </div>
 
             {error ? (
-              <div className="flex items-start gap-2 rounded-xl border border-red-200/80 bg-red-50 px-4 py-3 text-sm text-red-700">
+              <div className="flex items-start gap-2 rounded-xl border border-red-200/80 bg-red-50 px-4 py-3 text-sm text-red-700 transition-glass glow-status-error">
                 <AlertCircle className="mt-0.5 h-4 w-4" aria-hidden />
                 <span>{error}</span>
               </div>
@@ -131,7 +131,7 @@ export function DonorsPage() {
                 </div>
 
                 {status.state === 'error' ? (
-                  <div className="flex items-start gap-2 rounded-xl border border-red-200/80 bg-red-50 px-4 py-3 text-sm text-red-700">
+                  <div className="flex items-start gap-2 rounded-xl border border-red-200/80 bg-red-50 px-4 py-3 text-sm text-red-700 transition-glass glow-status-error">
                     <AlertCircle className="mt-0.5 h-4 w-4" aria-hidden />
                     <span>{status.message}</span>
                   </div>
@@ -139,7 +139,7 @@ export function DonorsPage() {
 
                 {isSignedIn ? (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3 rounded-xl glass-sm px-4 py-3 text-left text-sm text-muted-foreground shadow-minimal shadow-inner-light">
+                    <div className="flex items-center gap-3 rounded-xl glass-sm px-4 py-3 text-left text-sm text-muted-foreground shadow-minimal shadow-inner-light transition-glass glow-status-success">
                       <CheckCircle2 className="h-5 w-5 text-foreground" aria-hidden />
                       <div className="flex flex-col">
                         <span className="text-xs font-semibold text-foreground">
@@ -183,7 +183,7 @@ export function DonorsPage() {
                 )}
 
                 {consentError ? (
-                  <div className="flex items-start gap-2 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+                  <div className="flex items-start gap-2 rounded-md border border-red-200/70 bg-red-50 px-3 py-2 text-sm text-red-700 transition-glass glow-status-error">
                     <AlertCircle className="mt-0.5 h-4 w-4" aria-hidden />
                     <span>{consentError}</span>
                   </div>
