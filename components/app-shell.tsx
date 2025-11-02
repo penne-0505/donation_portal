@@ -76,15 +76,6 @@ export function AppShell({ children, className }: AppShellProps) {
             >
               プライバシーポリシー
             </Link>
-            <span className="text-border/40">•</span>
-            <Link
-              href="https://discord.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="transition hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground/30"
-            >
-              運営者情報
-            </Link>
           </div>
         </div>
       </footer>
