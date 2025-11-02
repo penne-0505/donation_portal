@@ -31,9 +31,9 @@ export function AppShell({ children, className }: AppShellProps) {
   };
 
   return (
-    <div className="app-shell relative flex min-h-screen flex-col overflow-hidden bg-root text-foreground">
-      <header className="sticky top-0 z-20 px-4 pt-4">
-        <div className="mx-auto flex max-w-6xl items-center justify-between rounded-2xl glass-sm border-gradient-subtle px-5 py-3 shadow-glass-elevated backdrop-blur transition-glass">
+    <div className="app-shell relative flex min-h-screen flex-col overflow-x-hidden bg-root text-foreground">
+      <header className="sticky top-0 z-40 px-4 pt-4">
+        <div className="mx-auto flex max-w-6xl items-center justify-between rounded-2xl glass-sm border-gradient-subtle px-5 py-3 shadow-minimal shadow-inner-light backdrop-blur transition-glass">
           <Link
             href="/"
             className="text-base font-semibold tracking-tight text-foreground transition-colors transition-macos hover:opacity-80"
@@ -52,8 +52,8 @@ export function AppShell({ children, className }: AppShellProps) {
               href="/donate"
               onClick={handleCtaClick}
               size="md"
-              variant={heroInView ? 'outline' : 'primary'}
-              className={cn('gap-2', heroInView && 'opacity-60')}
+              variant="primary"
+              className="gap-2"
               aria-label="寄付をはじめる"
             >
               <span className="flex items-center gap-2">

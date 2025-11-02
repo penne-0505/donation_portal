@@ -56,13 +56,13 @@ interface AppShellProps {
 #### ヘッダー実装
 
 ```typescript
-<header className="sticky top-0 z-20 border-b border-border/60 backdrop-blur">
-  <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
+<header className="sticky top-0 z-40 px-4 pt-4">
+  <div className="mx-auto flex max-w-6xl items-center justify-between rounded-2xl glass-sm border-gradient-subtle px-5 py-3 shadow-minimal shadow-inner-light backdrop-blur transition-glass">
     {/* Logo */}
     <Link href="/" className="text-base font-semibold ...">
       Donation Portal
     </Link>
-    
+
     {/* Nav */}
     <nav className="flex items-center gap-4">
       {/* Text Link */}
@@ -71,12 +71,7 @@ interface AppShellProps {
       </Link>
       
       {/* Primary Button */}
-      <Button
-        href="/donate"
-        onClick={handleCtaClick}
-        size="sm"
-        aria-label="寄付をはじめる"
-      >
+      <Button href="/donate" onClick={handleCtaClick} size="md" aria-label="寄付をはじめる">
         寄付する
       </Button>
     </nav>
@@ -137,6 +132,7 @@ const handleDonorListClick = () => {
 
 ```typescript
 export function HomePage() {
+  const { heroRef } = useHeroContext();
   const handleCTAClick = () => {
     // 計測: donate_start
   };
@@ -144,7 +140,10 @@ export function HomePage() {
   return (
     <div className="page-enter space-y-20">
       {/* Hero Section */}
-      <section className="flex min-h-[50vh] flex-col items-center justify-center gap-8 py-16 text-center md:py-24">
+      <section
+        ref={heroRef}
+        className="flex min-h-[calc(100vh-10rem)] flex-col items-center justify-center gap-10 px-6 py-16 text-center md:gap-12 md:py-24"
+      >
         {/* H1 + Lead */}
         {/* CTA 2 個 */}
         {/* Badge 3 個 */}
@@ -159,7 +158,7 @@ export function HomePage() {
 ##### H1 + リード
 
 ```typescript
-<div className="space-y-4">
+<div className="space-y-6">
   <h1 className="text-balance text-4xl font-bold tracking-tight text-foreground md:text-5xl">
     Discordコミュニティの運営を支える寄付
   </h1>
@@ -178,12 +177,12 @@ export function HomePage() {
 ##### CTA ボタン 2 個
 
 ```typescript
-<div className="flex flex-col gap-3 sm:flex-row">
+<div className="flex flex-col items-center gap-3 sm:flex-row">
   <Button
     href="/donate"
     onClick={handleCTAClick}
     size="lg"
-    className="gap-2 px-8"
+    className="gap-2 px-10"
     aria-label="寄付をはじめる"
   >
     <span className="flex items-center gap-2">
@@ -195,9 +194,9 @@ export function HomePage() {
     href="/donors"
     size="lg"
     variant="outline"
-    className="px-8"
-    aria-label="支援者一覧を表示"
-  >
+  className="px-10"
+  aria-label="支援者一覧を表示"
+>
     支援者一覧
   </Button>
 </div>
@@ -206,14 +205,14 @@ export function HomePage() {
 **クラス詳細**:
 - `gap-3`: ボタン間隔 12px（12 / 16 = 0.75rem）
 - `sm:flex-row`: SP `flex-col` (縦積み) / PC `flex-row` (横並び)
-- `px-8`: 左右パディング 32px
+- `px-10`: 左右パディング 40px
 - `aria-label`: スクリーンリーダー用ラベル
 - `aria-hidden`: アイコンを読み上げ非表示化
 
 ##### バッジ 3 個
 
 ```typescript
-<div className="flex flex-wrap justify-center gap-3 pt-4 md:pt-6">
+<div className="flex flex-wrap items-center justify-center gap-3 pt-2 md:pt-4">
   {[
     '🔒 Stripeで安全決済',
     '✅ OAuthで同意管理',
