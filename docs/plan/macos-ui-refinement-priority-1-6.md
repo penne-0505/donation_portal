@@ -41,7 +41,7 @@ requirements:
     - "P3: ボーダーに縦方向グラデーションを適用（上部明→下部暗）"
     - "P4: ホバー時の translate-y を削除し、透明度+glow変化に変更"
     - "P5: 全transition durationを200-300msに統一"
-    - "P6: 背景に極めて控えめなradial-gradient（紫3-5%）を追加"
+    - "P6: 背景に極めて控えめな線形グラデーション（グリーン〜イエロー系3-5%）を追加"
   non_functional:
     - "既存の視認性を損なわない（明度・コントラスト比を維持）"
     - "CSSのみの変更（JavaScriptの追加なし）"
@@ -90,7 +90,7 @@ rollout_plan:
         - "Lighthouse パフォーマンス測定"
       exit_criteria:
         - "全アニメーションが200-300msで統一"
-        - "背景に紫色の香り（3-5%）が追加されている"
+        - "背景にグリーン〜イエロー系の香り（3-5%）が追加されている"
         - "Lighthouse スコアが維持または改善"
         - "既存テストが100%パス"
 rollback:
@@ -151,7 +151,7 @@ acceptance_criteria:
   - "✅ P3: 主要要素のボーダーに縦グラデーションが適用されている"
   - "✅ P4: ホバー時に物理移動なし、透明度+glow変化のみ"
   - "✅ P5: 全transition durationが200-300ms"
-  - "✅ P6: 背景に極薄紫グラデーション（3-5%）が追加されている"
+  - "✅ P6: 背景に極薄グリーン〜イエローグラデーション（3-5%）が追加されている"
   - "✅ 既存テストスイート100%パス"
   - "✅ Lighthouse スコア悪化なし（±5%以内）"
   - "✅ レスポンシブ対応維持（4サイズで目視確認完了）"
@@ -480,24 +480,21 @@ background: #f5f7fb;  /* 単色 */
 ```css
 /* app/globals.css */
 body {
-  background: 
-    radial-gradient(
-      ellipse at 50% 0%, 
-      rgba(88, 101, 242, 0.03) 0%,    /* 紫3% */
-      transparent 70%
-    ),
-    radial-gradient(
-      ellipse at 100% 50%, 
-      rgba(88, 101, 242, 0.02) 0%,    /* 紫2% */
-      transparent 60%
+  background:
+    linear-gradient(
+      135deg,
+      rgba(34, 197, 94, 0.05) 0%,
+      rgba(250, 204, 21, 0.04) 100%
     ),
     #f5f7fb;
   background-attachment: fixed;
 }
 ```
 
+追加で、固定配置の `.app-shell::before` 疑似要素を用いて淡い放射グラデーションとノイズテクスチャを重ね、ガラス面の奥行きを補強する。ノイズは `data:image/svg+xml` ベースの粒状パターンを `mix-blend-mode: soft-light` で載せ、静的演出のため `prefers-reduced-motion` の影響を受けずに描画される。
+
 #### 制約
-- アクセント色は**3-5%以下**
+- グリーン〜イエロー系の彩度は**3-5%以下**
 - 視認性を損なわない
 - 目立ちすぎない「香り」程度
 
@@ -659,16 +656,11 @@ body {
 ```css
 /* app/globals.css */
 body {
-  background: 
-    radial-gradient(
-      ellipse at 50% 0%, 
-      rgba(88, 101, 242, 0.03) 0%,
-      transparent 70%
-    ),
-    radial-gradient(
-      ellipse at 100% 50%, 
-      rgba(88, 101, 242, 0.02) 0%,
-      transparent 60%
+  background:
+    linear-gradient(
+      135deg,
+      rgba(34, 197, 94, 0.05) 0%,
+      rgba(250, 204, 21, 0.04) 100%
     ),
     #f5f7fb;
   background-attachment: fixed;
@@ -688,7 +680,8 @@ body {
 - P3: `.border-gradient-subtle` を縦グラデーションへ刷新し、`Card` 基底クラスおよび `glass-sm` サーフェス（ログインステータス、同意ブロック、Donorリスト等）に追加。
 - P4: 新規 `.hover-glass` を導入し、寄附プランボタンやバッジでtranslate系アニメーションを廃止。光量と透明度変化のみでホバー応答させました。
 - P5: `transition-glass` を250ms + `--ease-macos` へ統一し、必要箇所に `transition-macos` を併用。CTAやナビゲーションリンクも同一テンポに統合。
-- P6: `bg-root` を紫3〜4%のradial gradientへ変更し、`AppShell` を `bg-root` 化。ヘッダー／フッターを `glass-sm` 化して背景との層分離を強化。
+- P6: `bg-root` をグリーン〜イエロー系の薄い線形グラデーションへ変更し、`AppShell` を `bg-root` 化。ヘッダー／フッターを `glass-sm` 化して背景との層分離を強化。
+- `.app-shell::before` に淡い放射グラデーションとノイズテクスチャを重ね、ガラス要素の境界を際立たせる静的背景演出を追加。`mix-blend-mode: soft-light` で調和させ、アニメーションレスでパフォーマンス負荷を抑制。
 - UI適用範囲: `components/app-shell.tsx`, `ui/button.tsx`, `ui/card.tsx`, `pages/{home,donate,donors,thanks}-page.tsx`, `donation-badge.tsx`, `donation-impact.tsx`, `donor-pill.tsx`。
 - テスト: `npm test` を実行したところ、既存の `ProcessEnv` キャストに起因するTypeScriptエラーで失敗（UI変更とは無関係）。詳細は `functions/oauth/start.ts` および `tests/oauth/cookie.test.ts` 系にて確認済み。
 

@@ -37,11 +37,48 @@
   }
 }
 
+@layer components {
+  .app-shell::before {
+    content: '';
+    position: fixed;
+    inset: -12%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.75;
+    background:
+      radial-gradient(
+        58% 62% at 16% 18%,
+        rgba(34, 197, 94, 0.18) 0%,
+        rgba(34, 197, 94, 0.04) 45%,
+        transparent 78%
+      ),
+      radial-gradient(
+        60% 64% at 82% 22%,
+        rgba(250, 204, 21, 0.16) 0%,
+        rgba(250, 204, 21, 0.04) 52%,
+        transparent 82%
+      ),
+      radial-gradient(
+        66% 70% at 38% 80%,
+        rgba(132, 204, 22, 0.14) 0%,
+        rgba(132, 204, 22, 0.03) 50%,
+        transparent 78%
+      ),
+      url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMjAnIGhlaWdodD0nMTIwJyB2aWV3Qm94PScwIDAgMTIwIDEyMCc+PGZpbHRlciBpZD0nZ3JhaW4nPjxmZVR1cmJ1bGVuY2UgdHlwZT0nZnJhY3RhbE5vaXNlJyBiYXNlRnJlcXVlbmN5PScxLjQnIG51bU9jdGF2ZXM9JzInIHN0aXRjaFRpbGVzPSdzdGl0Y2gnLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0nMTIwJyBoZWlnaHQ9JzEyMCcgZmlsdGVyPSd1cmwoI2dyYWluKScgb3BhY2l0eT0nMC4yNScvPjwvc3ZnPg==');
+    background-repeat: no-repeat, no-repeat, no-repeat, repeat;
+    background-size:
+      cover,
+      cover,
+      cover,
+      140px 140px;
+    mix-blend-mode: soft-light;
+  }
+}
+
 @layer utilities {
   .bg-root {
     background:
-      radial-gradient(ellipse at 50% 0%, rgba(88, 101, 242, 0.04) 0%, transparent 70%),
-      radial-gradient(ellipse at 100% 55%, rgba(88, 101, 242, 0.025) 0%, transparent 60%),
+      linear-gradient(135deg, rgba(34, 197, 94, 0.12) 0%, rgba(250, 204, 21, 0.08) 100%),
       var(--color-root);
     background-attachment: fixed;
   }

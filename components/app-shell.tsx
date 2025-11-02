@@ -31,7 +31,7 @@ export function AppShell({ children, className }: AppShellProps) {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-root text-foreground">
+    <div className="app-shell relative flex min-h-screen flex-col overflow-hidden bg-root text-foreground">
       <header className="sticky top-0 z-20 px-4 pt-4">
         <div className="mx-auto flex max-w-6xl items-center justify-between rounded-2xl glass-sm border-gradient-subtle px-5 py-3 shadow-minimal shadow-inner-light backdrop-blur transition-glass">
           <Link
@@ -64,10 +64,10 @@ export function AppShell({ children, className }: AppShellProps) {
           </nav>
         </div>
       </header>
-      <main className={cn('flex-1 mx-auto w-full max-w-6xl px-5 py-14', className)}>
+      <main className={cn('relative z-10 mx-auto w-full flex-1 max-w-6xl px-5 py-14', className)}>
         {children}
       </main>
-      <footer className="px-4 pb-6 text-center text-xs text-muted-foreground">
+      <footer className="relative z-10 px-4 pb-6 text-center text-xs text-muted-foreground">
         <div className="mx-auto flex max-w-6xl items-center justify-between rounded-2xl glass-sm border-gradient-subtle px-5 py-4 shadow-minimal shadow-inner-light transition-glass">
           <span>© 2025 {ORGANIZATION_NAME}</span>
           <div className="flex items-center gap-4">
