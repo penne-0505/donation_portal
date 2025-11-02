@@ -17,10 +17,10 @@ const baseClasses =
 const variants: Record<ButtonVariant, string> = {
   primary: 'bg-foreground text-background hover:bg-foreground/90 focus-visible:ring-foreground/40',
   secondary:
-    'bg-muted text-foreground hover:bg-muted/80 border border-border focus-visible:ring-muted-foreground/40',
-  ghost: 'bg-transparent text-foreground hover:bg-muted',
+    'bg-muted text-foreground hover:bg-muted/50 border border-border focus-visible:ring-muted-foreground/40',
+  ghost: 'bg-transparent text-foreground hover:bg-muted/40',
   outline:
-    'border border-border bg-background hover:bg-muted/80 focus-visible:ring-muted-foreground/40',
+    'border border-border bg-background hover:bg-muted/5 focus-visible:ring-muted-foreground/40',
 };
 
 const sizes: Record<ButtonSize, string> = {
