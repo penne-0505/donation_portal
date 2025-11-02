@@ -111,3 +111,8 @@ functions/new/
 # Stripe (if any local test files)
 stripe_*_test_*.js
 _worker.bundle
+
+# temporary
+_temp/
+temp/
+tmp/

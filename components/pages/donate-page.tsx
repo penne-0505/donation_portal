@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DonationImpact } from '@/components/donation-impact';
+import { cn } from '@/lib/ui/cn';
 import { CHECKOUT_PRESETS } from '@/lib/ui/checkout-presets';
 import { useCheckout } from '@/lib/ui/hooks/use-checkout';
 import { useConsentMutation } from '@/lib/ui/hooks/use-consent';
@@ -89,7 +90,7 @@ export function DonatePage() {
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <div className="space-y-6">
-          <Card className="border-2 glass p-0 hover-lift">
+          <Card className="p-0">
             <div className="flex flex-col gap-6 p-6 sm:p-8">
               <div className="space-y-2">
                 <h2 className="text-2xl font-semibold text-foreground">Discord ログイン</h2>
@@ -108,7 +109,7 @@ export function DonatePage() {
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 {isSignedIn ? (
                   <>
-                    <div className="flex flex-1 items-center gap-3 rounded-xl border border-border/70 bg-background/80 px-4 py-3 text-left text-sm text-muted-foreground animate-bounce-in">
+                    <div className="flex flex-1 items-center gap-3 rounded-xl glass-sm px-4 py-3 text-left text-sm text-muted-foreground shadow-minimal shadow-inner-light animate-bounce-in">
                       <CheckCircle2 className="h-5 w-5 text-foreground" aria-hidden />
                       <div className="flex flex-col">
                         <span className="font-semibold text-foreground">ログイン済み</span>
@@ -133,7 +134,7 @@ export function DonatePage() {
                     size="lg"
                     onClick={login}
                     disabled={isRefreshing}
-                    className="group w-full gap-2 sm:w-auto hover-glow"
+                    className="group w-full gap-2 sm:w-auto"
                   >
                     <span className="flex items-center gap-2">
                       <LogIn className="h-4 w-4" aria-hidden />
@@ -154,7 +155,7 @@ export function DonatePage() {
             </div>
           </Card>
 
-          <Card className="border-2 glass p-0 hover-lift">
+          <Card className="p-0">
             <div className="flex flex-col gap-6 p-6 sm:p-8">
               <div className="space-y-2">
                 <h2 className="text-2xl font-semibold text-foreground">掲示への同意</h2>
@@ -164,7 +165,7 @@ export function DonatePage() {
                 </p>
               </div>
 
-              <div className="flex items-start gap-3 rounded-xl border border-border/70 bg-background/80 px-4 py-3">
+              <div className="flex items-start gap-3 rounded-xl glass-sm px-4 py-3 shadow-minimal shadow-inner-light">
                 <Checkbox
                   aria-label="Donors ページに表示名を掲載することに同意します"
                   checked={consent}
@@ -196,7 +197,7 @@ export function DonatePage() {
             </div>
           ) : null}
 
-          <Card className="border border-dashed glass p-0">
+          <Card className="border border-dashed border-white/25 p-0">
             <div className="space-y-5 p-6 sm:p-8">
               <h3 className="text-lg font-semibold text-foreground">これからの流れ</h3>
               <ol className="space-y-3 text-sm text-muted-foreground">
@@ -222,7 +223,7 @@ export function DonatePage() {
 
         <div className="space-y-6 lg:col-span-1">
           <div className="space-y-6 lg:sticky lg:top-24">
-            <Card className="border-2 glass-strong p-0 hover-lift">
+            <Card className="glass-lg p-0">
               <div className="flex flex-col gap-6 p-6 sm:p-8">
                 <div className="space-y-2">
                   <h2 className="text-2xl font-semibold text-foreground">寄附メニュー</h2>
@@ -239,42 +240,48 @@ export function DonatePage() {
                 ) : null}
 
                 <div className="space-y-4">
-                  {presets.map((preset: CheckoutPreset) => (
-                    <button
-                      key={preset.id}
-                      type="button"
-                      onClick={() => void handleCheckout(preset)}
-                      disabled={!isSignedIn || checkoutState.isProcessing}
-                      className={`group w-full rounded-2xl border border-border/60 bg-background/90 px-6 py-5 text-left text-sm transition hover:border-foreground/40 hover:bg-foreground/5 hover-glow disabled:cursor-not-allowed disabled:opacity-50 ${
-                        selectedPreset?.id === preset.id
-                          ? 'border-foreground/50 bg-foreground/10'
-                          : ''
-                      }`}
-                    >
-                      <div className="flex items-center justify-between gap-4">
-                        <div className="space-y-1">
-                          <p className="text-base font-semibold text-foreground">{preset.label}</p>
-                          <p className="text-xs text-muted-foreground">{preset.description}</p>
-                        </div>
-                        <ArrowRight
-                          className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-hover:translate-x-1"
-                          aria-hidden
-                        />
-                      </div>
-                      <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
-                        {preset.mode === 'payment' ? (
-                          <span className="rounded-full bg-foreground/10 px-2 py-0.5 text-foreground">
-                            単発
-                          </span>
-                        ) : (
-                          <span className="rounded-full bg-foreground/10 px-2 py-0.5 text-foreground">
-                            {preset.interval === 'yearly' ? '年額' : '月額'}
-                          </span>
+                  {presets.map((preset: CheckoutPreset) => {
+                    const isSelected = selectedPreset?.id === preset.id;
+
+                    return (
+                      <button
+                        key={preset.id}
+                        type="button"
+                        onClick={() => void handleCheckout(preset)}
+                        disabled={!isSignedIn || checkoutState.isProcessing}
+                        data-active={isSelected ? 'true' : undefined}
+                        className={cn(
+                          'group w-full rounded-2xl glass-sm px-6 py-5 text-left text-sm transition duration-200 shadow-minimal shadow-inner-light border-gradient-subtle glow-accent-subtle hover:bg-white/10 hover:border-white/30 disabled:cursor-not-allowed disabled:opacity-50',
+                          isSelected ? 'glow-accent-medium border-white/40 bg-white/10' : undefined,
                         )}
-                        <span>Stripe Checkout で安全に決済します</span>
-                      </div>
-                    </button>
-                  ))}
+                      >
+                        <div className="flex items-center justify-between gap-4">
+                          <div className="space-y-1">
+                            <p className="text-base font-semibold text-foreground">
+                              {preset.label}
+                            </p>
+                            <p className="text-xs text-muted-foreground">{preset.description}</p>
+                          </div>
+                          <ArrowRight
+                            className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-hover:translate-x-1"
+                            aria-hidden
+                          />
+                        </div>
+                        <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+                          {preset.mode === 'payment' ? (
+                            <span className="rounded-full bg-foreground/10 px-2 py-0.5 text-foreground">
+                              単発
+                            </span>
+                          ) : (
+                            <span className="rounded-full bg-foreground/10 px-2 py-0.5 text-foreground">
+                              {preset.interval === 'yearly' ? '年額' : '月額'}
+                            </span>
+                          )}
+                          <span>Stripe Checkout で安全に決済します</span>
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
 
                 {!isSignedIn ? (

@@ -17,18 +17,13 @@ export function HomePage() {
           コミュニティの運営を支える寄附ポータル。透明性のある運営と、支援者の皆さまへの感謝を大切にしています。
         </p>
         <div className="flex flex-col gap-3 sm:flex-row">
-          <Button href="/donate" size="lg" className="gap-2 px-8 hover-glow">
+          <Button href="/donate" size="lg" className="gap-2 px-8">
             <span className="flex items-center gap-2">
               寄附する
               <ArrowRight className="h-5 w-5" aria-hidden />
             </span>
           </Button>
-          <Button
-            href="/donors"
-            size="lg"
-            variant="outline"
-            className="px-8 bg-transparent hover-glow"
-          >
+          <Button href="/donors" size="lg" variant="outline" className="px-8 bg-transparent">
             Donors を見る
           </Button>
         </div>
@@ -64,7 +59,7 @@ export function HomePage() {
         ].map((feature) => (
           <div
             key={feature.title}
-            className="rounded-2xl border border-border/60 bg-background/80 p-6 text-left shadow-soft transition hover-lift"
+            className="rounded-2xl glass-sm p-6 text-left shadow-minimal shadow-inner-light transition duration-200 hover:bg-white/10 hover:border-white/30"
           >
             <h2 className="text-lg font-semibold text-foreground">{feature.title}</h2>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">

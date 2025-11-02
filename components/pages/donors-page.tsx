@@ -63,7 +63,7 @@ export function DonorsPage() {
       </section>
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-        <Card className="border-2 glass p-0 hover-lift">
+        <Card className="p-0">
           <div className="flex flex-col gap-6 p-6 sm:p-8">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div className="space-y-1">
@@ -78,7 +78,7 @@ export function DonorsPage() {
                 size="sm"
                 onClick={handleRefresh}
                 disabled={isLoading}
-                className="gap-2 bg-transparent hover-glow"
+                className="gap-2 bg-transparent"
               >
                 <RefreshCw className={isLoading ? 'h-4 w-4 animate-spin' : 'h-4 w-4'} aria-hidden />
                 更新
@@ -92,7 +92,7 @@ export function DonorsPage() {
               </div>
             ) : null}
 
-            <div className="min-h-[180px] rounded-2xl border border-border/60 bg-background/80 px-4 py-6">
+            <div className="min-h-[180px] rounded-2xl glass-sm px-4 py-6 shadow-minimal shadow-inner-light">
               {isLoading ? (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <RefreshCw className="h-4 w-4 animate-spin" aria-hidden />
@@ -121,7 +121,7 @@ export function DonorsPage() {
 
         <div className="space-y-6 lg:col-span-1">
           <div className="space-y-6 lg:sticky lg:top-24">
-            <Card className="border-2 glass-strong p-0 hover-lift">
+            <Card className="glass-lg p-0">
               <div className="flex flex-col gap-6 p-6 sm:p-8">
                 <div className="space-y-2">
                   <h2 className="text-2xl font-semibold text-foreground">掲示の同意を管理</h2>
@@ -139,7 +139,7 @@ export function DonorsPage() {
 
                 {isSignedIn ? (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3 rounded-xl border border-border/60 bg-background/80 px-4 py-3 text-left text-sm text-muted-foreground">
+                    <div className="flex items-center gap-3 rounded-xl glass-sm px-4 py-3 text-left text-sm text-muted-foreground shadow-minimal shadow-inner-light">
                       <CheckCircle2 className="h-5 w-5 text-foreground" aria-hidden />
                       <div className="flex flex-col">
                         <span className="text-xs font-semibold text-foreground">
@@ -153,7 +153,7 @@ export function DonorsPage() {
                         variant="outline"
                         onClick={handleRevoke}
                         disabled={!consentPublic || isConsentUpdating}
-                        className="w-full sm:w-auto hover-glow"
+                        className="w-full sm:w-auto"
                       >
                         <span className="flex items-center gap-2">
                           <ArrowRight className="h-4 w-4" aria-hidden />
@@ -173,7 +173,7 @@ export function DonorsPage() {
                     <p className="text-sm text-muted-foreground">
                       Donors 掲載の同意を管理するには Discord でログインしてください。
                     </p>
-                    <Button onClick={login} size="md" className="group w-full gap-2 hover-glow">
+                    <Button onClick={login} size="md" className="group w-full gap-2">
                       <span className="flex items-center gap-2">
                         <LogIn className="h-4 w-4" aria-hidden />
                         Discord でログイン
