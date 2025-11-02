@@ -91,7 +91,7 @@ export function DonatePage() {
               <div className="space-y-2">
                 <h2 className="text-2xl font-semibold text-foreground">Discord ログイン</h2>
                 <p className="text-sm leading-relaxed text-muted-foreground">
-                  Stripe Checkout で寄附を進める前に、Discord ログインと掲示同意の状態を確認します。
+                  Stripe Checkout で寄付を進める前に、Discord ログインと掲示同意の状態を確認します。
                 </p>
               </div>
 
@@ -157,7 +157,7 @@ export function DonatePage() {
                 <h2 className="text-2xl font-semibold text-foreground">掲示への同意</h2>
                 <p className="text-sm text-muted-foreground">
                   同意した場合、Donors ページに Discord
-                  の表示名を掲載します（寄附額は表示されません）。
+                  の表示名を掲載します（寄付額は表示されません）。
                 </p>
               </div>
 
@@ -179,7 +179,7 @@ export function DonatePage() {
                       id={consentDescriptionId}
                       className="text-xs leading-relaxed text-muted-foreground"
                     >
-                      Discord でログインすると同意の状態を変更できます。寄附後でも撤回が可能です。
+                      Discord でログインすると同意の状態を変更できます。寄付後でも撤回が可能です。
                     </p>
                     {isConsentUpdating ? (
                       <span className="inline-flex items-center gap-1 text-xs text-muted-foreground transition-glass">
@@ -216,7 +216,7 @@ export function DonatePage() {
                 </li>
                 <li className="flex gap-3">
                   <span className="font-semibold text-foreground">2.</span>
-                  <span>寄附メニューからプランを選び、Stripe Checkout を開始します。</span>
+                  <span>寄付メニューからプランを選び、Stripe Checkout を開始します。</span>
                 </li>
                 <li className="flex gap-3">
                   <span className="font-semibold text-foreground">3.</span>
@@ -224,7 +224,7 @@ export function DonatePage() {
                 </li>
               </ol>
               <p className="text-xs text-muted-foreground">
-                いただいた寄附は {ORGANIZATION_NAME}{' '}
+                いただいた寄付は {ORGANIZATION_NAME}{' '}
                 のコミュニティ運営にのみ利用し、対価の提供は行いません。
               </p>
             </div>
@@ -236,9 +236,9 @@ export function DonatePage() {
             <Card className="glass-lg p-0">
               <div className="flex flex-col gap-6 p-6 sm:p-8">
                 <div className="space-y-2">
-                  <h2 className="text-2xl font-semibold text-foreground">寄附メニュー</h2>
+                  <h2 className="text-2xl font-semibold text-foreground">寄付メニュー</h2>
                   <p className="text-sm text-muted-foreground">
-                    Stripe Checkout で寄附を行います。カード決済のみ対応し、すべて税込の金額です。
+                    Stripe Checkout で寄付を行います。カード決済のみ対応し、すべて税込の金額です。
                   </p>
                 </div>
 
@@ -304,12 +304,12 @@ export function DonatePage() {
 
                 {!isSignedIn ? (
                   <p className="text-xs text-muted-foreground">
-                    Discord でログインすると寄附ボタンが有効になります。
+                    Discord でログインすると寄付ボタンが有効になります。
                   </p>
                 ) : null}
 
                 <p className="text-xs text-muted-foreground">
-                  寄附ボタンを押すと Stripe Checkout
+                  寄付ボタンを押すと Stripe Checkout
                   に移動します。完了後は自動的にサンクスページへ戻ります。
                 </p>
 

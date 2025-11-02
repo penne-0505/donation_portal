@@ -204,7 +204,7 @@ return new Response(bodyText, {
 
 **問題点**:
 
-1. **非決定的な ETag**: `order=random` の場合、毎回異なるレスポンスボディを生成するため、同じ寄附者リストでも ETag が異なります。
+1. **非決定的な ETag**: `order=random` の場合、毎回異なるレスポンスボディを生成するため、同じ寄付者リストでも ETag が異なります。
 
 2. **キャッシュの有効性**: 弱い ETag（`W/`）でも、リクエストごとに異なる ETag が返される場合、キャッシュの意味がありません。
 
@@ -242,7 +242,7 @@ return new Response(bodyText, {
 ### API エンドポイント
 - ✅ `functions/api/checkout/session.ts` - Checkout セッション作成
 - ✅ `functions/api/session.ts` - セッション状態取得
-- ✅ `functions/api/donors.ts` - 寄附者一覧取得
+- ✅ `functions/api/donors.ts` - 寄付者一覧取得
 - ✅ `functions/api/consent.ts` - 同意状態更新
 - ✅ `functions/api/webhooks/stripe.ts` - Stripe Webhook 受信
 

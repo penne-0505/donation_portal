@@ -16,7 +16,7 @@ references:
 
 ## 1. 概要
 
-Stripe からの `payment_intent.succeeded` および `invoice.paid` イベントを Cloudflare Pages Functions (`POST /api/webhooks/stripe`) で受信し、寄附を確認します。本ガイドでは Test / Preview 環境を対象に、Webhook の登録、テスト方法、Cloudflare Logs を使った一次監視、障害時の初動対応フローをまとめます。
+Stripe からの `payment_intent.succeeded` および `invoice.paid` イベントを Cloudflare Pages Functions (`POST /api/webhooks/stripe`) で受信し、寄付を確認します。本ガイドでは Test / Preview 環境を対象に、Webhook の登録、テスト方法、Cloudflare Logs を使った一次監視、障害時の初動対応フローをまとめます。
 
 ## 2. 前提条件
 

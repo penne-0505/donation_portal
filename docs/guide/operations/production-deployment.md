@@ -43,7 +43,7 @@ QA 手順やローンチ後の運用監視は [Phase 6 QA & Release Runbook](./p
 | 環境       | Cloudflare Pages ブランチ    | 代表 URL                             | Stripe モード | Discord アプリ | 備考               |
 | ---------- | ---------------------------- | ------------------------------------ | ------------- | -------------- | ------------------ |
 | Preview    | `dev` / Pull Request         | `https://<project>-<hash>.pages.dev` | Test          | Test 用アプリ  | QA・結合テスト用   |
-| Production | `main`（または指定ブランチ） | `https://<project>.pages.dev`        | Live          | 本番アプリ     | 寄附受付の公開環境 |
+| Production | `main`（または指定ブランチ） | `https://<project>.pages.dev`        | Live          | 本番アプリ     | 寄付受付の公開環境 |
 
 > **ブランチ戦略**: Cloudflare Pages の Production ブランチは `main` を推奨しますが、運用ポリシーに応じて `dev` から直接デプロイする場合は Release Runbook と整合するよう注意してください。
 
@@ -108,15 +108,15 @@ QA 手順やローンチ後の運用監視は [Phase 6 QA & Release Runbook](./p
 2. **変更凍結**: リリースウィンドウ中は `main` / `dev` への直接コミットを制限し、緊急修正はホットフィックス手順に従います。
 3. **Secrets 切替**: 上記手順で Live 用 Secrets を登録し、`wrangler pages deploy` または GitHub トリガーで Production デプロイを実行します。
 4. **QA 実施**: [Phase 6 QA & Release Runbook](./phase-06-qa-release.md#3-qa-チェックリスト) の QA-01〜QA-10 を Production で抜粋実施（Live 決済は少額テストを実施）。
-5. **Donors 同意移行**: Test 環境の同意データは Stripe Metadata（Customer）に保存されているため、Live 環境では新規寄附者のみが表示されます。既存テストデータは削除・アーカイブし、本番での初回寄附をもって掲載を開始します。
-6. **アナウンス**: 寄附受付開始をコミュニティへ告知し、Stripe レシートと `/thanks` ページの案内を共有します。
+5. **Donors 同意移行**: Test 環境の同意データは Stripe Metadata（Customer）に保存されているため、Live 環境では新規寄付者のみが表示されます。既存テストデータは削除・アーカイブし、本番での初回寄付をもって掲載を開始します。
+6. **アナウンス**: 寄付受付開始をコミュニティへ告知し、Stripe レシートと `/thanks` ページの案内を共有します。
 
 ## ロールバック手順
 
 1. Cloudflare Pages ダッシュボードで **Deployments → Rollback** を実行し、直前の安定版へ戻します。
 2. Stripe Dashboard の Webhook endpoint を一時停止し、不要な Live 決済の再送を防止します。
 3. Secrets を Test 用に差し戻し、再発防止策をまとめてから再リリースを計画します。
-4. 寄附者への影響がある場合は、Slack / Discord で状況説明と対応見込みを共有します。
+4. 寄付者への影響がある場合は、Slack / Discord で状況説明と対応見込みを共有します。
 
 ## リリース後の初動監視
 
@@ -125,7 +125,7 @@ QA 手順やローンチ後の運用監視は [Phase 6 QA & Release Runbook](./p
 | Stripe Webhook 成功率 | Stripe Dashboard > Events                | 失敗率 0%（再送含む） | 失敗発生時は Webhook ガイドの初動対応へ |
 | Functions レイテンシ  | Cloudflare Pages > Analytics > Functions | P95 < 200ms           | 閾値超過時はログ確認と再デプロイ検討    |
 | エラー監視            | Sentry / Cloudflare Logs                 | 致命エラー 0 件       | エラー検知時は Issue 登録と暫定対応     |
-| 寄附件数              | Stripe Dashboard > Payments              | 基準値から急減なし    | 異常時はコミュニティ周知・フォーム確認  |
+| 寄付件数              | Stripe Dashboard > Payments              | 基準値から急減なし    | 異常時はコミュニティ周知・フォーム確認  |
 
 監視結果はローンチ当日から 1 週間は日次で共有し、その後は週次レポートへ移行します。
 

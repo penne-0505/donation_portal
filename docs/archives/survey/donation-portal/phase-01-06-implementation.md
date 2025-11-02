@@ -41,7 +41,7 @@ Phase 1〜6 の計画で定義された成果物がコードベースとドキ�
 | --- | --- | --- |
 | Phase 1 | ✅ 実装内容確認済み | リポジトリ構成・ビルド/テストスクリプトが整備済み。CI とデプロイ結果はリポジトリだけでは判別不可。 |
 | Phase 2 | ✅ 実装内容確認済み | Discord OAuth の start/callback・セッション Cookie・`/donate` UI が揃っている。 |
-| Phase 3 | ✅ 実装内容確認済み | Checkout API と寄附ボタンが Stripe metadata を更新する実装に一致。 |
+| Phase 3 | ✅ 実装内容確認済み | Checkout API と寄付ボタンが Stripe metadata を更新する実装に一致。 |
 | Phase 4 | ✅ 実装内容確認済み | Donors API・Consent API・`/donors` UI が動作し、撤回導線も実装済み。 |
 | Phase 5 | ✅ 実装内容確認済み | Stripe Webhook・冪等処理・Health エンドポイントが存在し、テストも用意されている。 |
 | Phase 6 | ⚠️ 書類と実装の準備のみ確認 | QA/Release Runbook はあるが、Live キー投入・本番デプロイ完了の証跡はリポジトリ内に存在しない。 |
@@ -63,16 +63,16 @@ Phase 1〜6 の計画で定義された成果物がコードベースとドキ�
 | --- | --- | --- |
 | Discord OAuth 完了後に sess Cookie が発行される | ✅ | `functions/oauth/start.ts` と `functions/oauth/callback.ts` が state Cookie 発行と Discord API 連携を実装し、`issueSessionCookie` で署名付き Cookie を返している。 |
 | state 改ざん／TTL 超過で 400/401 を返す | ✅ | `stateCookieService` の TTL は 600 秒に固定され、`verifySignedCookie` の検証で署名・有効期限がチェックされる。異常時は `/donate?error=` へリダイレクト。 |
-| `/donate` UI がログイン状態と同意フローを反映する | ✅ | `public/donate/app.js` が sess Cookie を解析してログイン状態・同意チェックボックス・寄附ボタンの有効化を切り替える。 |
+| `/donate` UI がログイン状態と同意フローを反映する | ✅ | `public/donate/app.js` が sess Cookie を解析してログイン状態・同意チェックボックス・寄付ボタンの有効化を切り替える。 |
 
 ## Phase 3 — Checkout & Metadata
 
 | 受け入れ基準 | 状態 | 根拠・備考 |
 | --- | --- | --- |
-| 単発/定期寄附の Checkout セッション生成 | ✅ | `functions/api/checkout/session.ts` が `mode`/`interval`/`variant` を検証し、Price ID を環境変数から取得して `POST /v1/checkout/sessions` を呼び出す。 |
+| 単発/定期寄付の Checkout セッション生成 | ✅ | `functions/api/checkout/session.ts` が `mode`/`interval`/`variant` を検証し、Price ID を環境変数から取得して `POST /v1/checkout/sessions` を呼び出す。 |
 | Stripe Customer metadata の更新 | ✅ | 同ファイルで `ensureCustomer` が `metadata[display_name]` などを上書きし、既存 Customer の検索・作成を実装。 |
-| UI の寄附ボタンが Checkout API と連携 | ✅ | `public/donate/app.js` が `fetch('/api/checkout/session')` でレスポンス URL にリダイレクトし、エラー時のメッセージ表示も含む。 |
-| `/thanks` に感謝メッセージと注意書き | ✅ | `public/thanks/index.html` が寄附完了文言と方針説明を掲載。 |
+| UI の寄付ボタンが Checkout API と連携 | ✅ | `public/donate/app.js` が `fetch('/api/checkout/session')` でレスポンス URL にリダイレクトし、エラー時のメッセージ表示も含む。 |
+| `/thanks` に感謝メッセージと注意書き | ✅ | `public/thanks/index.html` が寄付完了文言と方針説明を掲載。 |
 
 ## Phase 4 — Donors & Consent
 

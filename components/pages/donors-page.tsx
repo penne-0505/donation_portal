@@ -54,7 +54,7 @@ export function DonorsPage() {
         </h1>
         <p className="max-w-3xl text-base leading-relaxed text-muted-foreground fade-in-up stagger-3">
           Discord
-          で掲示に同意いただいた寄附者の表示名を掲載しています。寄附額や回数は公開しておらず、純粋な支援の証として記録しています。
+          で掲示に同意いただいた寄付者の表示名を掲載しています。寄付額や回数は公開しておらず、純粋な支援の証として記録しています。
         </p>
       </section>
 

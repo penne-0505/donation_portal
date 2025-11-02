@@ -15,7 +15,7 @@ references:
 
 ## 1. 概要
 
-Donation Portal で寄附を受け付けるには Stripe Dashboard 上で Price を準備し、Cloudflare Pages Functions に環境変数を登録します。本ガイドでは Test 環境を前提に、単発/定期寄附を Stripe Checkout で扱うための初期設定手順を解説します。
+Donation Portal で寄付を受け付けるには Stripe Dashboard 上で Price を準備し、Cloudflare Pages Functions に環境変数を登録します。本ガイドでは Test 環境を前提に、単発/定期寄付を Stripe Checkout で扱うための初期設定手順を解説します。
 
 ## 2. 前提条件
 
@@ -29,12 +29,12 @@ Donation Portal で寄附を受け付けるには Stripe Dashboard 上で Price 
 
 1. Stripe Dashboard の **Products** から「Add product」を選択します。
 2. 以下 3 つの Price を作成します（通貨は JPY）。
-   - **単発寄附**: `¥300`、`One time`、Price 名称は `donation_one_time_300`
-   - **月額寄附**: `¥300`、`Recurring / Monthly`、Price 名称は `donation_subscription_monthly_300`
-   - **年額寄附**: `¥3,000`、`Recurring / Yearly`、Price 名称は `donation_subscription_yearly_3000`
+   - **単発寄付**: `¥300`、`One time`、Price 名称は `donation_one_time_300`
+   - **月額寄付**: `¥300`、`Recurring / Monthly`、Price 名称は `donation_subscription_monthly_300`
+   - **年額寄付**: `¥3,000`、`Recurring / Yearly`、Price 名称は `donation_subscription_yearly_3000`
 3. それぞれ作成後に表示される Price ID（例: `price_1234abcd`）を控えておきます。
 
-> **Tip:** Product 名や説明文には「任意の寄附であり対価がない」旨を明記すると審査時の確認がスムーズです。
+> **Tip:** Product 名や説明文には「任意の寄付であり対価がない」旨を明記すると審査時の確認がスムーズです。
 
 ### 3.2 Success / Cancel URL の確認
 
@@ -52,21 +52,21 @@ Pages Dashboard の **Settings > Functions > Environment variables** から以�
 | Key                     | Value                                  | 備考                                                                  |
 | ----------------------- | -------------------------------------- | --------------------------------------------------------------------- |
 | `STRIPE_SECRET_KEY`     | Stripe Test Secret Key (`sk_test_...`) | 本番では Live Key に置き換える                                        |
-| `PRICE_ONE_TIME_300`    | 単発寄附の Price ID                    | 例: `price_one_time_300`                                              |
-| `PRICE_SUB_MONTHLY_300` | 月額寄附の Price ID                    | 例: `price_monthly_300`                                               |
-| `PRICE_SUB_YEARLY_3000` | 年額寄附の Price ID                    | 例: `price_yearly_3000`                                               |
+| `PRICE_ONE_TIME_300`    | 単発寄付の Price ID                    | 例: `price_one_time_300`                                              |
+| `PRICE_SUB_MONTHLY_300` | 月額寄付の Price ID                    | 例: `price_monthly_300`                                               |
+| `PRICE_SUB_YEARLY_3000` | 年額寄付の Price ID                    | 例: `price_yearly_3000`                                               |
 | `APP_BASE_URL`          | ページのベース URL                     | テスト: `http://localhost:8788` / 本番: `https://<project>.pages.dev` |
 
 `COOKIE_SIGN_KEY` や Discord OAuth のキーは Phase 2 で設定済みの前提です。未登録の場合は `docs/guide/auth/discord-oauth.md` を参照して先に登録してください。
 
 ### 4.1 Stripe Customer metadata の必須フィールド
 
-Stripe Customer は寄附者情報の単一の保存場所 (SSOT) です。Pages Functions では以下の metadata を統一的に更新します。
+Stripe Customer は寄付者情報の単一の保存場所 (SSOT) です。Pages Functions では以下の metadata を統一的に更新します。
 Dashboard から手動編集する場合も同じキーとフォーマットを維持してください。
 
 | Key                   | 値の例                     | 説明                                                 |
 | --------------------- | -------------------------- | ---------------------------------------------------- |
-| `display_name`        | `寄附ユーザー`             | Discord 表示名。エスケープ済み文字列。               |
+| `display_name`        | `寄付ユーザー`             | Discord 表示名。エスケープ済み文字列。               |
 | `display_name_source` | `discord`                  | 表示名の取得元。今後のソース追加に備えた識別子。     |
 | `discord_id`          | `1234567890`               | Discord ユーザー ID。Webhook 連携での照合に使用。    |
 | `consent_public`      | `true` / `false`           | Donors 掲載同意フラグ。                              |
@@ -80,7 +80,7 @@ Dashboard から手動編集する場合も同じキーとフォーマットを�
 
 1. `.dev.vars` に上記のキーを追加し、ローカル用の Test Key と Price ID を設定します。
 2. `npm install && npm run dev` で開発サーバーを起動します。
-3. Discord OAuth でログインし、`/donate` の寄附ボタンをクリックして Checkout へ遷移します。
+3. Discord OAuth でログインし、`/donate` の寄付ボタンをクリックして Checkout へ遷移します。
 4. Stripe の Test カード（例: `4242 4242 4242 4242`）で決済を完了すると `/thanks` に戻り、Stripe Dashboard で Payment / Subscription が作成されます。
 
 ## 6. トラブルシューティング

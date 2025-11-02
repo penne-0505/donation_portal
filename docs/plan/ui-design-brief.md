@@ -16,18 +16,18 @@ references:
 
 **基調**: Minimal + Dark Mode Ready  
 **副要素**: Micro-interactions, Glow, Glassmorphism, グラデーション  
-**焦点**: 寄附という純粋な行為を邪魔しない洗練さと、細かな演出による貢献感・面白み
+**焦点**: 寄付という純粋な行為を邪魔しない洗練さと、細かな演出による貢献感・面白み
 
 ---
 
 ## ページ別要件
 
-### 1. `/donate` - 寄附エントリーページ
+### 1. `/donate` - 寄付エントリーページ
 
 **主要コンポーネント**:
-- **ヘッダー**: グラデーションテキスト「寄附してコミュニティを応援する」
-- **寄附趣旨セクション**: 「対価なし」「税控除対象外」を明示（minimal text）
-- **寄附メニュー**: 3枚のカード（glassmorphic + gradient + glow）
+- **ヘッダー**: グラデーションテキスト「寄付してコミュニティを応援する」
+- **寄付趣旨セクション**: 「対価なし」「税控除対象外」を明示（minimal text）
+- **寄付メニュー**: 3枚のカード（glassmorphic + gradient + glow）
   - ¥300 / 単発（gradient: blue→cyan, glow: blue）
   - ¥300 / 月（gradient: green→emerald, glow: green）
   - ¥3,000 / 年（gradient: amber→gold, glow: gold）
@@ -63,21 +63,21 @@ references:
 
 ---
 
-### 3. `/donors` - 公開寄附者リスト
+### 3. `/donors` - 公開寄付者リスト
 
 **主要コンポーネント**:
-- **ヘッダー**: 寄附者総数 + sort toggle
+- **ヘッダー**: 寄付者総数 + sort toggle
 - **Sort オプション**:
   - `desc` (newest): 上向き矢印 + "Recently" → blue accent
   - `asc` (oldest): 下向き矢印 + "Early supporters" → cyan accent
   - `random` (shuffle): shuffle icon + "Surprise order" → purple accent
-- **寄附者リスト**: 表示名のみ列挙（段階的フェードイン）
+- **寄付者リスト**: 表示名のみ列挙（段階的フェードイン）
 - **自分の名前**: row に inner glow + subtle highlight color
 - **ガイダンス**: 「撤回ガイド」と「60秒キャッシュ遅延」を明記
 
 **Micro-interactions**:
 - リスト表示時に上からスライドイン
-- 新規寄附者は最後に "new" ラベル付きで flicker
+- 新規寄付者は最後に "new" ラベル付きで flicker
 - Sort 切替時にリスト再表示アニメーション
 
 ---
@@ -96,7 +96,7 @@ references:
 ### Glassmorphism
 
 **主要な適用対象**:
-- **寄附メニュー card**:
+- **寄付メニュー card**:
   - Light: `rgba(255,255,255,0.1) + blur(10px) + border: rgba(255,255,255,0.2)`
   - Dark: `rgba(0,0,0,0.3) + blur(10px) + border: rgba(255,255,255,0.05)`
 - **ログインボタン**: 同様の glassmorphic style

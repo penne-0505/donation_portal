@@ -31,9 +31,8 @@ async function fetchSessionState() {
     }
 
     if (payload.status === 'signed-in' && payload.session && typeof payload.session === 'object') {
-      const displayNameRaw = typeof payload.session.displayName === 'string'
-        ? payload.session.displayName
-        : '';
+      const displayNameRaw =
+        typeof payload.session.displayName === 'string' ? payload.session.displayName : '';
       const displayName = displayNameRaw.trim();
       const consentPublic = payload.session.consentPublic === true;
       return {
@@ -193,7 +192,10 @@ function loadDonors(doc, elements) {
       const count = typeof payload.count === 'number' ? payload.count : donors.length;
 
       renderDonorList(doc, donorsList, donors);
-      setText(donorsStatus, donors.length === 0 ? '現在表示中の Donor はいません。' : 'Donors 情報を更新しました。');
+      setText(
+        donorsStatus,
+        donors.length === 0 ? '現在表示中の Donor はいません。' : 'Donors 情報を更新しました。',
+      );
       setText(donorsCount, String(count));
     } catch (error) {
       console.error('[donors-page] failed to load donors', error);
@@ -233,7 +235,10 @@ function applySessionState(doc, elements, state) {
     setText(consentStatus, `${state.session.displayName} さんは Donors 掲載に同意しています。`);
   } else {
     setVisibility(consentRevoke, false);
-    setText(consentStatus, '現在 Donors 掲載はオフになっています。寄附ページで同意を変更できます。');
+    setText(
+      consentStatus,
+      '現在 Donors 掲載はオフになっています。寄付ページで同意を変更できます。',
+    );
   }
 }
 
@@ -293,7 +298,10 @@ export async function initializeDonorsPage(doc = document) {
           return;
         }
         if (response.status === 404) {
-          setError(elements.consentError, '寄附者情報が見つかりませんでした。Stripe での連携状況をご確認ください。');
+          setError(
+            elements.consentError,
+            '寄付者情報が見つかりませんでした。Stripe での連携状況をご確認ください。',
+          );
           setText(elements.consentStatus, '');
           return;
         }
@@ -308,9 +316,8 @@ export async function initializeDonorsPage(doc = document) {
         );
         if (removed && elements.donorsList) {
           const childNodes = elements.donorsList.children;
-          const nextCount = childNodes && typeof childNodes.length === 'number'
-            ? childNodes.length
-            : 0;
+          const nextCount =
+            childNodes && typeof childNodes.length === 'number' ? childNodes.length : 0;
           setText(elements.donorsCount, String(nextCount));
         }
         setSessionState({
@@ -320,8 +327,14 @@ export async function initializeDonorsPage(doc = document) {
             consentPublic: false,
           },
         });
-        setText(elements.consentStatus, 'Donors 掲示を撤回しました。反映まで最大 60 秒かかる場合があります。');
-        setText(elements.donorsStatus, '掲示を撤回しました。最新の情報はしばらく後にご確認ください。');
+        setText(
+          elements.consentStatus,
+          'Donors 掲示を撤回しました。反映まで最大 60 秒かかる場合があります。',
+        );
+        setText(
+          elements.donorsStatus,
+          '掲示を撤回しました。最新の情報はしばらく後にご確認ください。',
+        );
       } catch (error) {
         console.error('[donors-page] failed to revoke consent', error);
         setError(elements.consentError, CONSENT_ERROR_MESSAGE);

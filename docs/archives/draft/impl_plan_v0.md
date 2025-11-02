@@ -31,7 +31,7 @@ superseded_by: docs/intent/donation-portal/mvp-architecture-and-phases.md
 
 ## 1. スコープ確定（再掲・確認用）
 
-* 寄附：単発/定期（カードのみ）。Checkout→`/thanks`。独自メールなし（Stripeレシートのみ）。
+* 寄付：単発/定期（カードのみ）。Checkout→`/thanks`。独自メールなし（Stripeレシートのみ）。
 * Donors：同意者の**表示名のみ**掲載（額/回数/順位なし、撤回可）。
 * SSOT=Stripe。自前DBなし。ドメインは `*.pages.dev`。
 
@@ -88,7 +88,7 @@ superseded_by: docs/intent/donation-portal/mvp-architecture-and-phases.md
 
 ### 4.1 フロント
 
-* `/donate`：寄附の趣旨（**対価なし/税控除なし**）、OAuth開始ボタン、寄附ボタン（単発/定期）。
+* `/donate`：寄付の趣旨（**対価なし/税控除なし**）、OAuth開始ボタン、寄付ボタン（単発/定期）。
 * `/thanks`：感謝文（署名「りん」）。
 * `/donors`：`GET /api/donors` の結果を表示名のみ列挙＋撤回リンク。
 
@@ -129,14 +129,14 @@ superseded_by: docs/intent/donation-portal/mvp-architecture-and-phases.md
 2. Stripe TestでE2E（単発/定期/再送）。
 3. Discord OAuth実機確認。
 4. Stripe **Liveキー**/Webhook切替・`PRICE_*`（本番ID）設定。
-5. 本番デプロイ→実寄附でスモーク（少額）。
+5. 本番デプロイ→実寄付でスモーク（少額）。
 6. 監視（エラー/失敗）を軽通知。
 
 ---
 
 ## 8. 受け入れ基準（DoD）
 
-* 単発/定期の寄附がCheckout経由で完了し、`/thanks` へ遷移する。
+* 単発/定期の寄付がCheckout経由で完了し、`/thanks` へ遷移する。
 * 独自メールは送られず、Stripeレシートのみ送信される。
 * Donorsは**同意者の表示名のみ**を表示し、撤回が反映される。
 * Webhookは署名検証を通り、重複イベントを無害化し、**P95<5分**で処理完了。

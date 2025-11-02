@@ -6,7 +6,7 @@
     <title>Donation Portal | Donate</title>
     <meta
       name="description"
-      content="Donation Portal の寄附受付ページです。Discord ログインと掲示同意の管理が行えます。"
+      content="Donation Portal の寄付受付ページです。Discord ログインと掲示同意の管理が行えます。"
     />
     <link rel="stylesheet" href="/styles/base.css" />
   </head>
@@ -14,9 +14,9 @@
     <main class="page page--donate" aria-labelledby="page-title">
       <header class="page-header">
         <span class="page-eyebrow">Donation Portal</span>
-        <h1 id="page-title" class="page-title">寄附のご案内</h1>
+        <h1 id="page-title" class="page-title">寄付のご案内</h1>
         <p class="page-lead">
-          Discord コミュニティの運営費を支える任意の寄附を受け付けています。Discord
+          Discord コミュニティの運営費を支える任意の寄付を受け付けています。Discord
           でログインし、掲示への同意を設定してください。
         </p>
       </header>
@@ -27,7 +27,7 @@
             <div class="section-header">
               <h2 id="auth-section-title">Discord ログイン</h2>
               <p id="auth-description" class="section-header__lead">
-                Stripe Checkout で寄附を進める前に、Discord
+                Stripe Checkout で寄付を進める前に、Discord
                 アカウントでログインして掲示同意を確認します。
               </p>
             </div>
@@ -39,7 +39,7 @@
                 aria-describedby="auth-description"
               >
                 <span class="button__label">Discord でログイン</span>
-                <span class="button__meta">掲示の同意と寄附ステータスを同期します</span>
+                <span class="button__meta">掲示の同意と寄付ステータスを同期します</span>
               </a>
               <a id="auth-logout" class="button button--secondary" href="/oauth/logout" hidden>
                 ログアウト
@@ -62,7 +62,7 @@
               <h2 id="consent-section-title">掲示への同意</h2>
               <p id="consent-explanation" class="section-header__lead">
                 同意した場合、Donors ページに Discord
-                の表示名を掲載します（寄附額は表示されません）。
+                の表示名を掲載します（寄付額は表示されません）。
               </p>
             </div>
             <div class="consent-control">
@@ -77,31 +77,31 @@
               <label for="consent-public">Donors ページに表示名を掲載することに同意します</label>
             </div>
             <p id="consent-note" class="consent-note">
-              Discord でログインすると同意の状態を変更できます。寄附後でも撤回が可能です。
+              Discord でログインすると同意の状態を変更できます。寄付後でも撤回が可能です。
             </p>
           </section>
 
           <section class="card card--muted info-card" aria-labelledby="info-section-title">
             <div class="section-header">
               <h2 id="info-section-title">これからの流れ</h2>
-              <p class="section-header__lead">寄附フローの概要と注意事項です。</p>
+              <p class="section-header__lead">寄付フローの概要と注意事項です。</p>
             </div>
             <ol class="info-steps">
               <li>Discord でログインし、掲示への同意を確認します。</li>
-              <li>同意内容を決めたら Stripe Checkout で寄附を行います。</li>
-              <li>寄附が完了するとサンクスページへ遷移します。</li>
+              <li>同意内容を決めたら Stripe Checkout で寄付を行います。</li>
+              <li>寄付が完了するとサンクスページへ遷移します。</li>
             </ol>
             <p class="info-disclaimer">
-              いただいた寄附はコミュニティ運営にのみ利用し、対価の提供は行いません。
+              いただいた寄付はコミュニティ運営にのみ利用し、対価の提供は行いません。
             </p>
           </section>
         </div>
 
         <section class="card checkout-card" aria-labelledby="checkout-section-title">
           <div class="section-header">
-            <h2 id="checkout-section-title">寄附メニュー</h2>
+            <h2 id="checkout-section-title">寄付メニュー</h2>
             <p id="checkout-description" class="section-header__lead">
-              Stripe Checkout で寄附を行います。カード決済のみ対応し、すべて税込の金額です。
+              Stripe Checkout で寄付を行います。カード決済のみ対応し、すべて税込の金額です。
             </p>
           </div>
           <div
@@ -123,7 +123,7 @@
                 aria-describedby="checkout-description checkout-note"
                 disabled
               >
-                <span class="button__label">単発寄附 ¥300</span>
+                <span class="button__label">単発寄付 ¥300</span>
                 <span class="button__meta">少額から参加できます</span>
               </button>
               <div class="checkout-action__meta">
@@ -142,7 +142,7 @@
                 aria-describedby="checkout-description checkout-note"
                 disabled
               >
-                <span class="button__label">毎月の寄附 ¥300</span>
+                <span class="button__label">毎月の寄付 ¥300</span>
                 <span class="button__meta">継続支援で安定運営に貢献</span>
               </button>
               <div class="checkout-action__meta">
@@ -161,8 +161,8 @@
                 aria-describedby="checkout-description checkout-note"
                 disabled
               >
-                <span class="button__label">毎年の寄附 ¥3,000</span>
-                <span class="button__meta">年次でまとめて寄附</span>
+                <span class="button__label">毎年の寄付 ¥3,000</span>
+                <span class="button__meta">年次でまとめて寄付</span>
               </button>
               <div class="checkout-action__meta">
                 <span class="tag">年額</span>
@@ -171,7 +171,7 @@
             </div>
           </div>
           <p id="checkout-note" class="checkout-note">
-            寄附ボタンを押すと Stripe Checkout
+            寄付ボタンを押すと Stripe Checkout
             に移動します。完了後は自動的にサンクスページへ戻ります。
           </p>
           <div

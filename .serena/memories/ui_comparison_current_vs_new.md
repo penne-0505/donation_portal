@@ -112,7 +112,7 @@ _new_ui_draft/
 
 **現状実装（`components/pages/donors-page.tsx`）**
 - 199行
-- `useDonors` フック で寄附者取得
+- `useDonors` フック で寄付者取得
 - 同意管理・撤回機能
 - ロール UI が統合
 
@@ -134,7 +134,7 @@ _new_ui_draft/
 - **ConsentToggle**: スムーズなトグルアニメーション
 
 ### インタラクション
-- **Confetti Celebration**: 寄附成功時の演出
+- **Confetti Celebration**: 寄付成功時の演出
 - **ホバー効果**: Card elevation + glow intensity
 - **ローディング**: Spinner コンポーネント
 

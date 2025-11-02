@@ -25,7 +25,7 @@ describe('DonatePage React UI', () => {
     cleanup();
   });
 
-  it('未ログイン時はログイン導線を表示し、寄附操作を無効化する', () => {
+  it('未ログイン時はログイン導線を表示し、寄付操作を無効化する', () => {
     let loginCalls = 0;
     const session = createSessionMock();
     session.status = { state: 'signed-out' };
@@ -123,7 +123,7 @@ describe('DonatePage React UI', () => {
     });
   });
 
-  it('寄附メニューの選択で Checkout を開始しインパクトカードを表示する', async () => {
+  it('寄付メニューの選択で Checkout を開始しインパクトカードを表示する', async () => {
     const session = createSessionMock();
     session.status = {
       state: 'signed-in',

@@ -1,6 +1,6 @@
 # Donation Portal
 
-Discord コミュニティ向けの寄附ポータルを Cloudflare Pages 上に構築するプロジェクトです。Stripe による単発・定期寄附を受け付け、寄附者の同意のもとで表示名を公開します。
+Discord コミュニティ向けの寄付ポータルを Cloudflare Pages 上に構築するプロジェクトです。Stripe による単発・定期寄付を受け付け、寄付者の同意のもとで表示名を公開します。
 
 ## 概要
 
@@ -8,9 +8,9 @@ Discord コミュニティ向けの寄附ポータルを Cloudflare Pages 上に
 - **技術スタック**: TypeScript, Next.js (App Router), Stripe SDK, Discord OAuth
 - **データ管理**: Stripe Customer metadata が Single Source of Truth
 - **主要機能**:
-  - `/donate` - 寄附案内ページ、同意フォーム
+  - `/donate` - 寄付案内ページ、同意フォーム
   - Stripe Checkout による決済処理
-  - `/thanks` - 寄附完了画面
+  - `/thanks` - 寄付完了画面
   - `/donors` - 同意者の表示名一覧
   - Discord OAuth 連携
 

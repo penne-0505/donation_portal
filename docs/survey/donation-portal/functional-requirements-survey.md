@@ -38,7 +38,7 @@ Donation Portal の機能実装は Intent ドキュメントを起点に段階�
 
 ### ユーザーフローと UI 要件
 
-- `/donate` は寄附趣旨と注意書き（対価なし・税控除なし）を掲示し、Discord OAuth を起点に寄附者表示名と掲示同意を取得する。単発（¥300）および定期（月額 ¥300 / 年額 ¥3,000）の寄附メニューを提示。
+- `/donate` は寄付趣旨と注意書き（対価なし・税控除なし）を掲示し、Discord OAuth を起点に寄付者表示名と掲示同意を取得する。単発（¥300）および定期（月額 ¥300 / 年額 ¥3,000）の寄付メニューを提示。
 - OAuth 完了時に `sess` Cookie を発行し、UI 上で表示名と掲示同意の状態を即時反映する。TTL は 10 分で、失効後は再ログインを要求。
 - Stripe Checkout 完了時は `/thanks` へ遷移し、感謝メッセージのみを表示する。特典・順位・額面に関する要素は一切含めない。
 - `/donors` は掲示同意を得た表示名だけをリスト列挙する。順序は API の `order` パラメータ（降順/昇順/ランダム）に追従し、撤回導線（OAuth 再実行→consent 更新）を提示する。
@@ -46,7 +46,7 @@ Donation Portal の機能実装は Intent ドキュメントを起点に段階�
 
 ### Stripe 連携と決済要件
 
-- 寄附はすべて Stripe Checkout で処理し、カード決済のみを提供。成功時は Stripe レシート以外の通知を送付しない。
+- 寄付はすべて Stripe Checkout で処理し、カード決済のみを提供。成功時は Stripe レシート以外の通知を送付しない。
 - Stripe Customer metadata を SSOT とし、`display_name`, `display_name_source=discord`, `discord_id`, `consent_public` を必須項目として保持する。自前データベースは導入しない。
 - `mode` と `interval` の組合せを厳密にバリデートし、単発 (`payment`) と定期 (`subscription` 月次/年次) の整合性を保証する。
 - Checkout からの復帰は `success_url=/thanks`、`cancel_url=/donate` 固定。キャンセル後に再度 OAuth を求めることで metadata の整合性を保つ。
@@ -64,7 +64,7 @@ Donation Portal の機能実装は Intent ドキュメントを起点に段階�
 #### `POST /api/checkout/session`
 
 - 認証: Discord OAuth セッション Cookie `sess` が必須。
-- リクエスト: `mode`, `interval`, `variant` の組み合わせで単発/定期の寄附メニューを識別。想定外の組み合わせは 400 を返却。
+- リクエスト: `mode`, `interval`, `variant` の組み合わせで単発/定期の寄付メニューを識別。想定外の組み合わせは 400 を返却。
 - 副作用: 対応する Stripe Customer を `metadata.discord_id` で検索し、存在しない場合は新規作成。表示名と掲示同意を metadata に保存してから Checkout Session を生成する。
 - レスポンス: Checkout URL を 200 で返す。Stripe API 失敗時は 500。
 
@@ -94,7 +94,7 @@ Donation Portal の機能実装は Intent ドキュメントを起点に段階�
 
 ### 非対象・制約事項
 
-- 対価・特典・ロール付与などインセンティブ要素は一切提供しない。寄附額やランキング表示も禁止。
+- 対価・特典・ロール付与などインセンティブ要素は一切提供しない。寄付額やランキング表示も禁止。
 - 独自メール送信は行わず、Stripe レシートのみで通知する運用を維持する。
 - カスタムドメインは利用せず `*.pages.dev` を継続。固定費ゼロを前提に設計。
 - データ保管は Stripe に限定し、ローカルや外部データベースを導入しない。PII 取扱いは Stripe 管理下に置く。
@@ -103,7 +103,7 @@ Donation Portal の機能実装は Intent ドキュメントを起点に段階�
 ### 利用者が行える操作と必要な UI 表示
 
 - `/donate`
-  - 寄附の趣旨と「対価なし」「税控除対象外」である旨を掲示。
+  - 寄付の趣旨と「対価なし」「税控除対象外」である旨を掲示。
   - Discord 連携開始ボタンを表示し、ログイン後は取得した表示名と掲示同意チェック状態を表示・切替できる。
   - 単発 ¥300、定期（月 ¥300 / 年 ¥3,000）メニューの選択肢と Checkout 開始ボタンを用意。
 - OAuth 完了後

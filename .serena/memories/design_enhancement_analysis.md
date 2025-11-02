@@ -56,19 +56,19 @@ Light/Dark mode の両対応
 
 ## 3. コンポーネント設計の違い
 
-### 現状UI の寄附カード表示
+### 現状UI の寄付カード表示
 ```tsx
 // DonationImpact コンポーネント使用
 <DonationImpact mode="payment" amount={300} />
 // → 説明的なカード（Icon + テキスト）
 
-// 実際の寄附ボタンは Preset ループで生成
+// 実際の寄付ボタンは Preset ループで生成
 const presets = CHECKOUT_PRESETS;  // 複数の金額・期間
 ```
 - **特徴**: 目的説明型、複数プリセット対応
 - **レイアウト**: Grid レイアウトで複数表示
 
-### 新UI の寄附カード表示
+### 新UI の寄付カード表示
 ```tsx
 <DonationCard 
   amount="¥300"

@@ -34,7 +34,7 @@ Design and implement the following pages with a focus on user experience, visual
 - Checkout button proceeds to Stripe payment
 
 **Visual Design**:
-- Header with gradient text: "寄附してコミュニティを応援する"
+- Header with gradient text: "寄付してコミュニティを応援する"
 - Three donation menu cards with glassmorphic style and individual gradient colors:
   - ¥300 / One-time: gradient blue→cyan with blue glow
   - ¥300 / Monthly: gradient green→emerald with green glow

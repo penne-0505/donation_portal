@@ -21,7 +21,7 @@ non_goals:
   - "高度な自動監視やアラートチューニング。"
 requirements:
   functional:
-    - "単発/定期寄附フロー、Donors 掲載、Webhook、Consent の総合テストを完了する。"
+    - "単発/定期寄付フロー、Donors 掲載、Webhook、Consent の総合テストを完了する。"
     - "Stripe Live キーと Discord 本番設定を投入し、本番デプロイを実施する。"
     - "Runbook/FAQ/ガイドを更新し、運用フローを明記する。"
   non_functional:
@@ -42,7 +42,7 @@ migrations:
   - "なし。"
 rollout_plan:
   - "Stripe Test で総合テスト → Discord OAuth 実機テスト。"
-  - "Live キー投入、Live Webhook 設定、試験的な少額寄附でスモーク。"
+  - "Live キー投入、Live Webhook 設定、試験的な少額寄付でスモーク。"
   - "Cloudflare Pages 本番デプロイ → Donors 掲載確認。"
 rollback:
   - "重大障害時は Pages を前バージョンへロールバックし、Stripe Webhook を停止。"
@@ -64,7 +64,7 @@ i18n_a11y:
   - "主要導線のスクリーンリーダ確認、aria-label の再確認。"
 acceptance_criteria:
   - "受け入れ基準 (MVP Plan) を全て満たす E2E テスト結果が保存されている。"
-  - "Live デプロイ完了後、Donors 掲載と寄附フローが正常に機能する。"
+  - "Live デプロイ完了後、Donors 掲載と寄付フローが正常に機能する。"
   - "運用 Runbook とサポート FAQ が最新化されている。"
 owners:
   - "@donation-portal-core"
@@ -90,14 +90,14 @@ MVP の機能群を総合テストし、本番環境へ安全にリリースす�
 ## 3. タスク詳細
 
 1. **総合テスト**
-   - 単発/定期寄附フローを Stripe Test モードで実施し、Webhook ログと Donors 更新を確認。
+   - 単発/定期寄付フローを Stripe Test モードで実施し、Webhook ログと Donors 更新を確認。
    - Consent 撤回→再同意の動作確認。UI 文言（対価なし/税控除なし）をチェック。
    - アクセシビリティテスト（キーボード操作、スクリーンリーダ簡易確認）。
 
 2. **Live 切替とスモークテスト**
    - Secrets/Env Bindings を Live キーへ更新し、レビュー承認後にデプロイ。
    - Stripe Dashboard で Live Webhook を登録し、署名シークレットを設定。
-   - 少額寄附でスモークテストし、Donors 掲載まで確認。
+   - 少額寄付でスモークテストし、Donors 掲載まで確認。
 
 3. **ドキュメント整備と引き継ぎ**
    - Runbook、FAQ、サポートフロー、障害対応手順を更新。
@@ -115,8 +115,8 @@ MVP の機能群を総合テストし、本番環境へ安全にリリースす�
 
 | リスク | 影響 | 対応策 |
 | --- | --- | --- |
-| Live キー設定ミス | 本番寄附失敗 | 2 人レビューとスモークテスト。 |
-| Webhook 失敗 | 寄附情報不整合 | 切替直後は Slack/Email 監視を強化。 |
+| Live キー設定ミス | 本番寄付失敗 | 2 人レビューとスモークテスト。 |
+| Webhook 失敗 | 寄付情報不整合 | 切替直後は Slack/Email 監視を強化。 |
 | UI 文言漏れ | コンプライアンス問題 | QA チェックリストに項目追加。 |
 
 ## 6. スケジュール

@@ -30,8 +30,8 @@ Next.js (App Router) を利用した React 版 UI が `/donate`・`/donors`・`/
 
 | ルート | ファイル | 説明 |
 | --- | --- | --- |
-| `/` | `app/(app-shell)/page.tsx` | React UI のランディング。寄附/Donors への導線を表示。 |
-| `/donate` | `app/(app-shell)/donate/page.tsx` | Discord OAuth を前提にした寄附フロー。セッション取得・同意更新・Stripe Checkout 起動を行う。 |
+| `/` | `app/(app-shell)/page.tsx` | React UI のランディング。寄付/Donors への導線を表示。 |
+| `/donate` | `app/(app-shell)/donate/page.tsx` | Discord OAuth を前提にした寄付フロー。セッション取得・同意更新・Stripe Checkout 起動を行う。 |
 | `/donors` | `app/(app-shell)/donors/page.tsx` | Donors 一覧取得と同意撤回を提供。 |
 | `/thanks` | `app/(app-shell)/thanks/page.tsx` | Stripe Checkout 成功後のサンクス画面。 |
 
@@ -55,7 +55,7 @@ Next.js (App Router) を利用した React 版 UI が `/donate`・`/donors`・`/
 
 ### Stripe Checkout 起動 (`useCheckout`)
 
-- `/api/checkout/session` (POST) に寄附のプリセット値 (`mode`, `variant`, `interval`) を送信。
+- `/api/checkout/session` (POST) に寄付のプリセット値 (`mode`, `variant`, `interval`) を送信。
 - 成功レスポンス内の `url` へリダイレクト。失敗時は UI にエラーメッセージを表示。
 - プリセットは `lib/ui/checkout-presets.ts` にて単発/月額/年額を定義。
 
@@ -72,7 +72,7 @@ Next.js (App Router) を利用した React 版 UI が `/donate`・`/donors`・`/
 | `components/ui/button.tsx` | 主要操作・リンクのスタイル統一 | `href` を指定すると Next.js の `<Link>` を描画。 |
 | `components/ui/card.tsx` | ガラス風カード表現 | カード内の余白とシャドウを統一。 |
 | `components/ui/checkbox.tsx` | カスタムチェックボックス | 状態制御は `onCheckedChange` で行う。 |
-| `components/donation-impact.tsx` | 寄附プランの鼓舞コンテンツ | 選択したメニューに応じたコピー/アイコンを出し分け。 |
+| `components/donation-impact.tsx` | 寄付プランの鼓舞コンテンツ | 選択したメニューに応じたコピー/アイコンを出し分け。 |
 | `components/donor-pill.tsx` | Donors リストのタグ表示 | Flex wrap を前提。 |
 | `components/confetti-celebration.tsx` | /thanks での祝砲演出 | `canvas-confetti` を動的 import。 |
 | `components/pages/*.tsx` | ページ固有の UI 構成 | `donate`/`donors` はクライアントコンポーネントとして hooks を利用。 |
@@ -91,7 +91,7 @@ Tailwind v4 のトークン定義は `app/globals.css` に集約し、旧静的 
 
 | URL | 主な確認事項 |
 | --- | --- |
-| `http://127.0.0.1:3000/donate` | OAuth 未ログイン時の CTA、同意チェックボックスの無効状態、寄附メニューの表示。 |
+| `http://127.0.0.1:3000/donate` | OAuth 未ログイン時の CTA、同意チェックボックスの無効状態、寄付メニューの表示。 |
 | `http://127.0.0.1:3000/donors` | Donors ローディング表示とログイン誘導文言。 |
 | `http://127.0.0.1:3000/thanks` | サンクスメッセージと遷移リンク。 |
 

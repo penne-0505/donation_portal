@@ -678,7 +678,7 @@ body {
 - P1: `app/globals.css` の `--shadow-soft` と `.shadow-minimal` を1-2px・inset light構成に調整し、各Card/Buttonに適用。`AppShell`・`DonationBadge`・`DonorPill` など主要ガラス面も `shadow-inner-light` を統一。
 - P2: `.glass-sm/md/lg` の透明度・blur値をmacOS仕様に合わせて更新し、カード／バッジ／ボタンへ適用。選択状態には `glass-md` を上書きしてZ軸差分を表現。
 - P3: `.border-gradient-subtle` を縦グラデーションへ刷新し、`Card` 基底クラスおよび `glass-sm` サーフェス（ログインステータス、同意ブロック、Donorリスト等）に追加。
-- P4: 新規 `.hover-glass` を導入し、寄附プランボタンやバッジでtranslate系アニメーションを廃止。光量と透明度変化のみでホバー応答させました。
+- P4: 新規 `.hover-glass` を導入し、寄付プランボタンやバッジでtranslate系アニメーションを廃止。光量と透明度変化のみでホバー応答させました。
 - P5: `transition-glass` を250ms + `--ease-macos` へ統一し、必要箇所に `transition-macos` を併用。CTAやナビゲーションリンクも同一テンポに統合。
 - P6: `bg-root` をグリーン〜イエロー系の薄い線形グラデーションへ変更し、`AppShell` を `bg-root` 化。ヘッダー／フッターを `glass-sm` 化して背景との層分離を強化。
 - `.app-shell::before` に淡い放射グラデーションとノイズテクスチャを重ね、ガラス要素の境界を際立たせる静的背景演出を追加。`mix-blend-mode: soft-light` で調和させ、アニメーションレスでパフォーマンス負荷を抑制。

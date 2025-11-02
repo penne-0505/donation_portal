@@ -148,7 +148,7 @@ export const onRequestPost: PagesFunction<CheckoutEnv> = async (context) => {
     return errorResponse(
       500,
       'internal',
-      '寄附を開始できませんでした。時間をおいて再度お試しください。',
+      '寄付を開始できませんでした。時間をおいて再度お試しください。',
     );
   }
 

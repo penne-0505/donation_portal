@@ -59,7 +59,7 @@ references:
 
 ## ドメイン別データフロー
 1. **ログイン～セッション確立**: `/oauth/start` が掲示同意パラメータを state Cookie に署名して Discord にリダイレクト。`/oauth/callback` で Discord ユーザー情報を取得し、`issueSessionCookie` により `sess` Cookie を発行する。
-2. **寄附開始**: `DonatePage` が `useSession` でサインイン状態を判定し、`useConsentMutation` で同意変更を反映する。`startCheckout` 要求は `/api/checkout/session` へ JSON POST し、Stripe URL を受け取ってブラウザ遷移を行う。
+2. **寄付開始**: `DonatePage` が `useSession` でサインイン状態を判定し、`useConsentMutation` で同意変更を反映する。`startCheckout` 要求は `/api/checkout/session` へ JSON POST し、Stripe URL を受け取ってブラウザ遷移を行う。
 3. **Webhook 処理**: Stripe からの `payment_intent.succeeded` / `invoice.paid` は Webhook で受信し、重複判定のみ実施。Donors 掲載は Stripe metadata によるため追加処理は行わない。
 4. **Donors 掲載**: `/api/donors` がメタデータを検索し、UI の `useDonors` が 60 秒キャッシュを前提に表示する。
 

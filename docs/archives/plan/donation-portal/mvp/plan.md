@@ -12,17 +12,17 @@ references:
   - docs/draft/impl_plan_v0.md
   - docs/intent/donation-portal/mvp-architecture-and-phases.md
 scope:
-  - "Cloudflare Pages 上で /donate・/thanks・/donors を提供し、任意の単発/定期寄附を Stripe Checkout で受け付ける。"
+  - "Cloudflare Pages 上で /donate・/thanks・/donors を提供し、任意の単発/定期寄付を Stripe Checkout で受け付ける。"
   - "Discord OAuth を用いた表示名取得と掲示同意フロー、Stripe Customer metadata を単一のデータソースとして扱う。"
   - "Pages Functions による API 群（OAuth、Checkout、Donors、Consent、Webhook、Health）を MVP としてリリースする。"
 non_goals:
-  - "寄附額に応じた特典・ロール付与や物理的リワードの提供。"
+  - "寄付額に応じた特典・ロール付与や物理的リワードの提供。"
   - "Stripe 以外の決済手段や自前データベースの導入。"
   - "Cloudflare Pages 以外のホスティング・独自ドメイン対応。"
 requirements:
   functional:
     - "Discord OAuth による表示名・掲示同意の取得と短期セッション管理。"
-    - "Stripe Checkout を用いた単発 (¥300) / 定期 (¥300, ¥3,000) 寄附フローの提供。"
+    - "Stripe Checkout を用いた単発 (¥300) / 定期 (¥300, ¥3,000) 寄付フローの提供。"
     - "Donors ページで同意者の表示名のみを掲示し、撤回操作で即時非掲載とする。"
   non_functional:
     - "Webhook は Stripe-Signature を検証し、重複イベントを冪等に処理する。"
@@ -61,7 +61,7 @@ rollout_plan:
   - "Live 切替前に Stripe Live キーと Price ID を環境変数へ投入し、手動スモークテストを行う。"
 rollback:
   - "Stripe Webhook を一時停止し、Pages デプロイを前バージョンへロールバックする。"
-  - "Discord OAuth リダイレクト URL を無効化し、一時的に寄附フォームへの導線を停止する。"
+  - "Discord OAuth リダイレクト URL を無効化し、一時的に寄付フォームへの導線を停止する。"
 test_plan:
   - "OAuth state 改ざん・TTL 失効・二重同意のユースケースをカバーする統合テスト。"
   - "Stripe Checkout 単発／定期／エラー分岐のモックテストと、Test ダッシュボードでの手動確認。"
@@ -79,7 +79,7 @@ i18n_a11y:
   - "日本語 UI を既定とし、ボタン/リンクにはアクセシビリティ対応のラベルを付与する。"
   - "Stripe Checkout の言語設定を ja-JP に固定し、スクリーンリーダ向けに主要操作へ aria-label を付与する。"
 acceptance_criteria:
-  - "単発/定期寄附完了後に /thanks へリダイレクトされ、Stripe レシートのみ送信される。"
+  - "単発/定期寄付完了後に /thanks へリダイレクトされ、Stripe レシートのみ送信される。"
   - "Donors ページで consent_public=true の表示名のみが 60 秒以内に更新される。"
   - "Webhook が署名検証を通過し、重複 event.id を無害化できる。"
   - "全画面に『対価なし』『税控除なし』が明記されている。"
@@ -94,12 +94,12 @@ MVP 計画の最終意図は `docs/intent/donation-portal/mvp-architecture-and-p
 
 # Donation Portal MVP 実装計画
 
-本計画は `docs/draft/interface_definition.md` と `docs/draft/impl_plan_v0.md` を統合し、Cloudflare Pages 上で Discord コミュニティ向け寄附機能を MVP として公開するための実施手順を定義する。Stripe Customer metadata を単一のデータソースとし、外部依存を最小限に抑えつつユーザー体験と運用負荷のバランスをとる。
+本計画は `docs/draft/interface_definition.md` と `docs/draft/impl_plan_v0.md` を統合し、Cloudflare Pages 上で Discord コミュニティ向け寄付機能を MVP として公開するための実施手順を定義する。Stripe Customer metadata を単一のデータソースとし、外部依存を最小限に抑えつつユーザー体験と運用負荷のバランスをとる。
 
 ## 1. 背景と目的
 
-- Discord コミュニティが任意で寄附できる導線を整備し、同意者のみ Donors ページに表示名を掲示する。
-- 寄附に対価や特典を付与せず、Stripe Checkout と Discord OAuth のみで MVP を成立させる。
+- Discord コミュニティが任意で寄付できる導線を整備し、同意者のみ Donors ページに表示名を掲示する。
+- 寄付に対価や特典を付与せず、Stripe Checkout と Discord OAuth のみで MVP を成立させる。
 - Pages Functions によりサーバレスに API と Webhook を実装し、Cloudflare Pages デプロイで運用コストを抑制する。
 
 ## 2. スコープと前提
@@ -111,7 +111,7 @@ MVP 計画の最終意図は `docs/intent/donation-portal/mvp-architecture-and-p
 - Stripe/Discord/Cloudflare Pages の設定および Secrets 管理、CI/CD パイプライン整備。
 
 ### 2.2 非対象
-- Stripe 以外の決済手段、寄附額に応じた特典付与。
+- Stripe 以外の決済手段、寄付額に応じた特典付与。
 - Webhook イベントのバックエンド永続化、分析基盤への連携。
 - カスタムドメイン導入や多言語展開。
 
@@ -139,7 +139,7 @@ MVP 計画の最終意図は `docs/intent/donation-portal/mvp-architecture-and-p
 ### フェーズ3: Checkout セッションとメタデータ更新
 - `POST /api/checkout/session` を実装し、Stripe Customer metadata を SSOT として更新。
 - 単発/定期の入力バリデーション、Price ID の環境変数化、エラーハンドリングとレスポンススキーマを整備。
-- `/donate` ページに単発/定期の寄附ボタン、同意 ON/OFF に応じた挙動を実装。
+- `/donate` ページに単発/定期の寄付ボタン、同意 ON/OFF に応じた挙動を実装。
 - 成果物: Checkout URL を受け取り、成功時 `/thanks` へ遷移。
 
 ### フェーズ4: Donors 掲示と同意管理
@@ -155,7 +155,7 @@ MVP 計画の最終意図は `docs/intent/donation-portal/mvp-architecture-and-p
 - 成果物: Webhook の再送耐性と監視基盤の初期セット。
 
 ### フェーズ6: QA とリリース
-- Stripe Test 環境で単発/定期寄附の E2E、Webhook 再送、Donors キャッシュ挙動を検証。
+- Stripe Test 環境で単発/定期寄付の E2E、Webhook 再送、Donors キャッシュ挙動を検証。
 - Discord OAuth 実機テスト、Cookie TTL/改ざんテスト、UI コピーの最終校閲。
 - 本番用 Stripe Live キー投入、Live 環境で少額スモーク、運用 Runbook 整備。
 - 成果物: 受け入れ基準を満たす MVP を Pages 本番へデプロイ。
@@ -165,7 +165,7 @@ MVP 計画の最終意図は `docs/intent/donation-portal/mvp-architecture-and-p
 1. **M1: 基盤準備完了** — CI が成功し、OAuth/Checkout/API のひな型がコンパイル済み。
 2. **M2: 機能フリーズ** — フロント・API・Webhook が Test 環境で通しテスト済み。
 3. **M3: 本番リリース** — Stripe Live 切替、Donors 掲示確認、監視通知有効化。
-4. **M4: 初期運用評価** — デプロイ後 1 週間の障害なし、ログ/寄附フローの安定稼働を確認。
+4. **M4: 初期運用評価** — デプロイ後 1 週間の障害なし、ログ/寄付フローの安定稼働を確認。
 
 各マイルストーンで acceptance_criteria を確認し、未達項目は次フェーズへ進まない。
 

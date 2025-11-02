@@ -58,7 +58,7 @@ Cookie: sess=<signed>
 | --- | --- | --- | --- |
 | `400` | `bad_request` | `consent_public は true または false を指定してください。` | リクエストボディが不正 |
 | `401` | `unauthorized` | `セッション情報の検証に失敗しました。Discord で再ログインしてください。` | `sess` Cookie 不在または署名不正 |
-| `404` | `not_found` | `該当する寄附者情報が見つかりませんでした。寄附後に再度お試しください。` | Stripe 上に該当 Customer が存在しない |
+| `404` | `not_found` | `該当する寄付者情報が見つかりませんでした。寄付後に再度お試しください。` | Stripe 上に該当 Customer が存在しない |
 | `500` | `internal` | `同意状態の更新に失敗しました。時間をおいて再実行してください。` | Stripe API エラー・設定不足 |
 
 ## Stripe 連携仕様

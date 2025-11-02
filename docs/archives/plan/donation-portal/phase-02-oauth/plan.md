@@ -81,7 +81,7 @@ OAuth フローに関する確定判断は intent ドキュメント `docs/inten
 
 ## 1. 目的
 
-寄附前に Discord で表示名と掲示同意を取得し、Stripe Checkout へ渡すためのセッション基盤を構築する。
+寄付前に Discord で表示名と掲示同意を取得し、Stripe Checkout へ渡すためのセッション基盤を構築する。
 
 ## 2. 背景と前提
 

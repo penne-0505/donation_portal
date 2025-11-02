@@ -1,5 +1,5 @@
 ---
-title: "寄附ページ新UI適用計画"
+title: "寄付ページ新UI適用計画"
 domain: "donation-portal/ui"
 status: "active"
 version: "0.1.0"
@@ -13,7 +13,7 @@ references:
   - "app/(app-shell)/donate/page.tsx"
   - "docs/archives/legacy-static/donate/index.html"
 scope:
-  - "寄附ページ(`/donate`)のUI・レイアウトを新デザインへ置き換える"
+  - "寄付ページ(`/donate`)のUI・レイアウトを新デザインへ置き換える"
   - "モック実装だった認証・同意・Checkout処理を既存の本番ロジックへ接続する"
 non_goals:
   - "Stripe価格やプラン構成の改定"
@@ -57,7 +57,7 @@ owners:
   - "penne-0505"
 ---
 
-# 寄附ページ新UI適用計画
+# 寄付ページ新UI適用計画
 
 ## 背景
 Legacy HTML/CSS 版から React + デザインシステムへの段階移行を進める中で、`/donate` は中間段階の UI が本番に残っている。`_temp/new_ui/` には刷新した UI のプレビューが存在するが、認証やStripe連携がモック化されており、本運用へ統合されていない。

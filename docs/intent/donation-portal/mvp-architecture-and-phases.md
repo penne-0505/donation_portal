@@ -37,7 +37,7 @@ supersedes:
 
 ## 1. 背景
 
-Discord コミュニティ向けの寄附ポータルは、寄附額や回数で特典を提供しないという強いコンプライアンス要件を前提に設計された。要件定義と I/F 仕様のドラフトでは、Cloudflare Pages をホスティング基盤に据え、Stripe Checkout を唯一の決済手段とすることで、初期コストと運用負荷を抑える方向性が確認されている。また、Donors 掲示に関する運用メモでは、Stripe Customer の metadata を単一の信頼ソースとして扱い、掲示同意を Web UI とサポート両面で整合させる必要性が整理されていた。（参照: docs/draft/requirements_definition.md）（参照: docs/draft/interface_definition.md）（参照: docs/draft/operations/consent-runbook.md）
+Discord コミュニティ向けの寄付ポータルは、寄付額や回数で特典を提供しないという強いコンプライアンス要件を前提に設計された。要件定義と I/F 仕様のドラフトでは、Cloudflare Pages をホスティング基盤に据え、Stripe Checkout を唯一の決済手段とすることで、初期コストと運用負荷を抑える方向性が確認されている。また、Donors 掲示に関する運用メモでは、Stripe Customer の metadata を単一の信頼ソースとして扱い、掲示同意を Web UI とサポート両面で整合させる必要性が整理されていた。（参照: docs/draft/requirements_definition.md）（参照: docs/draft/interface_definition.md）（参照: docs/draft/operations/consent-runbook.md）
 
 ## 2. 意思決定サマリー
 
@@ -73,7 +73,7 @@ Discord コミュニティ向けの寄附ポータルは、寄附額や回数で
 
 - **自前データベースの導入**: Stripe を SSOT とすることで構成を簡素化し、個人情報の保管責任を Stripe に委譲するため採用しない。（参照: docs/draft/requirements_definition.md）
 - **Webhook での同期処理**: 初期負荷が低いため非同期ログのみとし、Queue や Durable Object を導入する案は Phase 2 以降の拡張に保留する。（参照: docs/draft/impl_plan_v0.md）（参照: docs/plan/donation-portal/phase-05-webhook/plan.md）
-- **特典付き寄附メニュー**: コンプライアンス上のリスクが高く、要件定義で明確に非対象としたため検討から除外した。（参照: docs/draft/requirements_definition.md）
+- **特典付き寄付メニュー**: コンプライアンス上のリスクが高く、要件定義で明確に非対象としたため検討から除外した。（参照: docs/draft/requirements_definition.md）
 
 ## 5. 影響とフォローアップ
 
