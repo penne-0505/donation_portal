@@ -2,7 +2,7 @@
 title: "Landing Background Depth Enhancement Plan"
 domain: "donation-portal/ui"
 status: "implemented"
-version: "1.0.0"
+version: "1.0.1"
 created: "2025-11-02"
 updated: "2025-11-03"
 related_issues: []
@@ -18,7 +18,7 @@ owners:
   - "@penne-0505"
 scope:
   - "LP背景に方向性のある多層グラデーションを導入し、光源と陰影を表現する"
-  - "ヒーロー主要コンポーネントの背後にフォーカスグローを追加し、視線誘導と奥行きを強化する"
+  - "ヒーロー主要コンポーネントの視認性を強化する演出（フォーカスグロー試験導入→撤回）"
   - "ノイズテクスチャを二層構成に刷新し、素材感とガラス表現の調和を高める"
 non_goals:
   - "ヒーロー画像スライドショー等の新規コンテンツ導入"
@@ -27,7 +27,7 @@ non_goals:
 requirements:
   functional:
     - "Directional gradient: 左上光源／右下影となる複数の放射・線形グラデーションを背景に重ねる。"
-    - "Hero focus glow: ヒーローセクションのメインカード・CTA背後に薄いリング状ハイライトを配置する。"
+    - "Hero focus glow: ヒーローセクションのメインカード・CTA背後に薄いリング状ハイライトを配置する（2025-11-03 デザインフィードバックにより撤回）。"
     - "Dual-layer noise: 粗め・細かめのノイズテクスチャを重ね合わせ、奥行きと素材感を付与する。"
     - "`prefers-reduced-motion` ユーザーでも視覚品質を維持できる静的実装とする。"
   non_functional:
@@ -52,11 +52,11 @@ rollout_plan:
     - name: "Phase 2: Hero Focus Highlight"
       duration: "0.5日"
       tasks:
-        - "ヒーローセクションのカード背後にフォーカスグロー用疑似要素を実装"
-        - "レスポンシブ（sm/md/lg）で過度に主張しないよう半径・不透明度を調整"
+        - "ヒーローセクションのカード背後にフォーカスグロー用疑似要素を実装（後日撤回）"
+        - "レスポンシブ（sm/md/lg）で過度に主張しないよう半径・不透明度を調整（後日撤回）"
         - "`prefers-reduced-motion` 時は静的なまま表示されることを確認"
       exit_criteria:
-        - "ヒーロー中央コンポーネント背後に淡いリンググローが常時表示されている"
+        - "ヒーロー中央コンポーネント背後に淡いリンググローが常時表示されている（後日撤回）"
         - "CTAボタンが背景に埋もれず視線が自然に中心へ誘導される"
     - name: "Phase 3: Dual Noise & Fine Tuning"
       duration: "0.5日"
@@ -76,7 +76,7 @@ rollback:
 test_plan:
   visual:
     - "主要画面（/home, /donate, /thanks, /donors）で背景の光源方向とグローを目視確認"
-    - "sm/md/lg/xlの4ブレークポイントでヒーローグローのサイズ・位置を確認"
+    - "sm/md/lg/xlの4ブレークポイントでヒーロー導線の視認性とバランスを確認"
     - "`prefers-reduced-motion` 設定時の表示が意図通り静的であることを確認"
   performance:
     - "LighthouseでLCP/CLS/TTIを測定し、±5%以内を維持"
@@ -97,7 +97,7 @@ i18n_a11y:
   - "`prefers-reduced-motion` による配慮を継続"
 acceptance_criteria:
   - "背景に方向性のある多層グラデーションが導入され、ヒーロー周辺で光源が感じられる"
-  - "ヒーロー中央コンポーネント背後にフォーカスグローが常時表示され、CTAが浮き立つ"
+  - "ヒーロー導線が背景に埋もれず視認性が保たれている（フォーカスグローに依存しない）"
   - "ノイズが二層構成となり、ガラスカードが背景と調和した素材感を得ている"
   - "Lighthouse計測でLCP/CLS/TTIの悪化が±5%以内に収まる"
   - "CSSバンドルサイズ増加が1KB(gzip)以内"
@@ -123,7 +123,7 @@ acceptance_criteria:
 
 ## 実装結果
 
-- `app/globals.css` に方向性のある多層グラデーション変数と二層ノイズテクスチャを追加し、`hero-focus` ユーティリティでフォーカスグローを再利用可能にした。
-- `components/pages/home-page.tsx` のヒーローセクションへ `hero-focus` レイヤーを導入し、CTA とバッジ背後にリング状ハイライトを常時表示。
-- `components/pages/donate-page.tsx` のヒーロー導入文を同ユーティリティで包み、寄付導線の視線誘導と奥行きを強化した。
+- `app/globals.css` に方向性のある多層グラデーション変数と二層ノイズテクスチャを追加し、背景の光源表現と素材感を強化。
+- `components/pages/home-page.tsx` と `components/pages/donate-page.tsx` のヒーロー構造を調整し、グローに頼らずCTAが浮き立つレイアウトを確保。
+- `hero-focus` ユーティリティによるリング状グロー演出は検証後に撤回し、静的背景との調和を優先した。
 ---

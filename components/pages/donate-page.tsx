@@ -84,6 +84,19 @@ export function DonatePage() {
 
   return (
     <div className="space-y-12 page-enter">
+      <section className="text-pretty py-16 sm:py-20 md:py-24" ref={heroRef}>
+        <div className="mx-auto max-w-3xl px-4">
+          <div className="space-y-6">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-tight text-foreground fade-in-up stagger-2">
+              Discordコミュニティの運営を支えるための寄附
+            </h1>
+            <p className="text-base md:text-lg leading-relaxed text-muted-foreground fade-in-up stagger-3">
+              透明性と感謝を大切に運営しています。
+            </p>
+          </div>
+        </div>
+      </section>
+
       <div className="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <div className="space-y-6">
           <Card className="p-0">

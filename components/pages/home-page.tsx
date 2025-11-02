@@ -21,7 +21,7 @@ export function HomePage() {
     <div className="page-enter space-y-20">
       {/* ヒーロー */}
       <section className="flex min-h-[50vh] flex-col items-center justify-center gap-8 py-16 text-center md:py-24">
-        <div className="hero-focus mx-auto flex w-full max-w-4xl flex-col items-center gap-8 px-6">
+        <div className="mx-auto flex w-full max-w-4xl flex-col items-center gap-8 px-6">
           <div className="space-y-4">
             <h1 className="text-balance text-4xl font-bold tracking-tight text-foreground md:text-5xl">
               みんなで創る、みんなの世界
