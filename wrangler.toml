@@ -1,9 +1,0 @@
-name = "donation-portal"
-compatibility_date = "2025-10-30"
-compatibility_flags = ["nodejs_compat"]
-
-[pages]
-dirs = [".open-next/static"]
-
-[env.dev]
-vars = { }

@@ -1,0 +1,12 @@
+{
+  "name": "donation-portal",
+  "compatibility_date": "2025-10-30",
+  "compatibility_flags": ["nodejs_compat"],
+  "pages_build_output_dir": ".open-next",
+  "pages_assets_dir": ".open-next/static",
+  "env": {
+    "dev": {
+      "vars": {}
+    }
+  }
+}
