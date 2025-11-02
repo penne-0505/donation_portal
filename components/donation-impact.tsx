@@ -29,7 +29,7 @@ export function DonationImpact({ mode, amount }: DonationImpactProps) {
   const Icon = copy.icon;
 
   return (
-    <Card className="flex flex-col gap-3 border-dashed bg-surface">
+    <Card className="flex flex-col gap-3">
       <div className="flex items-center gap-3">
         <span className="flex h-10 w-10 items-center justify-center rounded-full bg-foreground/10 text-foreground">
           <Icon className="h-5 w-5" aria-hidden />

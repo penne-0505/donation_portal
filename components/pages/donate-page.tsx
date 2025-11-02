@@ -116,7 +116,7 @@ export function DonatePage() {
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 {isSignedIn ? (
                   <>
-                    <div className="flex flex-1 items-center gap-3 rounded-xl glass-sm px-4 py-3 text-left text-sm text-muted-foreground shadow-minimal shadow-inner-light transition-glass glow-status-success animate-bounce-in">
+                    <div className="flex flex-1 items-center gap-3 rounded-xl glass-sm border-gradient-subtle px-4 py-3 text-left text-sm text-muted-foreground shadow-minimal shadow-inner-light transition-glass glow-status-success animate-bounce-in">
                       <CheckCircle2 className="h-5 w-5 text-foreground" aria-hidden />
                       <div className="flex flex-col">
                         <span className="font-semibold text-foreground">ログイン済み</span>
@@ -172,7 +172,7 @@ export function DonatePage() {
                 </p>
               </div>
 
-              <div className="flex flex-col gap-3 rounded-xl glass-sm px-4 py-4 shadow-minimal shadow-inner-light transition-glass">
+              <div className="flex flex-col gap-3 rounded-xl glass-sm border-gradient-subtle px-4 py-4 shadow-minimal shadow-inner-light transition-glass">
                 <div className="flex items-start gap-4">
                   <ConsentToggle
                     aria-labelledby={consentLabelId}
@@ -272,8 +272,10 @@ export function DonatePage() {
                         disabled={!isSignedIn || checkoutState.isProcessing}
                         data-active={isSelected ? 'true' : undefined}
                         className={cn(
-                          'group w-full rounded-2xl glass-sm px-6 py-5 text-left text-sm transition duration-200 shadow-minimal shadow-inner-light border-gradient-subtle glow-accent-subtle hover:bg-white/10 hover:border-white/30 disabled:cursor-not-allowed disabled:opacity-50',
-                          isSelected ? 'glow-accent-medium border-white/40 bg-white/10' : undefined,
+                          'group w-full rounded-2xl glass-sm px-6 py-5 text-left text-sm transition-glass hover-glass shadow-minimal shadow-inner-light border-gradient-subtle disabled:cursor-not-allowed disabled:opacity-50',
+                          isSelected
+                            ? 'glow-accent-medium glass-md border-white/40'
+                            : 'glow-accent-subtle',
                         )}
                       >
                         <div className="flex items-center justify-between gap-4">
