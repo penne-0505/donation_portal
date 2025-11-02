@@ -59,6 +59,7 @@ QA 手順やローンチ後の運用監視は [Phase 6 QA & Release Runbook](./p
 - Compatibility date: `2025-10-30`
 - Compatibility flags: `nodejs_compat` を Cloudflare Pages の Project Settings で明示的に追加
 - Node.js 互換フラグはビルド時にも `NEXT_ON_PAGES_COMPATIBILITY_FLAGS=nodejs_compat` が付与されるよう `scripts/run-next-on-pages.cjs` に組み込んでいます。Cloudflare Pages 側でも同じフラグを Production/Preview 両環境に設定してください。
+- ビルド成果物には `.open-next/_worker.js/metadata.json` を生成し、互換性設定（`compatibility_date` / `compatibility_flags`）を明示的にバンドルしています。Pages ダッシュボード側の設定と合わせて二重で有効化される想定です。
 
 > `npm run build` は Next.js 出力と Functions を `.open-next/` 配下へまとめます。互換性フラグは Cloudflare Pages 側の設定（または `wrangler.toml`）に依存するため、必要に応じて `nodejs_compat` を追加してください。
 

@@ -21,14 +21,17 @@ function run() {
   const outputDir = path.resolve('.open-next');
   removePreviousBuild(outputDir);
 
+  const defaultCompatibilityDate = '2025-10-30';
+  const defaultCompatibilityFlags = 'nodejs_compat';
+
   const env = {
     ...process.env,
     NODE_ENV: process.env.NODE_ENV ?? 'production',
     NEXT_ON_PAGES_BUILD: process.env.NEXT_ON_PAGES_BUILD ?? '1',
     NEXT_ON_PAGES_COMPATIBILITY_DATE:
-      process.env.NEXT_ON_PAGES_COMPATIBILITY_DATE ?? '2025-10-30',
+      process.env.NEXT_ON_PAGES_COMPATIBILITY_DATE ?? defaultCompatibilityDate,
     NEXT_ON_PAGES_COMPATIBILITY_FLAGS:
-      process.env.NEXT_ON_PAGES_COMPATIBILITY_FLAGS ?? 'nodejs_compat',
+      process.env.NEXT_ON_PAGES_COMPATIBILITY_FLAGS ?? defaultCompatibilityFlags,
   };
 
   const result = spawnSync(
@@ -73,6 +76,27 @@ function run() {
     fs.writeFileSync(routesPath, JSON.stringify(routes));
   } catch (error) {
     console.warn(`[next-on-pages] _routes.json の更新に失敗しました: ${error.message}`);
+  }
+
+  const metadataPath = path.join(outputDir, '_worker.js', 'metadata.json');
+  const flags = (env.NEXT_ON_PAGES_COMPATIBILITY_FLAGS || defaultCompatibilityFlags)
+    .split(',')
+    .map((flag) => flag.trim())
+    .filter(Boolean);
+
+  const metadata = {
+    compatibility_date:
+      env.NEXT_ON_PAGES_COMPATIBILITY_DATE || defaultCompatibilityDate,
+    ...(flags.length > 0 ? { compatibility_flags: flags } : {}),
+  };
+
+  try {
+    fs.mkdirSync(path.dirname(metadataPath), { recursive: true });
+    fs.writeFileSync(metadataPath, `${JSON.stringify(metadata)}\n`);
+  } catch (error) {
+    console.warn(
+      `[next-on-pages] _worker.js/metadata.json の生成に失敗しました: ${error.message}`,
+    );
   }
 }
 
