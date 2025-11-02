@@ -54,7 +54,7 @@ export function ThanksPage() {
             </span>
           </Button>
           <Button href="/donors" size="md" variant="outline" className="flex-1 sm:text-base">
-            Donors 一覧を見る
+            支援者一覧を見る
           </Button>
         </div>
       </Card>

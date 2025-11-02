@@ -156,7 +156,7 @@ export function DonatePage() {
               <div className="space-y-2">
                 <h2 className="text-2xl font-semibold text-foreground">掲示への同意</h2>
                 <p className="text-sm text-muted-foreground">
-                  同意した場合、Donors ページに Discord
+                  同意した場合、支援者ページに Discord
                   の表示名を掲載します（寄付額は表示されません）。
                 </p>
               </div>
@@ -173,7 +173,7 @@ export function DonatePage() {
                   />
                   <div className="space-y-1">
                     <span id={consentLabelId} className="text-sm font-semibold text-foreground">
-                      Donors ページに表示名を掲載することに同意します
+                      支援者ページに表示名を掲載することに同意します
                     </span>
                     <p
                       id={consentDescriptionId}

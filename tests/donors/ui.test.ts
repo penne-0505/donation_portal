@@ -27,7 +27,7 @@ describe('DonorsPage React UI', () => {
     window.confirm = originalConfirm;
   });
 
-  it('未ログイン時はログイン導線を表示し、Donors 一覧を読み込む', () => {
+  it('未ログイン時はログイン導線を表示し、支援者一覧を読み込む', () => {
     let loginCalls = 0;
     const session = createSessionMock();
     session.status = { state: 'signed-out' };
@@ -52,19 +52,19 @@ describe('DonorsPage React UI', () => {
     assert.equal(screen.queryByRole('button', { name: /掲示を撤回する/ }), null);
   });
 
-  it('Donors API がエラーの場合はメッセージを表示する', () => {
+  it('支援者 API がエラーの場合はメッセージを表示する', () => {
     const session = createSessionMock();
     session.status = { state: 'signed-out' };
     setSessionHookMock(session);
 
     const donors = createDonorsMock();
-    donors.error = 'Donors 情報の取得に失敗しました。';
+    donors.error = '支援者情報の取得に失敗しました。';
     donors.isLoading = false;
     setDonorsHookMock(donors);
 
     render(createElement(DonorsPage));
 
-    assert.ok(screen.getByText('Donors 情報の取得に失敗しました。'));
+    assert.ok(screen.getByText('支援者情報の取得に失敗しました。'));
   });
 
   it('掲示撤回操作で確認ダイアログと API 呼び出しを行う', async () => {
@@ -115,7 +115,7 @@ describe('DonorsPage React UI', () => {
     });
   });
 
-  it('更新ボタンで Donors 情報を再取得する', async () => {
+  it('更新ボタンで支援者情報を再取得する', async () => {
     const session = createSessionMock();
     session.status = { state: 'signed-out' };
     setSessionHookMock(session);
