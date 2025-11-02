@@ -2,9 +2,9 @@
 title: "UI デザイントークン定義"
 domain: "donation-portal"
 status: "draft"
-version: "0.1.0"
+version: "0.1.1"
 created: "2025-11-01"
-updated: "2025-11-01"
+updated: "2025-11-03"
 related_issues: []
 related_prs: []
 references:
@@ -39,6 +39,11 @@ Donation Portal の画面スタイルは `docs/archives/legacy-static/styles/bas
 | `--space-3xs` | `0.25rem` | アイコンとラベルの最小余白 |
 | `--space-2xs` | `0.375rem` | メタラベル、タグ内余白 |
 | `--space-xs` | `0.5rem` | 小要素の縦余白、フォーム周辺 |
+### 背景グラデーション
+
+- ルート背景は `--background-gradient-source` により管理し、値は `linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%)`。
+- `.bg-root` と `AppShell` のオーバーレイは共通のグラデーションを参照し、ノイズテクスチャを重ねて質感を維持する。
+- ベースカラー `--color-root` は `#fdfbfb` とし、グラデーションの開始色と整合させてフッターや余白領域の段差を防ぐ。
 | `--space-sm` | `0.75rem` | セクション内の段落間 |
 | `--space-md` | `1rem` | カード内の基本余白 |
 | `--space-lg` | `1.5rem` | カードの外側余白、スタック間隔 |
