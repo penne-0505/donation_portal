@@ -1,6 +1,6 @@
 const configs = [
   {
-    ignores: ['dist/**', '.next/**', '.open-next/**', '.vercel/**', '_temp/**'],
+    ignores: ['dist/**', '.next/**', '.open-next/**', '.vercel/**', '_temp/**', '.wrangler/**'],
   },
   {
     files: ['**/*.js', '**/*.mjs', '**/*.cjs'],
