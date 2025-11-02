@@ -52,9 +52,8 @@ export function AppShell({ children, className }: AppShellProps) {
               onClick={handleCtaClick}
               size="md"
               variant={heroInView ? 'outline' : 'primary'}
-              className={cn('gap-2', heroInView && 'opacity-60 pointer-events-none')}
+              className={cn('gap-2', heroInView && 'opacity-60')}
               aria-label="寄付をはじめる"
-              disabled={heroInView}
             >
               <span className="flex items-center gap-2">
                 寄付する
