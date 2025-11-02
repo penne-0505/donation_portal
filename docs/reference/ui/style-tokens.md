@@ -2,9 +2,9 @@
 title: "UI デザイントークン定義"
 domain: "donation-portal"
 status: "draft"
-version: "0.1.1"
+version: "0.1.2"
 created: "2025-11-01"
-updated: "2025-11-03"
+updated: "2025-11-02"
 related_issues: []
 related_prs: []
 references:
@@ -41,9 +41,17 @@ Donation Portal の画面スタイルは `docs/archives/legacy-static/styles/bas
 | `--space-xs` | `0.5rem` | 小要素の縦余白、フォーム周辺 |
 ### 背景グラデーション
 
-- ルート背景は `--background-gradient-source` により管理し、値は `linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%)`。
-- `.bg-root` と `AppShell` のオーバーレイは共通のグラデーションを参照し、ノイズテクスチャを重ねて質感を維持する。
-- ベースカラー `--color-root` は `#fdfbfb` とし、グラデーションの開始色と整合させてフッターや余白領域の段差を防ぐ。
+- ルート背景は `--bg-a`（#f7f9fb）、`--bg-b`（#eef2ff）、`--bg-c`（#fff7ed）を用いた 2 つの radial-gradient と、ベースの linear-gradient で構成する。
+- `.bg-root` を `body`／`AppShell` に適用し、背景は `radial-gradient(1000px 700px at 20% 0%, var(--bg-b) 0%, transparent 60%)` と `radial-gradient(900px 600px at 85% 20%, var(--bg-c) 0%, transparent 60%)` を重ねる。
+- `.app-shell::before` では `--background-noise-coarse` と `--background-noise-fine` を 8% 程度で重ね、Retina／非 Retina でのバンディングを抑える。
+- ベースカラー `--color-root` は `#f7f9fb` とし、`linear-gradient(#fff, var(--bg-a))` の終端色と一致させる。
+
+### ガラスユーティリティ
+
+- `.glass-lg`（ヒーローカード）は `background: rgba(255, 255, 255, 0.14)`、`backdrop-filter: blur(20px) saturate(170%)`、`box-shadow: 0 16px 48px rgba(15, 23, 42, 0.14)` を既定とする。
+- `.glass` / `.glass-md`（標準カード）は `background: rgba(255, 255, 255, 0.12)`、`blur(16px) saturate(165%)`、`box-shadow: 0 10px 40px rgba(15, 23, 42, 0.12)`。
+- `.glass-sm`（チップ・小要素）は `background: rgba(255, 255, 255, 0.1)`、`blur(12px) saturate(150%)`、`box-shadow: 0 6px 24px rgba(15, 23, 42, 0.08)`。
+- すべての `.glass*` には `border: 1px solid rgba(255, 255, 255, 0.35)` と `linear-gradient(180deg, rgba(255, 255, 255, 0.5), transparent)` の縁光ハイライトを共通適用する。
 | `--space-sm` | `0.75rem` | セクション内の段落間 |
 | `--space-md` | `1rem` | カード内の基本余白 |
 | `--space-lg` | `1.5rem` | カードの外側余白、スタック間隔 |
@@ -110,7 +118,7 @@ Light と Dark は `prefers-color-scheme` で自動切り替えし、同一ト�
 
 | コンポーネント | 使用トークン | 備考 |
 | --- | --- | --- |
-| `.button` | `--radius-pill`, `--transition-base`, `--shadow-sm` | `--color-accent` 系のグラデーションを `button--primary` に適用。`button--secondary` は `--color-surface-muted` を背景に使用。 |
+| `.button` | `--radius-pill`, `--transition-base`, `--shadow-sm` | `button--primary` は `#111827` のソリッド背景（`box-shadow: 0 6px 20px rgba(17, 24, 39, 0.18)`）でコントラスト 4.5:1 以上を確保。`button--secondary` は `glass-sm` を利用。 |
 | `.alert` | `--radius-md`, `--color-*-soft` | 種別ごとに soft/border/strong トークンを組み合わせる。 |
 | `.donor-card` | `--radius-md`, `--shadow-xs`, `--color-surface-alt` | Donors リスト用のカード表現。空状態は `.donor-empty`。 |
 | `.checkout-action` | `.button` + `.tag` + `.button__meta` を組み合わせ、メニュー単位の補足を表示。 | `--space-3xs`, `--text-xs` |
