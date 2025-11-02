@@ -38,7 +38,7 @@ export function AppShell({ children, className }: AppShellProps) {
             href="/"
             className="text-base font-semibold tracking-tight text-foreground transition hover:opacity-80"
           >
-            Donation Portal
+            {ORGANIZATION_NAME}
           </Link>
           <nav className="flex items-center gap-4">
             <Link
