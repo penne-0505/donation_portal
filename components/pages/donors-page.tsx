@@ -50,9 +50,9 @@ export function DonorsPage() {
     <div className="space-y-12 page-enter">
       <section className="space-y-6 text-pretty">
         <h1 className="text-4xl font-bold tracking-tight text-foreground fade-in-up stagger-2 md:text-5xl">
-          Donors の皆さま
+          支援者の皆さま
         </h1>
-        <p className="max-w-3xl text-lg leading-relaxed text-muted-foreground fade-in-up stagger-3">
+        <p className="max-w-3xl text-base leading-relaxed text-muted-foreground fade-in-up stagger-3">
           Discord
           で掲示に同意いただいた寄附者の表示名を掲載しています。寄附額や回数は公開しておらず、純粋な支援の証として記録しています。
         </p>

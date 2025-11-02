@@ -1,10 +1,10 @@
 ---
 title: "Landing Background Depth Enhancement Plan"
 domain: "donation-portal/ui"
-status: "proposed"
-version: "0.1.0"
+status: "implemented"
+version: "1.0.0"
 created: "2025-11-02"
-updated: "2025-11-02"
+updated: "2025-11-03"
 related_issues: []
 related_prs: []
 references:
@@ -12,6 +12,8 @@ references:
   - "docs/draft/ui/hero-slideshow-background.md"
   - "app/globals.css"
   - "components/app-shell.tsx"
+  - "components/pages/home-page.tsx"
+  - "components/pages/donate-page.tsx"
 owners:
   - "@penne-0505"
 scope:
@@ -118,4 +120,10 @@ acceptance_criteria:
 
 - 画像スライドショー導入案 (draft参照) との両立方法
 - ダークテーマ実装時の色調整ポリシー
+
+## 実装結果
+
+- `app/globals.css` に方向性のある多層グラデーション変数と二層ノイズテクスチャを追加し、`hero-focus` ユーティリティでフォーカスグローを再利用可能にした。
+- `components/pages/home-page.tsx` のヒーローセクションへ `hero-focus` レイヤーを導入し、CTA とバッジ背後にリング状ハイライトを常時表示。
+- `components/pages/donate-page.tsx` のヒーロー導入文を同ユーティリティで包み、寄附導線の視線誘導と奥行きを強化した。
 ---
