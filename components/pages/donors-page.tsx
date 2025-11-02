@@ -74,7 +74,7 @@ export function DonorsPage() {
                 size="sm"
                 onClick={handleRefresh}
                 disabled={isLoading}
-                className="gap-2"
+                className="gap-2 bg-transparent"
               >
                 <RefreshCw className={isLoading ? 'h-4 w-4 animate-spin' : 'h-4 w-4'} aria-hidden />
                 更新
@@ -88,7 +88,7 @@ export function DonorsPage() {
               </div>
             ) : null}
 
-            <div className="min-h-[180px] rounded-2xl glass-sm border-gradient-subtle px-4 py-6 shadow-minimal shadow-inner-light transition-glass">
+            <div className="min-h-[180px] rounded-2xl glass-sm px-4 py-6 shadow-minimal shadow-inner-light">
               {isLoading ? (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <RefreshCw className="h-4 w-4 animate-spin" aria-hidden />
@@ -135,7 +135,7 @@ export function DonorsPage() {
 
                 {isSignedIn ? (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3 rounded-xl glass-sm border-gradient-subtle px-4 py-3 text-left text-sm text-muted-foreground shadow-minimal shadow-inner-light transition-glass glow-status-success">
+                    <div className="flex items-center gap-3 rounded-xl glass-sm px-4 py-3 text-left text-sm text-muted-foreground shadow-minimal shadow-inner-light transition-glass glow-status-success">
                       <CheckCircle2 className="h-5 w-5 text-foreground" aria-hidden />
                       <div className="flex flex-col">
                         <span className="text-xs font-semibold text-foreground">

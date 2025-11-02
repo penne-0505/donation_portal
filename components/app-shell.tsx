@@ -31,12 +31,12 @@ export function AppShell({ children, className }: AppShellProps) {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-root text-foreground">
-      <header className="sticky top-0 z-20 px-4 pt-4">
-        <div className="mx-auto flex max-w-6xl items-center justify-between rounded-2xl glass-sm border-gradient-subtle px-5 py-3 shadow-minimal shadow-inner-light backdrop-blur transition-glass">
+    <div className="flex min-h-screen flex-col bg-surface text-foreground">
+      <header className="sticky top-0 z-20 border-b border-border/60 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
           <Link
             href="/"
-            className="text-base font-semibold tracking-tight text-foreground transition-colors transition-macos hover:opacity-80"
+            className="text-base font-semibold tracking-tight text-foreground transition hover:opacity-80"
           >
             {ORGANIZATION_NAME}
           </Link>
@@ -44,7 +44,7 @@ export function AppShell({ children, className }: AppShellProps) {
             <Link
               href="/donors"
               onClick={handleDonorListClick}
-              className="text-sm font-medium text-muted-foreground transition-colors transition-macos hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/25 focus-visible:ring-offset-2"
+              className="text-sm font-medium text-muted-foreground transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/30 focus-visible:ring-offset-2"
             >
               支援者一覧
             </Link>
@@ -67,20 +67,20 @@ export function AppShell({ children, className }: AppShellProps) {
       <main className={cn('flex-1 mx-auto w-full max-w-6xl px-5 py-14', className)}>
         {children}
       </main>
-      <footer className="px-4 pb-6 text-center text-xs text-muted-foreground">
-        <div className="mx-auto flex max-w-6xl items-center justify-between rounded-2xl glass-sm border-gradient-subtle px-5 py-4 shadow-minimal shadow-inner-light transition-glass">
+      <footer className="border-t border-border/60 py-6 text-center text-xs text-muted-foreground">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-5">
           <span>© 2025 {ORGANIZATION_NAME}</span>
           <div className="flex items-center gap-4">
             <Link
               href="/privacy"
-              className="transition-colors transition-macos hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground/25 focus-visible:ring-offset-2"
+              className="transition hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground/30"
             >
               プライバシーポリシー
             </Link>
             <span className="text-border/40">•</span>
             <Link
               href="/privacy#operator-info"
-              className="transition-colors transition-macos hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground/25 focus-visible:ring-offset-2"
+              className="transition hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground/30"
             >
               運営者情報
             </Link>
