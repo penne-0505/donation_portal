@@ -69,6 +69,10 @@ export function DonatePage() {
       }
       setSelectedPreset(preset);
       resetError();
+      // 計測イベント: 寄付開始
+      if (typeof window !== 'undefined' && (window as any).gtag) {
+        (window as any).gtag('event', 'donate_start');
+      }
       await startCheckout(preset);
     },
     [isSignedIn, resetError, startCheckout],
