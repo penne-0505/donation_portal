@@ -1,6 +1,19 @@
+import { Inter, Noto_Sans_JP } from 'next/font/google';
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import './globals.css';
+
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+});
+
+const notoSansJp = Noto_Sans_JP({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-noto-sans-jp',
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://donation-portal.pages.dev'),
@@ -18,8 +31,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { readonly children: ReactNode }) {
   return (
-    <html lang="ja">
-      <body className="min-h-screen bg-root font-sans text-foreground antialiased">{children}</body>
+    <html lang="ja" className={`${inter.variable} ${notoSansJp.variable}`}>
+      <body className="min-h-screen bg-root text-foreground antialiased">{children}</body>
     </html>
   );
 }

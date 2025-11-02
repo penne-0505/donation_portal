@@ -2,7 +2,8 @@
 
 @theme inline {
   --font-sans:
-    'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    var(--font-inter), var(--font-noto-sans-jp), -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    system-ui, sans-serif;
   --color-root: #f5f7fb;
   --color-background: #ffffff;
   --color-foreground: #0f172a;
