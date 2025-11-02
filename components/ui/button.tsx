@@ -16,7 +16,7 @@ const baseClasses =
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    'bg-foreground text-background shadow-minimal shadow-inner-light hover:bg-foreground/85 focus-visible:ring-foreground/30 glow-accent-subtle',
+    'bg-slate-900 text-white shadow-[0_6px_20px_rgba(17,24,39,0.18)] hover:bg-slate-900/90 focus-visible:ring-slate-900/30',
   secondary:
     'glass-md text-foreground shadow-minimal shadow-inner-light border-gradient-subtle hover-glass focus-visible:ring-foreground/20',
   ghost:
