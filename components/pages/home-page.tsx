@@ -1,9 +1,15 @@
 'use client';
 
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Lock, ShieldCheck, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export function HomePage() {
+  const highlightBadges = [
+    { icon: Lock, label: 'Stripeで安全決済' },
+    { icon: ShieldCheck, label: 'OAuthで同意管理' },
+    { icon: Users, label: '支援者リストを公開' },
+  ];
+
   const handleCTAClick = () => {
     // 計測イベント: 寄付開始
     if (typeof window !== 'undefined' && (window as any).gtag) {
@@ -51,15 +57,17 @@ export function HomePage() {
 
         {/* バッジ3つ */}
         <div className="flex flex-wrap justify-center gap-3 pt-4 md:pt-6">
-          <div className="rounded-full border border-border/60 bg-white/5 px-4 py-2 text-center text-xs font-medium text-foreground backdrop-blur md:text-sm">
-            <span>🔒 Stripeで安全決済</span>
-          </div>
-          <div className="rounded-full border border-border/60 bg-white/5 px-4 py-2 text-center text-xs font-medium text-foreground backdrop-blur md:text-sm">
-            <span>✅ OAuthで同意管理</span>
-          </div>
-          <div className="rounded-full border border-border/60 bg-white/5 px-4 py-2 text-center text-xs font-medium text-foreground backdrop-blur md:text-sm">
-            <span>📋 支援者リストを公開</span>
-          </div>
+          {highlightBadges.map(({ icon: Icon, label }) => (
+            <div
+              key={label}
+              className="rounded-full border border-border/60 bg-white/5 px-4 py-2 text-center text-xs font-medium text-foreground backdrop-blur md:text-sm"
+            >
+              <span className="flex items-center justify-center gap-2">
+                <Icon className="h-4 w-4" aria-hidden />
+                {label}
+              </span>
+            </div>
+          ))}
         </div>
       </section>
     </div>
