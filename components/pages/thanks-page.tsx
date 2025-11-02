@@ -30,7 +30,7 @@ export function ThanksPage() {
             Stripe Checkout での寄付が完了しました。ご支援いただいたお気持ちは {ORGANIZATION_NAME}{' '}
             の運営費に充てさせていただきます。
           </p>
-          <div className="inline-flex flex-col gap-2 rounded-lg glass-sm px-4 py-3 shadow-minimal shadow-inner-light">
+          <div className="inline-flex flex-col gap-2 rounded-lg glass-sm border-gradient-subtle px-4 py-3 shadow-minimal shadow-inner-light transition-glass">
             <span className="text-sm font-medium text-muted-foreground">あなたの支援が</span>
             <span className="text-lg font-semibold text-foreground">
               コミュニティの未来を支えます
@@ -41,7 +41,7 @@ export function ThanksPage() {
           </p>
         </div>
 
-        <div className="rounded-lg glass-sm border border-dashed border-white/25 px-6 py-5 text-sm text-muted-foreground shadow-minimal shadow-inner-light">
+        <div className="rounded-lg glass-sm border border-dashed border-white/25 px-6 py-5 text-sm text-muted-foreground shadow-minimal shadow-inner-light transition-glass">
           この寄付は任意のものであり、対価や特典、税控除の対象にはなりません。領収書は Stripe
           から送信されるメールをご確認ください。
         </div>
@@ -53,12 +53,7 @@ export function ThanksPage() {
               <ArrowRight className="h-4 w-4" aria-hidden />
             </span>
           </Button>
-          <Button
-            href="/donors"
-            size="md"
-            variant="outline"
-            className="flex-1 bg-transparent sm:text-base"
-          >
+          <Button href="/donors" size="md" variant="outline" className="flex-1 sm:text-base">
             Donors 一覧を見る
           </Button>
         </div>

@@ -25,7 +25,7 @@ export function HomePage() {
           <h1 className="text-balance text-4xl font-bold tracking-tight text-foreground md:text-5xl">
             みんなで創る、みんなの世界
           </h1>
-          <p className="text-balance text-base text-gray-600 dark:text-gray-400 md:text-lg">
+          <p className="text-balance text-base text-muted-foreground md:text-lg">
             あなたの想いが、みんなの冒険を支えます。
           </p>
         </div>
@@ -60,7 +60,7 @@ export function HomePage() {
           {highlightBadges.map(({ icon: Icon, label }) => (
             <div
               key={label}
-              className="rounded-full border border-border/60 bg-white/5 px-4 py-2 text-center text-xs font-medium text-foreground backdrop-blur md:text-sm"
+              className="rounded-full glass-sm border-gradient-subtle px-4 py-2 text-center text-xs font-medium text-foreground shadow-minimal shadow-inner-light transition-glass hover-glass md:text-sm"
             >
               <span className="flex items-center justify-center gap-2">
                 <Icon className="h-4 w-4" aria-hidden />
