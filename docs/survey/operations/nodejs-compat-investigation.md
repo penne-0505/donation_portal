@@ -1,10 +1,10 @@
 ---
 title: 'Cloudflare Pages nodejs_compat 適用不備調査'
 domain: 'operations'
-status: 'active'
-version: '0.1.0'
+status: 'archived'
+version: '0.1.1'
 created: '2025-11-01'
-updated: '2025-11-01'
+updated: '2025-11-02'
 related_issues: []
 related_prs: []
 references:
@@ -15,7 +15,7 @@ references:
 
 ## 概要
 
-Cloudflare Pages へのデプロイ後に表示が `Node.JS Compatibility Error` に置き換わった事象について、原因調査と恒久対策を整理する。調査の結果、`@cloudflare/next-on-pages` が生成する `_worker.js` に互換性メタデータが含まれないため、Pages プロジェクト設定で `nodejs_compat` フラグが無効な場合に Node.js API が利用できず、本エラーが発生することを突き止めた。
+Cloudflare Pages へのデプロイ後に表示が `Node.JS Compatibility Error` に置き換わった事象について、原因調査と恒久対策を整理する。調査の結果、`@cloudflare/next-on-pages` が生成する `_worker.js` に互換性メタデータが含まれないため、Pages プロジェクト設定で `nodejs_compat` フラグが無効な場合に Node.js API が利用できず、本エラーが発生することを突き止めた。この調査結果は `docs/intent/operations/nodejs-compat-resolution.md` で採用済み。
 
 ## 事象
 
@@ -68,4 +68,3 @@ Cloudflare Pages へのデプロイ後に表示が `Node.JS Compatibility Error`
 
 - Cloudflare Pages ダッシュボード側でも Production/Preview へ互換フラグが設定されているか定期的に監査する仕組みを検討
 - ビルド時に `metadata.json` を検証する自動テスト（例: CI で JSON を読み取り必須キーを確認）を追加予定
-
