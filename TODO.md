@@ -18,6 +18,17 @@ Definitions to suppress Markdown warnings
 
 ## 後でタスク定義
 
+- LP、ヒーローとCTAがなんか絶妙な位置にあるので、中央付近に再レイアウトする。spacingに注意する
+- app shell(header, footer)についてglassを保ちつつ影を少し増やす
+- header、スクロール追従(常に画面上部に表示されるようにする)する
+- donate/各セクションについてカード化されているのかを確認
+  - カード化されていない場合、カード化する
+- donate/各セクション(カード)がglassになっているか確認
+  - glassになっていない場合、glassにする
+- donors/やthanks/に見られる"Donors"表記を完全に廃止して、"支援者"に統一する
+- glass感を出すための工夫を考える
+
+
 ---
 
 ## Backlog
