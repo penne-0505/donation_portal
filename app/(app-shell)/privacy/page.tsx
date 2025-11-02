@@ -1,3 +1,5 @@
+import { ORGANIZATION_NAME, REPRESENTATIVE_NAME } from '@/lib/ui/branding';
+
 export default function PrivacyPage() {
   return (
     <div className="space-y-8 py-8 page-enter">
@@ -55,10 +57,29 @@ export default function PrivacyPage() {
           <p>本ポリシーは予告なく変更される場合があります。最新版は本ページで常に参照できます。</p>
         </section>
 
+        <section className="space-y-2" id="operator-info">
+          <h2 className="text-lg font-semibold text-foreground">7. 運営者情報</h2>
+          <dl className="space-y-3">
+            <div className="space-y-1">
+              <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                団体名 / 社名
+              </dt>
+              <dd className="text-sm text-foreground">{ORGANIZATION_NAME}</dd>
+            </div>
+            <div className="space-y-1">
+              <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                代表者
+              </dt>
+              <dd className="text-sm text-foreground">{REPRESENTATIVE_NAME}</dd>
+            </div>
+          </dl>
+        </section>
+
         <section className="space-y-2">
-          <h2 className="text-lg font-semibold text-foreground">7. お問い合わせ</h2>
+          <h2 className="text-lg font-semibold text-foreground">8. お問い合わせ</h2>
           <p>
-            本ポリシーに関するご質問やご懸念は、Discord サーバーの管理者までお問い合わせください。
+            本ポリシーに関するご質問やご懸念は、Discord サーバーにて {REPRESENTATIVE_NAME}（
+            {ORGANIZATION_NAME}）までお問い合わせください。
           </p>
         </section>
       </div>

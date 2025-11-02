@@ -89,18 +89,20 @@ interface AppShellProps {
 ```typescript
 <footer className="border-t border-border/60 py-6 text-center text-xs text-muted-foreground">
   <div className="mx-auto flex max-w-6xl items-center justify-between px-5">
-    <span>© 2025 Donation Portal</span>
+    <span>© 2025 {ORGANIZATION_NAME}</span>
     <div className="flex items-center gap-4">
       <Link href="/privacy" className="...">
         プライバシーポリシー
       </Link>
       <span className="text-border/40">•</span>
-      <Link href="https://discord.com" target="_blank" rel="noopener noreferrer">
+      <Link href="/privacy#operator-info" className="...">
         運営者情報
       </Link>
     </div>
   </div>
 </footer>
+
+- `ORGANIZATION_NAME` は `@/lib/ui/branding` から import しているブランド定数。
 ```
 
 #### 計測イベント

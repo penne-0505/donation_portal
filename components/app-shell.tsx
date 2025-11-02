@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { cn } from '@/lib/ui/cn';
+import { ORGANIZATION_NAME } from '@/lib/ui/branding';
 import { useHeroContext } from '@/lib/ui/contexts/hero-context';
 import { Button } from '@/components/ui/button';
 
@@ -68,13 +69,20 @@ export function AppShell({ children, className }: AppShellProps) {
       </main>
       <footer className="border-t border-border/60 py-6 text-center text-xs text-muted-foreground">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5">
-          <span>© 2025 Donation Portal</span>
+          <span>© 2025 {ORGANIZATION_NAME}</span>
           <div className="flex items-center gap-4">
             <Link
               href="/privacy"
               className="transition hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground/30"
             >
               プライバシーポリシー
+            </Link>
+            <span className="text-border/40">•</span>
+            <Link
+              href="/privacy#operator-info"
+              className="transition hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground/30"
+            >
+              運営者情報
             </Link>
           </div>
         </div>

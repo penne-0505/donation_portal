@@ -5,6 +5,7 @@ import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ConfettiCelebration } from '@/components/confetti-celebration';
+import { ORGANIZATION_NAME } from '@/lib/ui/branding';
 
 export function ThanksPage() {
   useEffect(() => {
@@ -26,8 +27,8 @@ export function ThanksPage() {
             ご支援ありがとうございます
           </h1>
           <p className="max-w-xl text-pretty text-lg leading-relaxed text-muted-foreground">
-            Stripe Checkout での寄付が完了しました。ご支援いただいたお気持ちは Minecraft
-            サーバーの運営費に充てさせていただきます。
+            Stripe Checkout での寄付が完了しました。ご支援いただいたお気持ちは {ORGANIZATION_NAME}{' '}
+            の運営費に充てさせていただきます。
           </p>
           <div className="inline-flex flex-col gap-2 rounded-lg glass-sm px-4 py-3 shadow-minimal shadow-inner-light">
             <span className="text-sm font-medium text-muted-foreground">あなたの支援が</span>

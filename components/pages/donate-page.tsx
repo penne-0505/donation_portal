@@ -2,13 +2,14 @@
 
 import { useCallback, useEffect, useId, useState } from 'react';
 import { AlertCircle, ArrowRight, CheckCircle2, LoaderCircle, LogIn, LogOut } from 'lucide-react';
-import { useHeroContext } from '@/lib/ui/contexts/hero-context';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ConsentToggle } from '@/components/consent-toggle';
 import { DonationImpact } from '@/components/donation-impact';
 import { DonationBadge } from '@/components/donation-badge';
 import { cn } from '@/lib/ui/cn';
+import { ORGANIZATION_NAME } from '@/lib/ui/branding';
+import { useHeroContext } from '@/lib/ui/contexts/hero-context';
 import { CHECKOUT_PRESETS } from '@/lib/ui/checkout-presets';
 import { useCheckout } from '@/lib/ui/hooks/use-checkout';
 import { useConsentMutation } from '@/lib/ui/hooks/use-consent';
@@ -234,7 +235,8 @@ export function DonatePage() {
                 </li>
               </ol>
               <p className="text-xs text-muted-foreground">
-                いただいた寄附はコミュニティ運営にのみ利用し、対価の提供は行いません。
+                いただいた寄附は {ORGANIZATION_NAME}{' '}
+                のコミュニティ運営にのみ利用し、対価の提供は行いません。
               </p>
             </div>
           </Card>

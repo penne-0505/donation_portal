@@ -2,6 +2,7 @@
 
 import { ArrowRight, Lock, ShieldCheck, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ORGANIZATION_NAME } from '@/lib/ui/branding';
 
 export function HomePage() {
   const highlightBadges = [
@@ -23,10 +24,10 @@ export function HomePage() {
       <section className="flex min-h-[50vh] flex-col items-center justify-center gap-8 py-16 text-center md:py-24">
         <div className="space-y-4">
           <h1 className="text-balance text-4xl font-bold tracking-tight text-foreground md:text-5xl">
-            Discordコミュニティの運営を支える寄付
+            {ORGANIZATION_NAME} コミュニティの運営を支える寄付
           </h1>
           <p className="text-balance text-base text-gray-600 dark:text-gray-400 md:text-lg">
-            透明性と感謝を大切に運営しています。
+            透明性と感謝を大切に {ORGANIZATION_NAME} を運営しています。
           </p>
         </div>
 
