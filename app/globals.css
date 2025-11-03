@@ -92,7 +92,6 @@
       rgba(59, 130, 246, 0.75),
       rgba(129, 140, 248, 0.85),
       rgba(236, 72, 153, 0.9),
-      rgba(249, 115, 22, 0.85),
       rgba(59, 130, 246, 0.75)
     );
     background-size: 220% 220%;
@@ -121,21 +120,21 @@
     background-image:
       radial-gradient(
         1450px 1100px at -14% -26%,
-        rgba(88, 101, 242, 0.32) 0%,
-        rgba(88, 101, 242, 0.18) 32%,
-        rgba(88, 101, 242, 0.08) 64%,
+        rgba(59, 130, 246, 0.28) 0%,
+        rgba(59, 130, 246, 0.16) 32%,
+        rgba(59, 130, 246, 0.06) 64%,
         transparent 92%
       ),
       radial-gradient(
         1200px 820px at 20% 12%,
-        var(--bg-gradient-primary-strong) 0%,
-        var(--bg-gradient-primary-soft) 46%,
+        rgba(129, 140, 248, 0.26) 0%,
+        rgba(129, 140, 248, 0.09) 46%,
         transparent 82%
       ),
       radial-gradient(
         1120px 720px at 92% 16%,
-        var(--bg-gradient-secondary-strong) 0%,
-        var(--bg-gradient-secondary-soft) 44%,
+        rgba(236, 72, 153, 0.22) 0%,
+        rgba(236, 72, 153, 0.08) 44%,
         transparent 82%
       ),
       linear-gradient(#ffffff, var(--bg-a));
