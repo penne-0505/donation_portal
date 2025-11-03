@@ -2,7 +2,7 @@ import Link from 'next/link';
 import * as React from 'react';
 import { cn } from '@/lib/ui/cn';
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'outline';
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'outline' | 'discord';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -23,6 +23,8 @@ const variants: Record<ButtonVariant, string> = {
     'glass-sm text-foreground border border-transparent shadow-minimal shadow-inner-light hover-glass focus-visible:ring-muted-foreground/25',
   outline:
     'glass-sm text-foreground border border-white/20 shadow-minimal shadow-inner-light hover-glass focus-visible:ring-muted-foreground/25',
+  discord:
+    'bg-[#5865f2] text-white shadow-[0_12px_32px_rgba(88,101,242,0.28)] hover:bg-[#4752c4] focus-visible:ring-[#5865f2]/35',
 };
 
 const sizes: Record<ButtonSize, string> = {

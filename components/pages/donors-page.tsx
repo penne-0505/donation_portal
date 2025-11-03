@@ -1,17 +1,10 @@
 'use client';
 
-import {
-  AlertCircle,
-  ArrowRight,
-  CheckCircle2,
-  LogIn,
-  LogOut,
-  RefreshCw,
-  Users,
-} from 'lucide-react';
+import { AlertCircle, ArrowRight, CheckCircle2, LogOut, RefreshCw, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { DonorPill } from '@/components/donor-pill';
+import { DiscordIcon } from '@/components/ui/discord-icon';
 import { useConsentMutation } from '@/lib/ui/hooks/use-consent';
 import { useDonors } from '@/lib/ui/hooks/use-donors';
 import { useSession } from '@/lib/ui/hooks/use-session';
@@ -169,9 +162,14 @@ export function DonorsPage() {
                     <p className="text-sm text-muted-foreground">
                       支援者掲載の同意を管理するには Discord でログインしてください。
                     </p>
-                    <Button onClick={login} size="md" className="group w-full gap-2">
+                    <Button
+                      onClick={login}
+                      size="md"
+                      variant="discord"
+                      className="group w-full gap-2"
+                    >
                       <span className="flex items-center gap-2">
-                        <LogIn className="h-4 w-4" aria-hidden />
+                        <DiscordIcon className="h-5 w-5 text-white" aria-hidden />
                         Discord でログイン
                       </span>
                     </Button>

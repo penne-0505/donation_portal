@@ -1,12 +1,13 @@
 'use client';
 
 import { useCallback, useEffect, useId, useState } from 'react';
-import { AlertCircle, ArrowRight, CheckCircle2, LoaderCircle, LogIn, LogOut } from 'lucide-react';
+import { AlertCircle, ArrowRight, CheckCircle2, LoaderCircle, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ConsentToggle } from '@/components/consent-toggle';
 import { DonationImpact } from '@/components/donation-impact';
 import { DonationBadge } from '@/components/donation-badge';
+import { DiscordIcon } from '@/components/ui/discord-icon';
 import { cn } from '@/lib/ui/cn';
 import { ORGANIZATION_NAME } from '@/lib/ui/branding';
 import { useHeroContext } from '@/lib/ui/contexts/hero-context';
@@ -127,19 +128,16 @@ export function DonatePage() {
                   </>
                 ) : (
                   <Button
-                    size="lg"
+                    variant="discord"
+                    size="md"
                     onClick={login}
                     disabled={isRefreshing}
-                    className="group w-full gap-2 sm:w-auto"
+                    className="group w-full gap-2"
                   >
                     <span className="flex items-center gap-2">
-                      <LogIn className="h-4 w-4" aria-hidden />
+                      <DiscordIcon className="h-5 w-5 text-white" aria-hidden />
                       Discord でログイン
                     </span>
-                    <ArrowRight
-                      className="h-4 w-4 opacity-0 transition-transform duration-200 group-hover:translate-x-1 group-hover:opacity-100"
-                      aria-hidden
-                    />
                   </Button>
                 )}
               </div>
