@@ -70,11 +70,14 @@ export function AppShell({ children, className }: AppShellProps) {
           </nav>
         </div>
       </header>
-      <main className={cn('relative z-10 mx-auto w-full flex-1 max-w-6xl px-5 py-14', className)}>
+      <main
+        className={cn('relative z-10 mx-auto w-full flex-1 max-w-6xl px-5 py-6 md:py-8', className)}
+      >
         {children}
       </main>
       <footer className="relative z-10 px-4 pb-6 text-center text-xs text-muted-foreground">
-        <div className="mx-auto flex max-w-6xl items-center justify-between rounded-2xl glass-sm border-gradient-subtle px-5 py-4 shadow-glass-elevated transition-glass">
+        <div className="mx-auto flex max-w-6xl items-center justify-between rounded-2xl glass-sm border-gradient-subtle px-5 py-4 shadow-minimal shadow-inner-light transition-glass">
+          {' '}
           <span>© 2025 {ORGANIZATION_NAME}</span>
           <div className="flex items-center gap-4">
             <Link

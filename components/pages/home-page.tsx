@@ -20,14 +20,14 @@ export function HomePage() {
   };
 
   return (
-    <div className="page-enter space-y-20">
+    <div className="page-enter flex min-h-[calc(100vh-13.5rem)] flex-col justify-center md:min-h-[calc(100vh-14.5rem)]">
       {/* ヒーロー */}
       <section
         ref={heroRef}
-        className="flex min-h-[calc(100vh-8rem)] flex-col items-center justify-center px-6 pt-12 pb-20 text-center"
+        className="flex flex-col items-center justify-center px-6 py-4 text-center sm:py-5 lg:py-6"
       >
         <div className="hero-focus mx-auto flex w-full max-w-4xl flex-col items-center">
-          <div className="space-y-6 mb-10">
+          <div className="mb-3 space-y-3 sm:space-y-4">
             <h1 className="text-balance text-4xl font-bold tracking-tight text-foreground md:text-5xl">
               みんなで創る、みんなの世界
             </h1>
@@ -37,8 +37,8 @@ export function HomePage() {
           </div>
 
           {/* CTA ボタン2つ */}
-          <div className="relative mb-10 overflow-hidden rounded-2xl glass-sm border-gradient-subtle shadow-minimal shadow-inner-light transition-glass">
-            <div className="flex flex-col items-center gap-3 px-4 py-4 sm:flex-row">
+          <div className="relative mb-3 overflow-hidden rounded-2xl glass-sm border-gradient-subtle shadow-minimal shadow-inner-light transition-glass">
+            <div className="flex flex-col items-center gap-3 px-4 py-3 sm:flex-row">
               <Button
                 href="/donate"
                 onClick={handleCTAClick}
