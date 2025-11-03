@@ -44,7 +44,7 @@ export function HomePage() {
                 onClick={handleCTAClick}
                 size="md"
                 variant="primary"
-                className="gap-2 px-8"
+                className="donate-cta-animated gap-2 px-8"
                 aria-label="寄付をはじめる"
               >
                 <span className="flex items-center gap-2">

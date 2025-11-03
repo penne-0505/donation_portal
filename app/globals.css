@@ -61,6 +61,54 @@
       180px 180px;
     mix-blend-mode: soft-light;
   }
+
+  .donate-cta-animated {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 0;
+  }
+
+  .donate-cta-animated::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.86));
+    z-index: -2;
+    transition: background 0.4s var(--ease-macos);
+    pointer-events: none;
+  }
+
+  .donate-cta-animated::before {
+    content: '';
+    position: absolute;
+    inset: -45%;
+    background: linear-gradient(
+      135deg,
+      rgba(59, 130, 246, 0.75),
+      rgba(129, 140, 248, 0.85),
+      rgba(236, 72, 153, 0.9),
+      rgba(249, 115, 22, 0.85),
+      rgba(59, 130, 246, 0.75)
+    );
+    background-size: 220% 220%;
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-macos);
+    animation: donateCtaGradient 6s ease-in-out infinite;
+    z-index: -1;
+    pointer-events: none;
+    will-change: background-position;
+  }
+
+  .donate-cta-animated:hover::before,
+  .donate-cta-animated:focus-visible::before {
+    opacity: 1;
+  }
+
+  .donate-cta-animated:hover::after,
+  .donate-cta-animated:focus-visible::after {
+    background: linear-gradient(160deg, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.78));
+  }
 }
 
 @layer utilities {
@@ -371,6 +419,18 @@
     to {
       opacity: 1;
       transform: translateY(0);
+    }
+  }
+
+  @keyframes donateCtaGradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
     }
   }
 
