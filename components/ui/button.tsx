@@ -38,8 +38,9 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function 
   const classes = cn(baseClasses, variants[variant], sizes[size], className);
 
   if (href) {
+    const anchorProps = props as React.AnchorHTMLAttributes<HTMLAnchorElement>;
     return (
-      <Link href={href} className={classes}>
+      <Link href={href} className={classes} {...anchorProps}>
         {children}
       </Link>
     );
