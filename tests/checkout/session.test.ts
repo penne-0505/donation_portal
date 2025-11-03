@@ -98,7 +98,7 @@ describe('functions/api/checkout/session', () => {
   });
 
   it('Stripe Checkout セッションを作成し URL を返す', async () => {
-    const cookieHeader = await createSessionCookie('寄附ユーザー', true);
+    const cookieHeader = await createSessionCookie('寄付ユーザー', true);
     const request = createRequest(
       { mode: 'payment', interval: null, variant: 'fixed300' },
       cookieHeader,
@@ -135,12 +135,12 @@ describe('functions/api/checkout/session', () => {
         assert.equal(method, 'POST');
         assert.equal(url, 'https://api.stripe.com/v1/customers');
         const body = new URLSearchParams(init?.body as string);
-        assert.equal(body.get('metadata[display_name]'), '寄附ユーザー');
+        assert.equal(body.get('metadata[display_name]'), '寄付ユーザー');
         assert.equal(body.get('metadata[display_name_source]'), 'discord');
         assert.equal(body.get('metadata[discord_id]'), '123456789');
         assert.equal(body.get('metadata[consent_public]'), 'true');
         assert.equal(body.get('metadata[last_checkout_at]'), FIXED_NOW_ISO);
-        assert.equal(body.get('name'), '寄附ユーザー');
+        assert.equal(body.get('name'), '寄付ユーザー');
         return new Response(JSON.stringify({ id: 'cus_123' }), {
           status: 200,
           headers: { 'Content-Type': 'application/json' },

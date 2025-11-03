@@ -75,7 +75,7 @@ Phase 1 の意図と判断は `docs/intent/donation-portal/mvp-architecture-and-
 
 ## 1. 目的
 
-Cloudflare Pages 上で寄附ポータルを開発するための基本的なリポジトリ構成と CI/CD を整備し、後続フェーズで API や UI を安全に実装できる状態を作る。
+Cloudflare Pages 上で寄付ポータルを開発するための基本的なリポジトリ構成と CI/CD を整備し、後続フェーズで API や UI を安全に実装できる状態を作る。
 
 ## 2. 背景と前提
 

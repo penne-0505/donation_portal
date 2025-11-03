@@ -22,6 +22,6 @@
     "outDir": "dist",
     "sourceMap": true
   },
-  "include": ["src", "tests", "types", "functions", "components", "lib/ui"],
+  "include": ["src", "tests", "types", "functions", "components", "lib/ui", "app"],
   "exclude": ["node_modules", "dist", "build"]
 }

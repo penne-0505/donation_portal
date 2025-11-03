@@ -1,5 +1,5 @@
 ---
-title: '寄附受付 I/F仕様'
+title: '寄付受付 I/F仕様'
 domain: 'donation-portal'
 status: 'superseded'
 version: '1.0.0'
@@ -26,7 +26,7 @@ superseded_by: docs/intent/donation-portal/mvp-architecture-and-phases.md
 
 本仕様は intent ドキュメント `docs/intent/donation-portal/mvp-architecture-and-phases.md` に引き継がれました。詳細検討が必要な場合は intent を参照してください。
 
-# I/F仕様 — 寄附受付（Cloudflare Pages＋Functions, TypeScript） v1.0
+# I/F仕様 — 寄付受付（Cloudflare Pages＋Functions, TypeScript） v1.0
 
 最終更新: 2025-10-29 (JST)
 
@@ -34,8 +34,8 @@ superseded_by: docs/intent/donation-portal/mvp-architecture-and-phases.md
 
 ## 0. 概要 / スコープ
 
-* **目的**: 任意の寄附（単発/定期）を Stripe Checkout 経由で受け付け、/thanks 表示と Donors（同意者の表示名のみ）を提供する。
-* **非目的**: 寄附に対価・特典を付与しない（アクセス権/ロール/優遇等は実装しない）。
+* **目的**: 任意の寄付（単発/定期）を Stripe Checkout 経由で受け付け、/thanks 表示と Donors（同意者の表示名のみ）を提供する。
+* **非目的**: 寄付に対価・特典を付与しない（アクセス権/ロール/優遇等は実装しない）。
 * **アーキテクチャ**: Cloudflare Pages（/donate, /thanks, /donors）+ Pages Functions（API, Webhook） / TypeScript。
 * **データ**: 自前DBなし。**SSOT = Stripe** の Customer/Events/Metadata。
 * **ドメイン**: `*.pages.dev`（カスタムドメインなし）。
@@ -188,8 +188,8 @@ superseded_by: docs/intent/donation-portal/mvp-architecture-and-phases.md
 
 ### `/donate`
 
-* 表示: 「任意の寄附／対価・特典なし／税控除なし」を明記。
-* フロー: 「Discordで表示名取得」→「掲示同意のチェック（既定OFF）」→「寄附ボタン（単発/定期）」
+* 表示: 「任意の寄付／対価・特典なし／税控除なし」を明記。
+* フロー: 「Discordで表示名取得」→「掲示同意のチェック（既定OFF）」→「寄付ボタン（単発/定期）」
 
 ### `/thanks`
 
@@ -270,7 +270,7 @@ Stripe → POST /api/webhooks/stripe (payment_intent.succeeded | invoice.paid)
 
 ## 12. 将来拡張（非互換に注意）
 
-* 任意額寄附（`variant: custom_amount` + サーバ側バリデーション）
+* 任意額寄付（`variant: custom_amount` + サーバ側バリデーション）
 * 支払い手段の追加（銀行振込/コンビニ/PayPay単発）
 * 軽量キャッシュ層（KV/D1）導入（公開負荷が上がった場合）
 

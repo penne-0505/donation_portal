@@ -41,8 +41,8 @@ superseded_by: docs/intent/donation-portal/mvp-architecture-and-phases.md
 
 | シナリオ | 典型的な問い合わせ例 | 一次回答テンプレート |
 | --- | --- | --- |
-| 掲示を撤回したい | 「Donors から名前を消してください」 | 寄附ページ `/donate` から Discord ログイン → 「Donors 掲示を撤回する」ボタンをご案内。実装済みの `/donors` ページでも撤回可能。 |
-| 掲示を再開したい | 「寄附後に再掲示したい」 | `/donate` ページでチェックボックスをオン → 保存（寄附フロー不要）で再掲示される旨を案内。 |
+| 掲示を撤回したい | 「Donors から名前を消してください」 | 寄付ページ `/donate` から Discord ログイン → 「Donors 掲示を撤回する」ボタンをご案内。実装済みの `/donors` ページでも撤回可能。 |
+| 掲示を再開したい | 「寄付後に再掲示したい」 | `/donate` ページでチェックボックスをオン → 保存（寄付フロー不要）で再掲示される旨を案内。 |
 | 掲示が反映されない | 「撤回/同意が反映されない」 | 60 秒キャッシュの遅延を説明し、時間を空けても改善しない場合は Stripe Dashboard で metadata を確認する。 |
 
 ## 2. オペレーション手順
@@ -54,7 +54,7 @@ superseded_by: docs/intent/donation-portal/mvp-architecture-and-phases.md
 
 ## 3. エスカレーション条件
 
-- Stripe 側で Customer が存在しない場合（寄附未実施）
+- Stripe 側で Customer が存在しない場合（寄付未実施）
 - API が `500 internal` を返し続ける場合（Stripe 側障害を疑う）
 - Discord OAuth セッションが無効で再ログインできない場合（Phase 2 担当へ）
 

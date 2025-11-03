@@ -25,7 +25,7 @@ describe('DonatePage React UI', () => {
     cleanup();
   });
 
-  it('未ログイン時はログイン導線を表示し、寄附操作を無効化する', () => {
+  it('未ログイン時はログイン導線を表示し、寄付操作を無効化する', () => {
     let loginCalls = 0;
     const session = createSessionMock();
     session.status = { state: 'signed-out' };
@@ -40,11 +40,11 @@ describe('DonatePage React UI', () => {
     fireEvent.click(loginButton);
     assert.equal(loginCalls, 1);
 
-    const consentCheckbox = screen.getByLabelText(
-      'Donors ページに表示名を掲載することに同意します',
-    ) as HTMLInputElement;
-    assert.equal(consentCheckbox.disabled, true);
-    assert.equal(consentCheckbox.checked, false);
+    const consentToggle = screen.getByRole('switch', {
+      name: '支援者ページに表示名を掲載することに同意します',
+    }) as HTMLButtonElement;
+    assert.equal(consentToggle.disabled, true);
+    assert.equal(consentToggle.getAttribute('aria-checked'), 'false');
 
     for (const preset of CHECKOUT_PRESETS) {
       const button = screen.getByRole('button', {
@@ -74,11 +74,11 @@ describe('DonatePage React UI', () => {
 
     assert.ok(screen.getByText('テストユーザー'));
 
-    const consentCheckbox = screen.getByLabelText(
-      'Donors ページに表示名を掲載することに同意します',
-    ) as HTMLInputElement;
+    const consentToggle = screen.getByRole('switch', {
+      name: '支援者ページに表示名を掲載することに同意します',
+    }) as HTMLButtonElement;
     await waitFor(() => {
-      assert.equal(consentCheckbox.checked, true);
+      assert.equal(consentToggle.getAttribute('aria-checked'), 'true');
     });
 
     const logoutButton = screen.getByRole('button', { name: /ログアウト/ }) as HTMLButtonElement;
@@ -107,22 +107,23 @@ describe('DonatePage React UI', () => {
 
     render(createElement(DonatePage));
 
-    const consentCheckbox = screen.getByLabelText(
-      'Donors ページに表示名を掲載することに同意します',
-    ) as HTMLInputElement;
+    const consentToggle = screen.getByRole('switch', {
+      name: '支援者ページに表示名を掲載することに同意します',
+    }) as HTMLButtonElement;
 
     await waitFor(() => {
-      assert.equal(consentCheckbox.checked, false);
+      assert.equal(consentToggle.getAttribute('aria-checked'), 'false');
     });
 
-    fireEvent.click(consentCheckbox);
+    fireEvent.click(consentToggle);
 
     await waitFor(() => {
       assert.deepEqual(consentCalls, [true]);
+      assert.equal(consentToggle.getAttribute('aria-checked'), 'true');
     });
   });
 
-  it('寄附メニューの選択で Checkout を開始しインパクトカードを表示する', async () => {
+  it('寄付メニューの選択で Checkout を開始しインパクトカードを表示する', async () => {
     const session = createSessionMock();
     session.status = {
       state: 'signed-in',

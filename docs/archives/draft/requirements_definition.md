@@ -1,5 +1,5 @@
 ---
-title: '寄附受付 要件定義書'
+title: '寄付受付 要件定義書'
 domain: 'donation-portal'
 status: 'superseded'
 version: '1.0.0'
@@ -25,7 +25,7 @@ superseded_by: docs/intent/donation-portal/mvp-architecture-and-phases.md
 
 要件定義は intent ドキュメント `docs/intent/donation-portal/mvp-architecture-and-phases.md` に統合済みです。背景や決定事項を確認する際は intent を参照してください。
 
-# 寄附受付（Discordコミュニティ）要件定義書 — 確定版 v1.0
+# 寄付受付（Discordコミュニティ）要件定義書 — 確定版 v1.0
 
 最終更新日: 2025-10-29（JST）
 
@@ -33,14 +33,14 @@ superseded_by: docs/intent/donation-portal/mvp-architecture-and-phases.md
 
 ## 0. 現状整理（確定事項サマリー）
 
-* **提供形態**: 寄附（任意の支援）のみ。**対価・特典は一切付与しない**（アクセス権／ロール／優遇／物品などは不可）。
+* **提供形態**: 寄付（任意の支援）のみ。**対価・特典は一切付与しない**（アクセス権／ロール／優遇／物品などは不可）。
 * **決済**: Stripe Checkout。**単発・定期**の両方を用意。
 
   * **V1（MVP）**: 決済手段は**カードのみ**。
   * 将来（V2以降）: 銀行振込／コンビニ／PayPay（いずれも単発想定）を再検討。
 * **通知**: Stripeのレシートのみ。**独自のサンクスメールは送信しない**。
 * **UI遷移**: 成功時 `/thanks`、キャンセル時 `/donate`。
-* **寄附者名の掲示**: Discord OAuthで本人確認し、**同意者のみ**サイトに**表示名だけ**を列挙（額・回数・順位は非表示／いつでも撤回可）。
+* **寄付者名の掲示**: Discord OAuthで本人確認し、**同意者のみ**サイトに**表示名だけ**を列挙（額・回数・順位は非表示／いつでも撤回可）。
 * **SSOT**: Stripe（自前DBは持たない）。
 * **技術スタック**: **Cloudflare Pages + Pages Functions（Workers）**へ集約、**TypeScript**で実装。
 * **ドメイン**: **カスタムドメインは使わない**（`*.pages.dev` を利用）。
@@ -50,15 +50,15 @@ superseded_by: docs/intent/donation-portal/mvp-architecture-and-phases.md
 
 ## 1. 目的・非目的
 
-* **目的**: コミュニティを任意の寄附で継続支援できる受け皿を用意する。
+* **目的**: コミュニティを任意の寄付で継続支援できる受け皿を用意する。
 * **非目的**: 会員制・限定アクセス・ゲーム内優遇・物品提供等、**対価性を生む要素**の一切。
 
 ---
 
 ## 2. スコープ
 
-* **In**: 寄附の受付（単発／定期）、受領後の感謝表示（/thanks）、寄附者名（同意者のみ）のサイト掲示。
-* **Out**: 特典やロール付与、寄附額に応じた表示・ランキング、独自メール運用、会計レポートの定期出力。
+* **In**: 寄付の受付（単発／定期）、受領後の感謝表示（/thanks）、寄付者名（同意者のみ）のサイト掲示。
+* **Out**: 特典やロール付与、寄付額に応じた表示・ランキング、独自メール運用、会計レポートの定期出力。
 
 ---
 
@@ -66,7 +66,7 @@ superseded_by: docs/intent/donation-portal/mvp-architecture-and-phases.md
 
 ### 3.1 画面（Cloudflare Pages）
 
-* `/donate`  … 寄附の趣旨・注意書き（**対価なし／税控除なし**）とボタン。
+* `/donate`  … 寄付の趣旨・注意書き（**対価なし／税控除なし**）とボタン。
 * `/thanks`  … 感謝メッセージのみ（特典表現なし）。
 * `/donors`  … 同意者の **表示名のみ** を列挙（撤回導線を併記）。
 * `/privacy`（任意） … 簡潔なプライバシー方針と問い合わせ先。
@@ -126,11 +126,11 @@ superseded_by: docs/intent/donation-portal/mvp-architecture-and-phases.md
 
 * 必須表記（/donate）:
 
-  * 「本寄附は任意のご支援であり、**対価・特典は一切ありません**。」
+  * 「本寄付は任意のご支援であり、**対価・特典は一切ありません**。」
   * 「**税控除はありません**。」
 * メール運用: **独自送信なし**（Stripeレシートのみ）。
-* 寄附者名掲示: **同意制**・表示名のみ・撤回いつでも可・序列や金額は非表示。
-* 特商法ページ: **不要想定**（寄附のみ）。ただし問い合わせ先（メール等）は `footer` に明示。
+* 寄付者名掲示: **同意制**・表示名のみ・撤回いつでも可・序列や金額は非表示。
+* 特商法ページ: **不要想定**（寄付のみ）。ただし問い合わせ先（メール等）は `footer` に明示。
 
 ---
 
@@ -168,7 +168,7 @@ superseded_by: docs/intent/donation-portal/mvp-architecture-and-phases.md
 
 ## 11. ロードマップ（将来）
 
-* **V1.1**: 任意額寄附、Donorsページのキャッシュ、/donors の表示順最適化（ランダム or 時系列）。
+* **V1.1**: 任意額寄付、Donorsページのキャッシュ、/donors の表示順最適化（ランダム or 時系列）。
 * **V2**: 銀行振込／コンビニ／PayPay（単発）を選択式で追加、必要に応じて軽量キャッシュ層（D1/KV）導入。
 
 ---
@@ -183,6 +183,6 @@ superseded_by: docs/intent/donation-portal/mvp-architecture-and-phases.md
 
 ## 13. 変更履歴
 
-* v1.0（2025-10-29）: Cloudflare Pages + Functions（TS）への集約、カスタムドメイン/独自メールなし、寄附のみ・対価ゼロの最終確定。
+* v1.0（2025-10-29）: Cloudflare Pages + Functions（TS）への集約、カスタムドメイン/独自メールなし、寄付のみ・対価ゼロの最終確定。
 
 ---

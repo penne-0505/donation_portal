@@ -18,7 +18,7 @@ references:
 
 ## 1. 概要
 
-Donation Portal MVP を本番リリースするための最終 QA チェックリストとデプロイ手順をまとめた Runbook です。単発/定期寄附、Donors 掲示、Stripe Webhook、Discord OAuth といった Phase 1〜5 の成果物が統合されていることを前提とします。Live キー投入後の初動監視やロールバック判断も本書に従って実施してください。
+Donation Portal MVP を本番リリースするための最終 QA チェックリストとデプロイ手順をまとめた Runbook です。単発/定期寄付、Donors 掲示、Stripe Webhook、Discord OAuth といった Phase 1〜5 の成果物が統合されていることを前提とします。Live キー投入後の初動監視やロールバック判断も本書に従って実施してください。
 
 ## 2. 前提条件
 
@@ -31,14 +31,14 @@ Donation Portal MVP を本番リリースするための最終 QA チェック�
 
 | No.   | 項目                           | 手順                                                                              | 期待結果                                                                                    | 記録欄 |
 | ----- | ------------------------------ | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ------ |
-| QA-01 | 単発寄附フロー（Test）         | Discord OAuth → `/donate` で同意オン → Checkout → `4242` カードで支払い           | `/thanks` 表示、Stripe Dashboard に PaymentIntent が作成され `metadata.consent_public=true` |        |
-| QA-02 | 定期（月額）寄附フロー（Test） | QA-01 と同様に `/donate` で月額を選択して Checkout                                | Stripe Dashboard に Subscription が作成され、Customer metadata が更新される                 |        |
-| QA-03 | 定期（年額）寄附フロー（Test） | `/donate` で年額を選択して Checkout                                               | Subscription が `annual` プランで作成される                                                 |        |
+| QA-01 | 単発寄付フロー（Test）         | Discord OAuth → `/donate` で同意オン → Checkout → `4242` カードで支払い           | `/thanks` 表示、Stripe Dashboard に PaymentIntent が作成され `metadata.consent_public=true` |        |
+| QA-02 | 定期（月額）寄付フロー（Test） | QA-01 と同様に `/donate` で月額を選択して Checkout                                | Stripe Dashboard に Subscription が作成され、Customer metadata が更新される                 |        |
+| QA-03 | 定期（年額）寄付フロー（Test） | `/donate` で年額を選択して Checkout                                               | Subscription が `annual` プランで作成される                                                 |        |
 | QA-04 | Donors 掲示反映                | Consent をオンにした状態で Checkout 後 `/donors` にアクセス                       | 表示名が 60 秒以内にリストへ追加される                                                      |        |
 | QA-05 | Consent 撤回・再同意           | `/donors` で撤回 → Stripe Dashboard で metadata=false を確認 → `/donate` で再同意 | Donors API のレスポンスが撤回/再同意に追従し、キャッシュ遅延は 60 秒以内                    |        |
 | QA-06 | Webhook 冪等性                 | Stripe CLI で `payment_intent.succeeded` を 2 回送信                              | 最初が `200`, 2 回目も `200`、ログに `duplicate=true` が記録される                          |        |
 | QA-07 | Webhook 署名検証               | Stripe CLI の `trigger` 後に署名シークレットを不正値で再送                        | `400` が返り、ログに `signature_invalid` が残る                                             |        |
-| QA-08 | UI 法務文言確認                | `/donate`, `/thanks`, `/donors` のコピーを確認                                    | 「任意の寄附」「対価なし」「税控除なし」の表現が全ページで表示される                        |        |
+| QA-08 | UI 法務文言確認                | `/donate`, `/thanks`, `/donors` のコピーを確認                                    | 「任意の寄付」「対価なし」「税控除なし」の表現が全ページで表示される                        |        |
 | QA-09 | アクセシビリティ簡易チェック   | キーボードのみで `/donate` を操作し、スクリーンリーダーで主要導線を読み上げ       | フォーカスインジケーターが可視、aria-label が設定漏れなし                                   |        |
 | QA-10 | Health エンドポイント          | `/api/health` にアクセス                                                          | `200 OK` と `{"status":"ok"}` が返る                                                        |        |
 
@@ -65,7 +65,7 @@ Donation Portal MVP を本番リリースするための最終 QA チェック�
 
 ### 4.3 スモークテスト
 
-1. 対象チームメンバーが少額（¥100〜¥300）で単発寄附を実施します。
+1. 対象チームメンバーが少額（¥100〜¥300）で単発寄付を実施します。
 2. Checkout 完了後 `/thanks` に遷移するか、Stripe Dashboard で Live Payment が記録されるか確認します。
 3. Donors 掲示に 10 分以内で表示名が追加されること、Webhook ログが `duplicate=false` で 1 回のみ処理されていることをチェックします。
 
@@ -76,7 +76,7 @@ Donation Portal MVP を本番リリースするための最終 QA チェック�
 | Webhook 成功率       | Stripe Dashboard > Developers > Events        | 失敗率 0%（再送があっても最終成功） | 失敗検知時は `docs/guide/payments/stripe-webhook-operations.md#6-障害時の初動対応フロー` に従う |
 | Functions レイテンシ | Cloudflare Pages > Analytics > Functions      | P95 < 200ms                         | 指標悪化時はデプロイ履歴とログを確認し、必要に応じてロールバック                                |
 | UI エラー            | Sentry 等のエラートラッキング（導入済み前提） | 致命エラー 0 件                     | 発生時は Issue を作成し、影響度を共有                                                           |
-| 寄附件数             | Stripe Dashboard > Payments / Subscriptions   | 日次で急減していないかを確認        | 急減時はコミュニティへアナウンスが行われているか確認                                            |
+| 寄付件数             | Stripe Dashboard > Payments / Subscriptions   | 日次で急減していないかを確認        | 急減時はコミュニティへアナウンスが行われているか確認                                            |
 
 - 監視結果は初週のみ日次で Slack チャンネルに共有し、1 週間後に週次報告へ切り替えます。
 - 重大障害時は Pages の「Rollback」機能で直前の安定バージョンへ戻し、Stripe Webhook を一時停止してください。

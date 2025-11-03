@@ -17,42 +17,30 @@ function resolveNpxCommand() {
   return process.platform === 'win32' ? 'npx.cmd' : 'npx';
 }
 
-function enforceWorkerCompatibility(outputDir) {
-  const workerEntryPath = path.join(outputDir, '_worker.js', 'index.js');
-  const banner =
-    "export const config = { compatibility_date: '2024-10-29', compatibility_flags: ['nodejs_compat'] };\n";
-
-  try {
-    if (!fs.existsSync(workerEntryPath)) {
-      return;
-    }
-
-    const current = fs.readFileSync(workerEntryPath, 'utf8');
-    if (/export const config\s*=\s*{[^}]*compatibility_flags/.test(current)) {
-      return;
-    }
-
-    const rewritten = current.replace(/^(\s*"use strict";\s*)?/, `$1${banner}`);
-    if (rewritten !== current) {
-      fs.writeFileSync(workerEntryPath, rewritten);
-      return;
-    }
-
-    fs.writeFileSync(workerEntryPath, `${banner}\n${current}`);
-  } catch (error) {
-    console.warn(`[next-on-pages] _worker.js の互換性フラグ挿入に失敗しました: ${error.message}`);
-  }
-}
-
 function run() {
   const outputDir = path.resolve('.open-next');
   removePreviousBuild(outputDir);
+
+  const defaultCompatibilityDate = '2025-10-30';
+  const defaultCompatibilityFlags = 'nodejs_compat';
 
   const env = {
     ...process.env,
     NODE_ENV: process.env.NODE_ENV ?? 'production',
     NEXT_ON_PAGES_BUILD: process.env.NEXT_ON_PAGES_BUILD ?? '1',
+    NEXT_ON_PAGES_COMPATIBILITY_DATE:
+      process.env.NEXT_ON_PAGES_COMPATIBILITY_DATE ?? defaultCompatibilityDate,
+    NEXT_ON_PAGES_COMPATIBILITY_FLAGS:
+      process.env.NEXT_ON_PAGES_COMPATIBILITY_FLAGS ?? defaultCompatibilityFlags,
   };
+
+  console.log('[debug][run-next-on-pages] build params', {
+    outputDir,
+    nodeEnv: env.NODE_ENV,
+    nextOnPagesBuild: env.NEXT_ON_PAGES_BUILD,
+    compatibilityDate: env.NEXT_ON_PAGES_COMPATIBILITY_DATE,
+    compatibilityFlags: env.NEXT_ON_PAGES_COMPATIBILITY_FLAGS,
+  });
 
   const result = spawnSync(
     resolveNpxCommand(),
@@ -61,8 +49,15 @@ function run() {
   );
 
   if (result.status !== 0) {
+    console.error('[debug][run-next-on-pages] build failed', {
+      status: result.status,
+      signal: result.signal,
+      error: result.error?.message,
+    });
     process.exit(result.status ?? 1);
   }
+
+  console.log('[debug][run-next-on-pages] build succeeded');
 
   const staticDir = path.join(outputDir, 'static');
   try {
@@ -98,7 +93,30 @@ function run() {
     console.warn(`[next-on-pages] _routes.json の更新に失敗しました: ${error.message}`);
   }
 
-  enforceWorkerCompatibility(outputDir);
+  const metadataPath = path.join(outputDir, '_worker.js', 'metadata.json');
+  const flags = (env.NEXT_ON_PAGES_COMPATIBILITY_FLAGS || defaultCompatibilityFlags)
+    .split(',')
+    .map((flag) => flag.trim())
+    .filter(Boolean);
+
+  const metadata = {
+    compatibility_date:
+      env.NEXT_ON_PAGES_COMPATIBILITY_DATE || defaultCompatibilityDate,
+    ...(flags.length > 0 ? { compatibility_flags: flags } : {}),
+  };
+
+  try {
+    fs.mkdirSync(path.dirname(metadataPath), { recursive: true });
+    fs.writeFileSync(metadataPath, `${JSON.stringify(metadata)}\n`);
+    console.log('[debug][run-next-on-pages] metadata.json written', {
+      metadataPath,
+      metadata,
+    });
+  } catch (error) {
+    console.warn(
+      `[next-on-pages] _worker.js/metadata.json の生成に失敗しました: ${error.message}`,
+    );
+  }
 }
 
 run();

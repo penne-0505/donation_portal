@@ -3,19 +3,20 @@
 このファイルは、LLM/AIエージェントがリポジトリを扱う際の最小限のガイダンスです。
 
 ## 原則
-- ユーザーとは**日本語**で会話  
+- ユーザーとは**日本語**で会話すること。
 - **Serenaを積極活用(projectは"ds_donation_system"とする)(使用可能な場合)**  
 - **Context7を利用する(使用可能な場合)**
+- **入念に現状実装やドキュメントを参照、分析してから実装を行こと。**
 - **`git rm`やファイル削除は禁止**（ユーザーに提案し、実行は待つ）
 - **[@docs/standards/documentation_guidelines.md](docs/standards/documentation_guidelines.md)と[@docs/standards/documentation_operations.md](docs/standards/documentation_operations.md)に従い、積極的にドキュメント運用・記述を行う**
 - 日付確認には`date`コマンドを使用すること
 
 ## プロジェクト概要
-- **名前**: Donation Portal（Discord寄附受付）  
-- **目的**: Discordコミュニティ向けに、**対価（特典）を一切伴わない任意の寄附**を受け付ける。寄附者名は**同意者のみ**サイトに表示（額・回数・順位は非表示）。  
+- **名前**: Donation Portal（Discord寄付受付）  
+- **目的**: Discordコミュニティ向けに、**対価（特典）を一切伴わない任意の寄付**を受け付ける。寄付者名は**同意者のみ**サイトに表示（額・回数・順位は非表示）。  
 - **プラットフォーム**: **Cloudflare Pages**（/donate, /thanks, /donors）＋ **Pages Functions（Workers）**  
 - **機能**:  
-  - Stripe Checkout による **単発／定期**寄附  
+  - Stripe Checkout による **単発／定期**寄付  
   - 成功後 `/thanks` 表示（独自メール送信は無し、Stripeレシートのみ）  
   - **Donors** ページ（同意者の表示名のみ列挙／撤回可）  
   - Discord OAuth による表示名取得＆掲示同意の管理  
@@ -26,7 +27,7 @@
 - **データ方針**: **SSOT = Stripe**（自前DBは持たない）。`Customer.metadata` に  
   `display_name`, `display_name_source=discord`, `discord_id`, `consent_public` を保存。  
 - **アーキテクチャ**:  
-  - 画面: `/donate`（寄附案内・同意UI）→ Checkout → `/thanks`  
+  - 画面: `/donate`（寄付案内・同意UI）→ Checkout → `/thanks`  
   - API:  
     - `POST /api/checkout/session`（OAuthセッション必須・metadata設定）  
     - `POST /api/webhooks/stripe`（署名検証・早期200・冪等）  

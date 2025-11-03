@@ -125,14 +125,18 @@ Cloudflare Pages 上で Donation Portal を開発するための初期セット�
 | `npm run format`    | Prettier によるフォーマットチェック              | `scripts/run-prettier.cjs` がグローバル `prettier` を利用します。                                                            |
 | `npm run typecheck` | TypeScript コンパイルチェック                    | グローバル `tsc` を利用し、型エラーを検出します。                                                                            |
 | `npm test`          | Node.js 標準テストランナーでユニットテストを実行 | OAuth／Checkout／Donors／Webhook の主要ユースケースが 52 件のテストで検証されます。                                          |
-| `npm run build`     | Functions のビルド検証                           | `wrangler` がインストールされていない場合はスキップメッセージを表示します。                                                  |
+| `npm run build`     | Next.js + Functions の Pages 向けビルド          | `.open-next/` にデプロイ用成果物を生成します。Cloudflare Pages と同一構成で検証できます。                                    |
 
 ## Cloudflare Pages との連携
 
 1. Cloudflare ダッシュボードで Pages プロジェクトを作成し、GitHub リポジトリを接続します。
-2. ビルドコマンドに `npm run build`、ビルド出力ディレクトリに `public` を指定します。
-3. Functions ディレクトリとして `functions` を登録し、`Compatibility date` を `2024-10-29` に合わせます。
-4. Preview 環境では `.env` を利用せず、Cloudflare Pages の環境変数機能で Secrets を管理します。
+2. Build Settings は以下の通りに構成します。
+   - Build command: `npm run build`
+   - Build output directory: `.open-next`
+   - Functions directory: `.open-next/functions`
+   - Compatibility date: `2025-10-30`
+   - Compatibility flags: `nodejs_compat`
+3. Preview 環境では `.env` を利用せず、Cloudflare Pages の環境変数機能で Secrets を管理します。
 
 ## トラブルシューティング
 

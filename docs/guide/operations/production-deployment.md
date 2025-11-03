@@ -2,9 +2,9 @@
 title: 'Donation Portal 本番環境セットアップ & 移行ガイド'
 domain: 'donation-portal'
 status: 'active'
-version: '1.0.0'
-created: '2025-11-02'
-updated: '2025-11-02'
+version: '1.0.1'
+created: '2025-11-01'
+updated: '2025-11-01'
 related_issues: []
 related_prs: []
 references:
@@ -43,7 +43,7 @@ QA 手順やローンチ後の運用監視は [Phase 6 QA & Release Runbook](./p
 | 環境       | Cloudflare Pages ブランチ    | 代表 URL                             | Stripe モード | Discord アプリ | 備考               |
 | ---------- | ---------------------------- | ------------------------------------ | ------------- | -------------- | ------------------ |
 | Preview    | `dev` / Pull Request         | `https://<project>-<hash>.pages.dev` | Test          | Test 用アプリ  | QA・結合テスト用   |
-| Production | `main`（または指定ブランチ） | `https://<project>.pages.dev`        | Live          | 本番アプリ     | 寄附受付の公開環境 |
+| Production | `main`（または指定ブランチ） | `https://<project>.pages.dev`        | Live          | 本番アプリ     | 寄付受付の公開環境 |
 
 > **ブランチ戦略**: Cloudflare Pages の Production ブランチは `main` を推奨しますが、運用ポリシーに応じて `dev` から直接デプロイする場合は Release Runbook と整合するよう注意してください。
 
@@ -56,10 +56,12 @@ QA 手順やローンチ後の運用監視は [Phase 6 QA & Release Runbook](./p
 - Build output directory: `.open-next`
 - Functions directory: `.open-next/functions`
 - 補足: `npm run build` は Next.js の成果物と既存 Pages Functions を `.open-next/` 配下に集約します。追加のコピー処理は不要です。
-- Compatibility date: `2024-10-29`
-- Compatibility flags: ビルド済み `_worker.js` に `nodejs_compat` を自動で挿入（追加の UI 設定は不要）
+- Compatibility date: `2025-10-30`
+- Compatibility flags: `nodejs_compat` を Cloudflare Pages の Project Settings で明示的に追加
+- Node.js 互換フラグはビルド時にも `NEXT_ON_PAGES_COMPATIBILITY_FLAGS=nodejs_compat` が付与されるよう `scripts/run-next-on-pages.cjs` に組み込んでいます。Cloudflare Pages 側でも同じフラグを Production/Preview 両環境に設定してください。
+- ビルド成果物には `.open-next/_worker.js/metadata.json` を生成し、互換性設定（`compatibility_date` / `compatibility_flags`）を明示的にバンドルしています。Pages ダッシュボード側の設定と合わせて二重で有効化される想定です。
 
-> `npm run build` 実行時に `scripts/run-next-on-pages.cjs` が `_worker.js/index.js` の先頭へ互換性フラグを挿入します。ローカルの `.open-next/` を削除してから再ビルドすると、Pages デプロイでも同じ設定が反映されます。
+> `npm run build` は Next.js 出力と Functions を `.open-next/` 配下へまとめます。互換性フラグは Cloudflare Pages 側の設定（または `wrangler.toml`）に依存するため、必要に応じて `nodejs_compat` を追加してください。
 
 3. **Production branch** を `main` に設定し、必要に応じて Preview ブランチに `dev` を追加します。
 4. セットアップ後、Pages が自動で初回ビルドを実行するため、完了を待ってから Secrets の登録に進みます。
@@ -106,15 +108,15 @@ QA 手順やローンチ後の運用監視は [Phase 6 QA & Release Runbook](./p
 2. **変更凍結**: リリースウィンドウ中は `main` / `dev` への直接コミットを制限し、緊急修正はホットフィックス手順に従います。
 3. **Secrets 切替**: 上記手順で Live 用 Secrets を登録し、`wrangler pages deploy` または GitHub トリガーで Production デプロイを実行します。
 4. **QA 実施**: [Phase 6 QA & Release Runbook](./phase-06-qa-release.md#3-qa-チェックリスト) の QA-01〜QA-10 を Production で抜粋実施（Live 決済は少額テストを実施）。
-5. **Donors 同意移行**: Test 環境の同意データは Stripe Metadata（Customer）に保存されているため、Live 環境では新規寄附者のみが表示されます。既存テストデータは削除・アーカイブし、本番での初回寄附をもって掲載を開始します。
-6. **アナウンス**: 寄附受付開始をコミュニティへ告知し、Stripe レシートと `/thanks` ページの案内を共有します。
+5. **Donors 同意移行**: Test 環境の同意データは Stripe Metadata（Customer）に保存されているため、Live 環境では新規寄付者のみが表示されます。既存テストデータは削除・アーカイブし、本番での初回寄付をもって掲載を開始します。
+6. **アナウンス**: 寄付受付開始をコミュニティへ告知し、Stripe レシートと `/thanks` ページの案内を共有します。
 
 ## ロールバック手順
 
 1. Cloudflare Pages ダッシュボードで **Deployments → Rollback** を実行し、直前の安定版へ戻します。
 2. Stripe Dashboard の Webhook endpoint を一時停止し、不要な Live 決済の再送を防止します。
 3. Secrets を Test 用に差し戻し、再発防止策をまとめてから再リリースを計画します。
-4. 寄附者への影響がある場合は、Slack / Discord で状況説明と対応見込みを共有します。
+4. 寄付者への影響がある場合は、Slack / Discord で状況説明と対応見込みを共有します。
 
 ## リリース後の初動監視
 
@@ -123,9 +125,17 @@ QA 手順やローンチ後の運用監視は [Phase 6 QA & Release Runbook](./p
 | Stripe Webhook 成功率 | Stripe Dashboard > Events                | 失敗率 0%（再送含む） | 失敗発生時は Webhook ガイドの初動対応へ |
 | Functions レイテンシ  | Cloudflare Pages > Analytics > Functions | P95 < 200ms           | 閾値超過時はログ確認と再デプロイ検討    |
 | エラー監視            | Sentry / Cloudflare Logs                 | 致命エラー 0 件       | エラー検知時は Issue 登録と暫定対応     |
-| 寄附件数              | Stripe Dashboard > Payments              | 基準値から急減なし    | 異常時はコミュニティ周知・フォーム確認  |
+| 寄付件数              | Stripe Dashboard > Payments              | 基準値から急減なし    | 異常時はコミュニティ周知・フォーム確認  |
 
 監視結果はローンチ当日から 1 週間は日次で共有し、その後は週次レポートへ移行します。
+
+## トラブルシューティング
+
+### Node.JS Compatibility Error が表示される
+
+- 症状: ページ全体が `Node.JS Compatibility Error`（`no nodejs_compat compatibility flag set`）画面に置き換わり、Next.js の UI が表示されない。
+- 原因: Cloudflare Pages の互換フラグ `nodejs_compat` が適用されず、Workers ランタイムが Node.js API を利用できていない。2025-11-01 以前のビルドスクリプトでは `NEXT_ON_PAGES_COMPATIBILITY_FLAGS` が未設定だったため、ダッシュボード側の設定漏れがあると本事象が発生する。
+- 対処: `npm run build` が実行される環境変数で `NEXT_ON_PAGES_COMPATIBILITY_FLAGS=nodejs_compat`（および `NEXT_ON_PAGES_COMPATIBILITY_DATE=2025-10-30`）が渡っているか確認し、Cloudflare Pages の Project Settings > Functions でも同じ互換フラグを Production/Preview 双方に追加する。フラグを更新したら新しいデプロイをトリガーする。
 
 ## 関連ドキュメント
 

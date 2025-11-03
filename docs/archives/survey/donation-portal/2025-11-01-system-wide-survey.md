@@ -16,7 +16,7 @@ references:
 
 ## 背景
 
-Donation Portal プロジェクトは、Discord コミュニティ向けに対価を伴わない任意寄附を受け付けるシステムである。Stripe 決済、Discord OAuth、Cloudflare Pages Functions によるサーバーレスアーキテクチャで構成されており、セキュリティ・ユーザー体験・運用効率の観点から継続的な品質保証が必要である。
+Donation Portal プロジェクトは、Discord コミュニティ向けに対価を伴わない任意寄付を受け付けるシステムである。Stripe 決済、Discord OAuth、Cloudflare Pages Functions によるサーバーレスアーキテクチャで構成されており、セキュリティ・ユーザー体験・運用効率の観点から継続的な品質保証が必要である。
 
 ## 目的
 

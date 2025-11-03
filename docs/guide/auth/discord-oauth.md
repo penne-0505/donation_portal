@@ -14,7 +14,7 @@ references:
 
 ## 概要
 
-Discord OAuth を利用して寄附者の表示名と掲示同意を取得し、Stripe 連携前のセッション情報を整えるための手順を整理します。`GET /oauth/start` で state Cookie を発行し、Discord 認可後に `GET /oauth/callback` が sess Cookie を生成して `/donate` に戻すフローを前提とします。
+Discord OAuth を利用して寄付者の表示名と掲示同意を取得し、Stripe 連携前のセッション情報を整えるための手順を整理します。`GET /oauth/start` で state Cookie を発行し、Discord 認可後に `GET /oauth/callback` が sess Cookie を生成して `/donate` に戻すフローを前提とします。
 
 ### フロー全体像
 

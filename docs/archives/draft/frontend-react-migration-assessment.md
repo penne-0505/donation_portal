@@ -56,7 +56,7 @@ ttl_days: 30
 - メリット
   - コンポーネント化による UI 再利用性向上、ロジックと表示の分離。
   - React Query 等と連携したデータ取得パターン確立で API エラーハンドリングを統一可能。
-  - 将来的な UI 拡張（寄附額カスタム入力、プレビューなど）を行う際の開発速度向上。
+  - 将来的な UI 拡張（寄付額カスタム入力、プレビューなど）を行う際の開発速度向上。
 - コスト
   - ビルド設定（Vite/ESLint/Prettier/Testing Library）の導入とメンテナンス。
   - バンドルサイズ増加。最小構成でも React + ReactDOM で ≈45KB gzipped。追加ライブラリに注意。
@@ -80,7 +80,7 @@ ttl_days: 30
 ### 非機能要件 (Non-functional)
 - 初回ロード時の gzipped バンドルサイズ 200KB 以下、`Largest Contentful Paint` 2.0s 以下を CI + プレビューで検証。
 - ESLint (React 推奨設定 + import/no-cycle) と TypeScript 型チェックを CI に組み込み、既存バックエンド処理と同列に扱う。
-- React Testing Library + Playwright で主要シナリオ（寄附同意、OAuth 後の thanks、Donors 表示）を自動テスト化。
+- React Testing Library + Playwright で主要シナリオ（寄付同意、OAuth 後の thanks、Donors 表示）を自動テスト化。
 - WCAG 2.1 AA に準拠したアクセシビリティチェックリストを更新し、React コンポーネントで aria 属性とフォーカス管理を実装。
 - Cloudflare Pages ビルドで Vite を使用し、`npm run build` で backend/ frontend 双方が成功すること。
 

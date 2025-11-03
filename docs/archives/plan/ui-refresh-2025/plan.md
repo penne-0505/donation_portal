@@ -15,7 +15,7 @@ references:
   - public/styles/base.css
   - docs/intent/donation-portal/mvp-architecture-and-phases.md
 scope:
-  - "寄附導線 (/donate)・Donors ページ (/donors)・Thanks ページ (/thanks) の UI/UX をリリース品質へ引き上げる。"
+  - "寄付導線 (/donate)・Donors ページ (/donors)・Thanks ページ (/thanks) の UI/UX をリリース品質へ引き上げる。"
   - "既存の DOM 構造とプレーン JavaScript 実装を維持したまま、スタイル体系とコンポーネントの再設計を行う。"
 non_goals:
   - "Backend API や Stripe/Discord 連携仕様の拡張。"

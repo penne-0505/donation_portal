@@ -94,8 +94,8 @@ describe('functions/api/donors', () => {
       new Response(
         JSON.stringify({
           data: [
-            { livemode: false, metadata: { display_name: 'テスト寄附者' }, created: 1 },
-            { livemode: true, metadata: { display_name: '本番寄附者' }, created: 2 },
+            { livemode: false, metadata: { display_name: 'テスト寄付者' }, created: 1 },
+            { livemode: true, metadata: { display_name: '本番寄付者' }, created: 2 },
           ],
         }),
         {
@@ -109,7 +109,7 @@ describe('functions/api/donors', () => {
 
     assert.equal(response.status, 200);
     const body = (await response.json()) as { donors?: string[]; count?: number };
-    assert.deepEqual(body.donors, ['本番寄附者']);
+    assert.deepEqual(body.donors, ['本番寄付者']);
     assert.equal(body.count, 1);
   });
 

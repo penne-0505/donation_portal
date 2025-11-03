@@ -16,7 +16,7 @@ references:
 
 > 実装ステータス: ✅ 実装済み (2025-10 Phase 3)
 
-Stripe Checkout セッションを生成し、寄附者の Discord 情報を Stripe Customer metadata に保存します。単発寄附（¥300）と定期寄附（¥300/月・¥3,000/年）をサポートします。
+Stripe Checkout セッションを生成し、寄付者の Discord 情報を Stripe Customer metadata に保存します。単発寄付（¥300）と定期寄付（¥300/月・¥3,000/年）をサポートします。
 
 ## エンドポイント概要
 
@@ -40,8 +40,8 @@ Cookie: sess=<signed>
 | フィールド | 型 | 必須 | 説明 |
 | --- | --- | --- | --- |
 | `mode` | `"payment"` \| `"subscription"` | ✅ | Checkout モード |
-| `interval` | `"monthly"` \| `"yearly"` \| `null` | ✅ | 定期寄附の場合は課金間隔、単発時は `null` |
-| `variant` | `"fixed300"` \| `"fixed3000"` | ✅ | 寄附メニューを識別するキー |
+| `interval` | `"monthly"` \| `"yearly"` \| `null` | ✅ | 定期寄付の場合は課金間隔、単発時は `null` |
+| `variant` | `"fixed300"` \| `"fixed3000"` | ✅ | 寄付メニューを識別するキー |
 
 ### バリデーション
 

@@ -89,7 +89,7 @@ export const onRequestPost: PagesFunction<ConsentEnv> = async (context) => {
       return errorResponse(
         404,
         'not_found',
-        '該当する寄附者情報が見つかりませんでした。寄附後に再度お試しください。',
+        '該当する寄付者情報が見つかりませんでした。寄付後に再度お試しください。',
       );
     }
 

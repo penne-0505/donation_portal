@@ -4,7 +4,7 @@ export const CHECKOUT_PRESETS: readonly CheckoutPreset[] = [
   {
     id: 'one-time-300',
     mode: 'payment',
-    label: '単発寄附 ¥300',
+    label: '単発寄付 ¥300',
     description: '少額から参加できます',
     amount: 300,
     interval: null,
@@ -13,7 +13,7 @@ export const CHECKOUT_PRESETS: readonly CheckoutPreset[] = [
   {
     id: 'monthly-300',
     mode: 'subscription',
-    label: '毎月の寄附 ¥300',
+    label: '毎月の寄付 ¥300',
     description: '継続支援で安定運営に貢献',
     amount: 300,
     interval: 'monthly',
@@ -22,8 +22,8 @@ export const CHECKOUT_PRESETS: readonly CheckoutPreset[] = [
   {
     id: 'yearly-3000',
     mode: 'subscription',
-    label: '毎年の寄附 ¥3,000',
-    description: '一年単位でまとめて寄附(毎月換算で約¥250)',
+    label: '毎年の寄付 ¥3,000',
+    description: '一年単位でまとめて寄付(毎月換算で約¥250)',
     amount: 3000,
     interval: 'yearly',
     variant: 'fixed3000',
