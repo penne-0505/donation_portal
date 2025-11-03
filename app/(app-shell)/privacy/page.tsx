@@ -62,7 +62,7 @@ export default function PrivacyPage() {
           <dl className="space-y-3">
             <div className="space-y-1">
               <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                団体名 / 社名
+                団体名
               </dt>
               <dd className="text-sm text-foreground">{ORGANIZATION_NAME}</dd>
             </div>
