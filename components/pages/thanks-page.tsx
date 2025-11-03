@@ -46,16 +46,21 @@ export function ThanksPage() {
           から送信されるメールをご確認ください。
         </div>
 
-        <div className="flex flex-col gap-4 sm:flex-row">
-          <Button href="/donate" size="md" className="flex-1 gap-2 sm:text-base">
-            <span className="flex items-center gap-2">
-              寄付ページへ戻る
-              <ArrowRight className="h-4 w-4" aria-hidden />
-            </span>
-          </Button>
-          <Button href="/donors" size="md" variant="outline" className="flex-1 sm:text-base">
-            支援者一覧を見る
-          </Button>
+        <div className="flex justify-center">
+          <div className="relative w-full max-w-sm overflow-hidden rounded-2xl glass-sm border-gradient-subtle shadow-minimal shadow-inner-light transition-glass">
+            <Button
+              href="/donors"
+              size="md"
+              variant="primary"
+              className="w-full gap-2 px-8 sm:text-base"
+              aria-label="支援者一覧を見る"
+            >
+              <span className="flex items-center justify-center gap-2">
+                支援者一覧を見る
+                <ArrowRight className="h-4 w-4" aria-hidden />
+              </span>
+            </Button>
+          </div>
         </div>
       </Card>
     </div>
