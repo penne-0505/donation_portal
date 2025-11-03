@@ -33,7 +33,7 @@ export function AppShell({ children, className }: AppShellProps) {
   };
 
   return (
-    <div className="app-shell relative flex min-h-screen flex-col overflow-x-hidden bg-root text-foreground">
+    <div className="app-shell relative flex min-h-screen flex-col bg-root text-foreground">
       <header className="sticky top-0 z-40 px-4 pt-4">
         <div className="mx-auto flex max-w-6xl items-center justify-between rounded-2xl glass-sm border-gradient-subtle px-5 py-3 shadow-minimal shadow-inner-light backdrop-blur transition-glass">
           <Link

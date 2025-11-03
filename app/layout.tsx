@@ -32,7 +32,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { readonly children: ReactNode }) {
   return (
     <html lang="ja" className={`${inter.variable} ${notoSansJp.variable}`}>
-      <body className="min-h-screen bg-root text-foreground antialiased">{children}</body>
+      <body className="min-h-screen bg-root text-foreground antialiased overflow-x-hidden">
+        {children}
+      </body>
     </html>
   );
 }

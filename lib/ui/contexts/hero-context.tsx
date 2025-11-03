@@ -1,24 +1,29 @@
 'use client';
 
-import { createContext, useContext, useRef, useState, ReactNode, useEffect } from 'react';
+import { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
 
 interface HeroContextType {
   heroInView: boolean;
   setHeroInView: (inView: boolean) => void;
-  heroRef: React.RefObject<HTMLElement>;
+  heroRef: (node: HTMLElement | null) => void;
   hasHeroSection: boolean;
 }
 
 const HeroContext = createContext<HeroContextType | undefined>(undefined);
 
 export function HeroProvider({ children }: { readonly children: ReactNode }) {
-  const heroRef = useRef<HTMLElement>(null);
-  const [heroInView, setHeroInView] = useState(true);
+  const [heroElement, setHeroElement] = useState<HTMLElement | null>(null);
+  const [heroInView, setHeroInView] = useState(false);
   const [hasHeroSection, setHasHeroSection] = useState(false);
 
+  const heroRef = useCallback((node: HTMLElement | null) => {
+    setHeroElement(node);
+  }, []);
+
   useEffect(() => {
-    if (!heroRef.current) {
+    if (!heroElement) {
       setHasHeroSection(false);
+      setHeroInView(false);
       return;
     }
 
@@ -31,12 +36,12 @@ export function HeroProvider({ children }: { readonly children: ReactNode }) {
       { threshold: 0.5 },
     );
 
-    observer.observe(heroRef.current);
+    observer.observe(heroElement);
 
     return () => {
       observer.disconnect();
     };
-  }, []);
+  }, [heroElement]);
 
   const value: HeroContextType = {
     heroInView,
