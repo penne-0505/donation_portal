@@ -21,8 +21,12 @@
 :root {
   color-scheme: light;
   --bg-a: #f7f9fb;
-  --bg-b: #eef2ff;
-  --bg-c: #fff7ed;
+  --bg-b: #e3e9ff;
+  --bg-c: #ffe8d8;
+  --bg-gradient-primary-strong: rgba(88, 101, 242, 0.28);
+  --bg-gradient-primary-soft: rgba(88, 101, 242, 0.09);
+  --bg-gradient-secondary-strong: rgba(249, 115, 22, 0.24);
+  --bg-gradient-secondary-soft: rgba(249, 115, 22, 0.08);
   --background-noise-coarse: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxNjAnIGhlaWdodD0nMTYwJyB2aWV3Qm94PScwIDAgMTYwIDE2MCc+PGZpbHRlciBpZD0nbm9pc2UnPjxmZVR1cmJ1bGVuY2UgdHlwZT0nZnJhY3RhbE5vaXNlJyBiYXNlRnJlcXVlbmN5PScwLjc1JyBudW1PY3RhdmVzPSczJyBzdGl0Y2hUaWxlcz0nc3RpdGNoJyBzZWVkPSc1Jy8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9JzE2MCcgaGVpZ2h0PScxNjAnIGZpbHRlcj0ndXJsKCNub2lzZSknIG9wYWNpdHk9JzAuMjgnLz48L3N2Zz4=');
   --background-noise-fine: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxNDAnIGhlaWdodD0nMTQwJyB2aWV3Qm94PScwIDAgMTQwIDE0MCc+PGZpbHRlciBpZD0nbm9pc2UnPjxmZVR1cmJ1bGVuY2UgdHlwZT0nZnJhY3RhbE5vaXNlJyBiYXNlRnJlcXVlbmN5PScxLjQnIG51bU9jdGF2ZXM9JzInIHN0aXRjaFRpbGVzPSdzdGl0Y2gnIHNlZWQ9JzExJy8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9JzE0MCcgaGVpZ2h0PScxNDAnIGZpbHRlcj0ndXJsKCNub2lzZSknIG9wYWNpdHk9JzAuMTYnLz48L3N2Zz4=');
 }
@@ -115,17 +119,31 @@
   .bg-root {
     background-color: var(--bg-a);
     background-image:
-      radial-gradient(1000px 700px at 20% 0%, var(--bg-b) 0%, transparent 60%),
-      radial-gradient(900px 600px at 85% 20%, var(--bg-c) 0%, transparent 60%),
+      radial-gradient(
+        1450px 1100px at -14% -26%,
+        rgba(88, 101, 242, 0.32) 0%,
+        rgba(88, 101, 242, 0.18) 32%,
+        rgba(88, 101, 242, 0.08) 64%,
+        transparent 92%
+      ),
+      radial-gradient(
+        1200px 820px at 20% 12%,
+        var(--bg-gradient-primary-strong) 0%,
+        var(--bg-gradient-primary-soft) 46%,
+        transparent 82%
+      ),
+      radial-gradient(
+        1120px 720px at 92% 16%,
+        var(--bg-gradient-secondary-strong) 0%,
+        var(--bg-gradient-secondary-soft) 44%,
+        transparent 82%
+      ),
       linear-gradient(#ffffff, var(--bg-a));
     background-repeat: no-repeat;
-    background-size:
-      120% 120%,
-      120% 120%,
-      100% 100%;
     background-position:
-      center top,
-      right top,
+      -12% -18%,
+      20% 6%,
+      92% 10%,
       center;
   }
 
