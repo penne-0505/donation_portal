@@ -18,24 +18,11 @@ Definitions to suppress Markdown warnings
 
 ## 後でタスク定義
 
+- 
+
 ---
 
 ## Backlog
-
-### [Documentation] Glassmorphism表現向上のための技術調査とデザイン提案
-- **ID**: UI/UX-Documentation-23
-- **Priority**: P3
-- **Size**: M
-- **Area**: UI/UX
-- **Dependencies**: None
-- **Goal**: より洗練されたGlassmorphism（すりガラス効果）を実装するための具体的なCSSテクニックやデザインパターンをまとめたドキュメントが作成される。
-- **Steps**:
-  1. Glassmorphismの先進的な実装例をWeb上で調査する（Dribbble, Awwwardsなど）。
-  2. `box-shadow`, `border`, `background-gradient`, `noise texture`, `lighting effects` などの要素を組み合わせる方法を検討する。
-  3. 調査結果を基に、本プロジェクトで適用可能な複数のデザインパターンを提案する。
-  4. 各パターンの実装方法（CSSコード例）と、メリット・デメリットをまとめる。
-  5. `docs/survey/ui/glassmorphism-enhancement-survey.md` としてドキュメントを作成する。
-- **Description**: 現在のGlassmorphism実装をさらに洗練させるため、表現力を向上させるための技術的な工夫を調査・検討する。影、境界線、グラデーション、ノイズテクスチャなどを効果的に組み合わせる方法を探求し、今後のUI改善に活かすためのデザイン提案と技術的な指針をドキュメントとしてまとめる。
 
 ---
 
