@@ -1,7 +1,7 @@
 ---
 title: "Hero Background Slideshow Exploration"
 domain: "donation-portal/ui"
-status: "draft"
+status: "proposed"
 version: "0.1.0"
 created: "2025-11-02"
 updated: "2025-11-02"

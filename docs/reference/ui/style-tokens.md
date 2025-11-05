@@ -1,7 +1,7 @@
 ---
 title: "UI デザイントークン定義"
 domain: "donation-portal"
-status: "draft"
+status: "active"
 version: "0.1.2"
 created: "2025-11-01"
 updated: "2025-11-02"

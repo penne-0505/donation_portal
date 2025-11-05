@@ -1,7 +1,7 @@
 ---
 title: 'Stripe Webhook 運用ガイド'
 domain: 'donation-portal'
-status: 'draft'
+status: 'active'
 version: '0.1.0'
 created: '2025-10-30'
 updated: '2025-10-30'

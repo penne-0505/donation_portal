@@ -1,7 +1,7 @@
 ---
 title: 'Cloudflare Pages nodejs_compat 不適用の原因調査メモ'
 domain: 'operations'
-status: 'archived'
+status: 'superseded'
 version: '0.1.1'
 created: '2025-11-02'
 updated: '2025-11-02'
@@ -9,7 +9,7 @@ related_issues: []
 related_prs: []
 references:
   - ../../_temp_logs/donation-portal.fc84d07a-d942-48c1-a9a0-3e8dfe7b1404.log
-state: 'archived'
+state: 'paused'
 hypothesis: |
   Cloudflare Pages 側で `nodejs_compat` が有効化されていない、もしくはビルド成果物に含めた互換性メタデータが取り込まれていない、という初期仮説の記録（意図文書 `docs/intent/operations/nodejs-compat-resolution.md` に統合済み）。
 options:

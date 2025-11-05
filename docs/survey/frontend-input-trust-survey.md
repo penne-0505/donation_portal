@@ -1,7 +1,7 @@
 ---
 title: "Frontend Input Trust Survey"
 domain: "security"
-status: "active"
+status: "superseded"
 version: 1
 created: "2025-11-04"
 updated: "2025-11-05"
