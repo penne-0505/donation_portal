@@ -88,7 +88,7 @@ function run() {
     );
     
     if (wranglerResult.status !== 0) {
-      console.error('[next-on-pages] Wrangler Pages Functions のビルドに失敗しました');
+      console.error('[next-on-pages] Wrangler Pages Functions build failed');
       process.exit(wranglerResult.status ?? 1);
     }
     
@@ -103,17 +103,17 @@ function run() {
       fs.copyFileSync(compiledWorker, path.join(outputFunctionsDir, '_worker.js'));
       console.log('[next-on-pages] Copied compiled worker to .open-next/functions/_worker.js');
     } else {
-      console.warn('[next-on-pages] Compiled worker が見つかりませんでした');
+      console.warn('[next-on-pages] Compiled worker not found');
     }
     
     // Clean up temp directory
     try {
       fs.rmSync(tempBuildDir, { recursive: true, force: true });
     } catch (error) {
-      console.warn(`[next-on-pages] 一時ディレクトリのクリーンアップに失敗: ${error.message}`);
+      console.warn(`[next-on-pages] Failed to clean up temporary directory: ${error.message}`);
     }
   } else {
-    console.warn('[next-on-pages] functions/ ディレクトリが見つかりません');
+    console.warn('[next-on-pages] functions/ directory not found');
   }
 
   const routesPath = path.join(outputDir, '_routes.json');
