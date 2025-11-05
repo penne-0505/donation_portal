@@ -50,7 +50,7 @@ function run() {
   } catch (error) {
     console.warn('[build] Wrangler が見つかりませんでした。`npm install wrangler` を実行してください。');
     console.warn(`[build] 詳細: ${error.message}`);
-    process.exit(0);
+    process.exit(1);
   }
 }
 

@@ -33,14 +33,15 @@ function resolveBin(packageName, binName) {
 function run() {
   try {
     const tscBin = resolveBin('typescript', 'tsc');
-    const result = spawnSync(tscBin, [...process.argv.slice(2)], {
+    // Windows でも実行可能なように node 経由で実行
+    const result = spawnSync('node', [tscBin, ...process.argv.slice(2)], {
       stdio: 'inherit',
     });
     process.exit(result.status ?? 1);
   } catch (error) {
     console.warn('[typecheck] TypeScript が見つかりませんでした。`npm install typescript` を実行してください。');
     console.warn(`[typecheck] 詳細: ${error.message}`);
-    process.exit(0);
+    process.exit(1);
   }
 }
 

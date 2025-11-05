@@ -52,11 +52,15 @@ function run() {
         stdio: 'inherit',
       },
     );
+    // SIGINT/SIGTERM による正常な終了は成功扱いにする
+    if (result.signal === 'SIGINT' || result.signal === 'SIGTERM') {
+      process.exit(0);
+    }
     process.exit(result.status ?? 1);
   } catch (error) {
     console.warn('[dev] Wrangler が見つかりませんでした。`npm install wrangler` を実行してください。');
     console.warn(`[dev] 詳細: ${error.message}`);
-    process.exit(0);
+    process.exit(1);
   }
 }
 
