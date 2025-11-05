@@ -31,7 +31,7 @@ function getEnvValue(
   if (env[key]) {
     return env[key];
   }
-  const processEnv = process.env as Record<string, string | undefined>;
+  const processEnv = process.env as unknown as Record<string, string | undefined>;
   return processEnv[key];
 }
 
