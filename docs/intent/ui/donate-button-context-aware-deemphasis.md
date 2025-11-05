@@ -160,7 +160,3 @@ data-state={buttonShouldBeDeemphasized ? 'deemphasized' : 'active'}
 - [ ] Related PRs and issues linked in front-matter
 
 ---
-
-**Authors**: Copilot AI  
-**Last Reviewed**: 2025-11-05  
-**Review Status**: Pending implementation review

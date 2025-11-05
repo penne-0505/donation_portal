@@ -64,6 +64,13 @@ references:
 4. **Donors 掲載**: `/api/donors` がメタデータを検索し、UI の `useDonors` が 60 秒キャッシュを前提に表示する。
 
 ## セキュリティと運用ポリシー
+
+### 基本原則
+- **フロントエンド入力の不信**: クライアント側の入力値・データは信頼せず、API エンドポイント層で型・フォーマット・範囲を必ず再検証する。
+- **権限チェックの必須化**: リソースアクセスや操作の前に、ユーザーの権限を明示的に確認する（セッション検証を含む）。
+- **ビジネスロジックのサーバーサイド集中**: 価格計算・割引適用など重要なロジックは必ずサーバーサイド（Functions）で実行し、環境変数から安全に解決した値を用いる。
+
+### 実装ポリシー
 - Secrets（Stripe keys, Discord credentials, Cookie keys）は Cloudflare Pages Env Bindings と GitHub Actions Secrets に限定し、ローカル開発は `.env.example` をテンプレートとする。
 - Cookie は `Secure` + `HttpOnly` + `SameSite=Lax` を必須とし、期限切れ時は明示的に破棄する (`buildExpiredSessionCookie`)。
 - 監査/トラブルシューティングは Cloudflare Logs と Stripe Dashboard を主要ソースとし、ログは JSON 形式でタイムスタンプ・scope・request_id を含める。

@@ -1,7 +1,7 @@
 ---
 title: "React UI 本番: /donate, /donors, /thanks 概要"
 domain: "donation-portal"
-status: "draft"
+status: "active"
 version: "0.2.0"
 created: "2025-11-01"
 updated: "2025-11-01"

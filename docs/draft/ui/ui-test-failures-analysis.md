@@ -1,7 +1,7 @@
 ---
 title: "UI Test Failures Analysis: DonatePage Hero Context Issue"
 domain: "donation-portal/ui/testing"
-status: "draft"
+status: "proposed"
 version: "0.1.0"
 created: "2025-11-05"
 updated: "2025-11-05"

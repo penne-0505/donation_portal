@@ -1,7 +1,7 @@
 ---
 title: "Frontend React Migration Feasibility"
 domain: "frontend"
-status: "deprecated"
+status: "superseded"
 version: "0.1.0"
 created: "2025-11-01"
 updated: "2025-11-01"
