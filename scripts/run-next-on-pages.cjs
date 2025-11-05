@@ -72,32 +72,32 @@ function run() {
   // Build Pages Functions using wrangler instead of copying raw TypeScript files
   const sourceFunctionsDir = path.resolve('functions');
   const outputFunctionsDir = path.join(outputDir, 'functions');
-  
+
   if (fs.existsSync(sourceFunctionsDir)) {
     console.log('[next-on-pages] Building Pages Functions with wrangler...');
-    
+
     // Create a temporary directory for the build output
     const tempBuildDir = path.join(outputDir, '_functions-build');
     fs.mkdirSync(tempBuildDir, { recursive: true });
-    
+
     // Run wrangler pages functions build with --outdir to get compiled JS
     const wranglerResult = spawnSync(
       resolveNpxCommand(),
       ['wrangler', 'pages', 'functions', 'build', './functions', '--outdir', tempBuildDir],
-      { stdio: 'inherit' }
+      { stdio: 'inherit' },
     );
-    
+
     if (wranglerResult.status !== 0) {
       console.error('[next-on-pages] Wrangler Pages Functions build failed');
       process.exit(wranglerResult.status ?? 1);
     }
-    
+
     // Copy the compiled worker to .open-next/functions/
     const compiledWorker = path.join(tempBuildDir, 'index.js');
-    
+
     if (fs.existsSync(compiledWorker)) {
       fs.mkdirSync(outputFunctionsDir, { recursive: true });
-      
+
       // Copy the compiled worker as _worker.js in the functions directory
       // Cloudflare Pages will use this as the functions worker
       fs.copyFileSync(compiledWorker, path.join(outputFunctionsDir, '_worker.js'));
@@ -105,7 +105,7 @@ function run() {
     } else {
       console.warn('[next-on-pages] Compiled worker not found');
     }
-    
+
     // Clean up temp directory
     try {
       fs.rmSync(tempBuildDir, { recursive: true, force: true });
@@ -116,17 +116,9 @@ function run() {
     console.warn('[next-on-pages] functions/ directory not found');
   }
 
-  const routesPath = path.join(outputDir, '_routes.json');
-  try {
-    const raw = fs.readFileSync(routesPath, 'utf8');
-    const routes = JSON.parse(raw);
-    const additionalExcludes = ['/api/*', '/oauth/*', '/health'];
-    const excludeSet = new Set([...(routes.exclude ?? []), ...additionalExcludes]);
-    routes.exclude = Array.from(excludeSet);
-    fs.writeFileSync(routesPath, JSON.stringify(routes));
-  } catch (error) {
-    console.warn(`[next-on-pages] _routes.json の更新に失敗しました: ${error.message}`);
-  }
+  // Note: _routes.json exclude processing has been removed to allow /api/* routes
+  // to reach the Pages Functions Worker. This resolves the /api/session 404 issue.
+  // See: docs/draft/operations/session-api-session-fetch-investigation.md
 
   const metadataPath = path.join(outputDir, '_worker.js', 'metadata.json');
   const flags = (env.NEXT_ON_PAGES_COMPATIBILITY_FLAGS || defaultCompatibilityFlags)
@@ -135,8 +127,7 @@ function run() {
     .filter(Boolean);
 
   const metadata = {
-    compatibility_date:
-      env.NEXT_ON_PAGES_COMPATIBILITY_DATE || defaultCompatibilityDate,
+    compatibility_date: env.NEXT_ON_PAGES_COMPATIBILITY_DATE || defaultCompatibilityDate,
     ...(flags.length > 0 ? { compatibility_flags: flags } : {}),
   };
 
@@ -148,9 +139,7 @@ function run() {
       metadata,
     });
   } catch (error) {
-    console.warn(
-      `[next-on-pages] _worker.js/metadata.json の生成に失敗しました: ${error.message}`,
-    );
+    console.warn(`[next-on-pages] _worker.js/metadata.json の生成に失敗しました: ${error.message}`);
   }
 }
 
