@@ -14,9 +14,7 @@ interface AppShellProps {
 }
 
 export function AppShell({ children, className }: AppShellProps) {
-  const { heroInView, hasHeroSection } = useHeroContext();
-
-  const isHeroCtaSuppressed = hasHeroSection && heroInView;
+  const { buttonShouldBeDeemphasized } = useHeroContext();
 
   const handleCtaClick = () => {
     // 計測イベント発火
@@ -54,12 +52,12 @@ export function AppShell({ children, className }: AppShellProps) {
               href="/donate"
               onClick={handleCtaClick}
               size="md"
-              variant={isHeroCtaSuppressed ? 'outline' : 'primary'}
+              variant={buttonShouldBeDeemphasized ? 'outline' : 'primary'}
               className={cn(
                 'gap-2 transition-all duration-200',
-                isHeroCtaSuppressed && 'opacity-80 hover:opacity-100',
+                buttonShouldBeDeemphasized && 'opacity-80 hover:opacity-100',
               )}
-              data-state={isHeroCtaSuppressed ? 'suppressed' : 'active'}
+              data-state={buttonShouldBeDeemphasized ? 'deemphasized' : 'active'}
               aria-label="寄付をはじめる"
             >
               <span className="flex items-center gap-2">
