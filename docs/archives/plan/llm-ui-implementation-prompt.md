@@ -1,7 +1,7 @@
 ---
 title: 'LLM UI 実装プロンプト'
 domain: 'donation-portal'
-status: 'active'
+status: 'deprecated'
 version: '0.1.0'
 created: '2025-11-02'
 related_docs:

@@ -1,7 +1,7 @@
 ---
 title: 'Donation Portal 機能要件サーベイ'
 domain: 'donation-portal'
-status: 'active'
+status: 'deprecated'
 version: '0.1.0'
 created: '2025-11-02'
 updated: '2025-11-02'

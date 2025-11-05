@@ -141,12 +141,6 @@ e8a80fa (origin/main, main) Merge pull request #46 ...
 - `docs/guide/development/git-workflow.md`: 実装フロー（dev → feature → PR）の詳細手順
 - `docs/reference/operations/git-commands.md`: rebase / merge の使い分けリファレンス
 
-## 承認ステータス
-
-- 実装完了: 2025-11-05
-- レビュー待機中
-- 最終承認者: プロジェクトメンバー
-
 ---
 
 **補足**: バックアップブランチ `backup-dev-before-rebase` は `6a4c9f1` を指しており、必要に応じて復帰可能な状態を保持している。

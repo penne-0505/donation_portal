@@ -1,7 +1,7 @@
 ---
 title: "寄付ページ新UI適用計画"
 domain: "donation-portal/ui"
-status: "active"
+status: "deprecated"
 version: "0.1.0"
 created: "2025-11-01"
 updated: "2025-11-01"

@@ -4,10 +4,11 @@ domain: "security"
 status: "active"
 version: 1
 created: "2025-11-04"
-updated: "2025-11-04"
+updated: "2025-11-05"
 related_issues: []
 related_prs: []
-references: []
+references:
+  - docs/standards/architecture.md
 ---
 
 # フロントエンドからの入力信頼性に関する調査レポート
