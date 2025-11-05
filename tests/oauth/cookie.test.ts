@@ -3,15 +3,16 @@ import assert from 'node:assert/strict';
 
 import { createSignedCookie, verifySignedCookie } from '../../src/lib/auth/cookie.js';
 
-const ORIGINAL_KEY = (process.env as Record<string, string | undefined>).COOKIE_SIGN_KEY;
+const ORIGINAL_KEY = (process.env as unknown as Record<string, string | undefined>).COOKIE_SIGN_KEY;
 
 describe('OAuth cookie signing', () => {
   beforeEach(() => {
-    (process.env as Record<string, string | undefined>).COOKIE_SIGN_KEY = 'test-cookie-secret';
+    (process.env as unknown as Record<string, string | undefined>).COOKIE_SIGN_KEY =
+      'test-cookie-secret';
   });
 
   after(() => {
-    const env = process.env as Record<string, string | undefined>;
+    const env = process.env as unknown as Record<string, string | undefined>;
     if (typeof ORIGINAL_KEY === 'undefined') {
       delete env.COOKIE_SIGN_KEY;
     } else {
