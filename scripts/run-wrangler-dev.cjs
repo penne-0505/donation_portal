@@ -35,29 +35,54 @@ function run() {
   try {
     const wranglerBin = resolveWranglerBin();
     const defaultStaticDir = './public';
-    const builtStaticDir = fs.existsSync('.open-next/static') ? '.open-next/static' : defaultStaticDir;
+    const buildOutputDir = '.open-next';
+    const buildHasPrerender = ensureBuildArtifacts(buildOutputDir);
+    const builtStaticDir = buildHasPrerender ? buildOutputDir : defaultStaticDir;
     const result = spawnSync(
       'node',
-      [
-        wranglerBin,
-        'pages',
-        'dev',
-        builtStaticDir,
-        '--local',
-        'true',
-        '--port',
-        '8788',
-      ],
+      [wranglerBin, 'pages', 'dev', builtStaticDir, '--local', 'true', '--port', '8788'],
       {
         stdio: 'inherit',
       },
     );
+    // SIGINT/SIGTERM による正常な終了は成功扱いにする
+    if (result.signal === 'SIGINT' || result.signal === 'SIGTERM') {
+      process.exit(0);
+    }
     process.exit(result.status ?? 1);
   } catch (error) {
-    console.warn('[dev] Wrangler が見つかりませんでした。`npm install wrangler` を実行してください。');
+    console.warn(
+      '[dev] Wrangler が見つかりませんでした。`npm install wrangler` を実行してください。',
+    );
     console.warn(`[dev] 詳細: ${error.message}`);
-    process.exit(0);
+    process.exit(1);
   }
+}
+
+function ensureBuildArtifacts(buildOutputDir) {
+  const indexHtmlPath = path.join(buildOutputDir, 'index.html');
+  if (fs.existsSync(indexHtmlPath)) {
+    return true;
+  }
+
+  console.log('[dev] .open-next が存在しないため `npm run ui:build` を実行します');
+  const buildResult = spawnSync('npm', ['run', 'ui:build'], {
+    stdio: 'inherit',
+    env: { ...process.env, NEXT_ON_PAGES_BUILD: '1' },
+  });
+
+  if (buildResult.status !== 0) {
+    console.error('[dev] `npm run ui:build` が失敗しました');
+    process.exit(buildResult.status ?? 1);
+  }
+
+  if (!fs.existsSync(indexHtmlPath)) {
+    console.warn('[dev] `npm run ui:build` 実行後も .open-next/index.html が見つかりません');
+    return false;
+  }
+
+  console.log('[dev] .open-next を再生成しました');
+  return true;
 }
 
 run();

@@ -68,6 +68,7 @@ Cloudflare Pages 上で Donation Portal を開発するための初期セット�
    npm run dev
    ```
 
+   - 初回起動や UI/Functions を更新した際は、事前に `npm run build`（もしくは UI 変更のみの場合は `npm run ui:build`）を実行して `.open-next/` を再生成してください。これがないと `/donate` 等のページが 404 になる場合があります。
    - `wrangler` が未インストールの場合はエラーになるため、`npm install wrangler --save-dev` または `npm install -g wrangler` で導入してください。
    - 開発サーバは `http://localhost:8788` で立ち上がり、`/donate`・`/thanks`・`/donors` の 3 ページを提供します。
 
