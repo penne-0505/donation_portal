@@ -13,7 +13,7 @@ describe('getCookieSignKey', () => {
   });
 
   it('`process.env` にフォールバックする', () => {
-    const env = process.env as Record<string, string | undefined>;
+    const env = process.env as unknown as Record<string, string | undefined>;
     const original = env.COOKIE_SIGN_KEY;
     env.COOKIE_SIGN_KEY = 'fallback-key';
 

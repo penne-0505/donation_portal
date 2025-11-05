@@ -25,10 +25,18 @@ function getImpactKey(preset: CheckoutPreset): 'payment' | 'monthly' | 'yearly' 
 }
 
 export function DonatePage() {
-  useHeroContext();
+  const { setShouldDeemphasizeButton } = useHeroContext();
   const { status, login, logout, refresh, isRefreshing } = useSession();
   const [consent, setConsent] = useState(false);
   const [selectedPreset, setSelectedPreset] = useState<CheckoutPreset | null>(null);
+
+  // Deemphasize the header donate button while on the donate page
+  useEffect(() => {
+    setShouldDeemphasizeButton(true);
+    return () => {
+      setShouldDeemphasizeButton(false);
+    };
+  }, [setShouldDeemphasizeButton]);
 
   const {
     updateConsent,

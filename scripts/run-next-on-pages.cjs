@@ -69,16 +69,51 @@ function run() {
     console.warn(`[next-on-pages] public ディレクトリのコピーに失敗しました: ${error.message}`);
   }
 
-  const outputFunctionsDir = path.join(outputDir, 'functions');
+  // Build Pages Functions using wrangler instead of copying raw TypeScript files
   const sourceFunctionsDir = path.resolve('functions');
-  try {
-    if (fs.existsSync(sourceFunctionsDir)) {
-      fs.rmSync(outputFunctionsDir, { recursive: true, force: true });
-      fs.mkdirSync(outputFunctionsDir, { recursive: true });
-      fs.cpSync(sourceFunctionsDir, outputFunctionsDir, { recursive: true });
+  const outputFunctionsDir = path.join(outputDir, 'functions');
+  
+  if (fs.existsSync(sourceFunctionsDir)) {
+    console.log('[next-on-pages] Building Pages Functions with wrangler...');
+    
+    // Create a temporary directory for the build output
+    const tempBuildDir = path.join(outputDir, '_functions-build');
+    fs.mkdirSync(tempBuildDir, { recursive: true });
+    
+    // Run wrangler pages functions build with --outdir to get compiled JS
+    const wranglerResult = spawnSync(
+      resolveNpxCommand(),
+      ['wrangler', 'pages', 'functions', 'build', './functions', '--outdir', tempBuildDir],
+      { stdio: 'inherit' }
+    );
+    
+    if (wranglerResult.status !== 0) {
+      console.error('[next-on-pages] Wrangler Pages Functions build failed');
+      process.exit(wranglerResult.status ?? 1);
     }
-  } catch (error) {
-    console.warn(`[next-on-pages] 既存 Functions のコピーに失敗しました: ${error.message}`);
+    
+    // Copy the compiled worker to .open-next/functions/
+    const compiledWorker = path.join(tempBuildDir, 'index.js');
+    
+    if (fs.existsSync(compiledWorker)) {
+      fs.mkdirSync(outputFunctionsDir, { recursive: true });
+      
+      // Copy the compiled worker as _worker.js in the functions directory
+      // Cloudflare Pages will use this as the functions worker
+      fs.copyFileSync(compiledWorker, path.join(outputFunctionsDir, '_worker.js'));
+      console.log('[next-on-pages] Copied compiled worker to .open-next/functions/_worker.js');
+    } else {
+      console.warn('[next-on-pages] Compiled worker not found');
+    }
+    
+    // Clean up temp directory
+    try {
+      fs.rmSync(tempBuildDir, { recursive: true, force: true });
+    } catch (error) {
+      console.warn(`[next-on-pages] Failed to clean up temporary directory: ${error.message}`);
+    }
+  } else {
+    console.warn('[next-on-pages] functions/ directory not found');
   }
 
   const routesPath = path.join(outputDir, '_routes.json');

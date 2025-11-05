@@ -1,12 +1,15 @@
 'use client';
 
-import { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, ReactNode, useEffect, useCallback, useMemo } from 'react';
 
 interface HeroContextType {
   heroInView: boolean;
   setHeroInView: (inView: boolean) => void;
   heroRef: (node: HTMLElement | null) => void;
   hasHeroSection: boolean;
+  shouldDeemphasizeButton: boolean;
+  setShouldDeemphasizeButton: (value: boolean) => void;
+  buttonShouldBeDeemphasized: boolean;
 }
 
 const HeroContext = createContext<HeroContextType | undefined>(undefined);
@@ -15,10 +18,16 @@ export function HeroProvider({ children }: { readonly children: ReactNode }) {
   const [heroElement, setHeroElement] = useState<HTMLElement | null>(null);
   const [heroInView, setHeroInView] = useState(false);
   const [hasHeroSection, setHasHeroSection] = useState(false);
+  const [shouldDeemphasizeButton, setShouldDeemphasizeButton] = useState(false);
 
   const heroRef = useCallback((node: HTMLElement | null) => {
     setHeroElement(node);
   }, []);
+
+  // Compute whether button should be deemphasized: either hero is in view OR explicitly set
+  const buttonShouldBeDeemphasized = useMemo(() => {
+    return heroInView || shouldDeemphasizeButton;
+  }, [heroInView, shouldDeemphasizeButton]);
 
   useEffect(() => {
     if (!heroElement) {
@@ -48,6 +57,9 @@ export function HeroProvider({ children }: { readonly children: ReactNode }) {
     setHeroInView,
     heroRef,
     hasHeroSection,
+    shouldDeemphasizeButton,
+    setShouldDeemphasizeButton,
+    buttonShouldBeDeemphasized,
   };
 
   return <HeroContext.Provider value={value}>{children}</HeroContext.Provider>;
