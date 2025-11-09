@@ -17,6 +17,87 @@ function resolveNpxCommand() {
   return process.platform === 'win32' ? 'npx.cmd' : 'npx';
 }
 
+function ensureRoutesManifest(routesPath, requiredExcludes, { label } = {}) {
+  const manifestLabel = label ?? routesPath;
+
+  try {
+    if (!fs.existsSync(routesPath)) {
+      console.warn(`[next-on-pages] ${manifestLabel} が見つかりません: ${routesPath}`);
+      return;
+    }
+
+    const routes = JSON.parse(fs.readFileSync(routesPath, 'utf8'));
+    let updated = false;
+
+    if (routes.exclude === undefined) {
+      routes.exclude = [];
+      updated = true;
+    } else if (!Array.isArray(routes.exclude)) {
+      routes.exclude = [routes.exclude].filter(
+        (pattern) => typeof pattern === 'string' && pattern.length > 0,
+      );
+      updated = true;
+    }
+
+    const existingExcludes = new Set(
+      Array.isArray(routes.exclude)
+        ? routes.exclude.filter((pattern) => typeof pattern === 'string')
+        : [],
+    );
+
+    for (const pattern of requiredExcludes) {
+      if (!existingExcludes.has(pattern)) {
+        routes.exclude.push(pattern);
+        existingExcludes.add(pattern);
+        updated = true;
+      }
+    }
+
+    if (updated) {
+      fs.writeFileSync(routesPath, `${JSON.stringify(routes, null, 2)}\n`);
+      console.log(`[next-on-pages] ${manifestLabel} exclude を更新しました`, {
+        routesPath,
+        exclude: routes.exclude,
+      });
+    }
+  } catch (error) {
+    console.warn(`[next-on-pages] ${manifestLabel} の補正に失敗しました: ${error.message}`);
+  }
+}
+
+function removeExcludedPatterns(routesPath, forbiddenPatterns, { label } = {}) {
+  const manifestLabel = label ?? routesPath;
+
+  try {
+    if (!fs.existsSync(routesPath)) {
+      console.warn(`[next-on-pages] ${manifestLabel} が見つかりません: ${routesPath}`);
+      return;
+    }
+
+    const routes = JSON.parse(fs.readFileSync(routesPath, 'utf8'));
+
+    if (!Array.isArray(routes.exclude) || routes.exclude.length === 0) {
+      return;
+    }
+
+    const excludeSet = new Set(forbiddenPatterns);
+    const filteredExclude = routes.exclude.filter(
+      (pattern) => typeof pattern === 'string' && !excludeSet.has(pattern),
+    );
+
+    if (filteredExclude.length !== routes.exclude.length) {
+      routes.exclude = filteredExclude;
+      fs.writeFileSync(routesPath, `${JSON.stringify(routes, null, 2)}\n`);
+      console.log(`[next-on-pages] ${manifestLabel} exclude から禁止パターンを除去しました`, {
+        routesPath,
+        removed: forbiddenPatterns,
+      });
+    }
+  } catch (error) {
+    console.warn(`[next-on-pages] ${manifestLabel} の補正（禁止パターン除去）に失敗しました: ${error.message}`);
+  }
+}
+
 function run() {
   const outputDir = path.resolve('.open-next');
   removePreviousBuild(outputDir);
@@ -78,12 +159,23 @@ function run() {
 
     // Create a temporary directory for the build output
     const tempBuildDir = path.join(outputDir, '_functions-build');
+    const tempRoutesPath = path.join(tempBuildDir, '_routes.json');
     fs.mkdirSync(tempBuildDir, { recursive: true });
 
     // Run wrangler pages functions build with --outdir to get compiled JS
     const wranglerResult = spawnSync(
       resolveNpxCommand(),
-      ['wrangler', 'pages', 'functions', 'build', './functions', '--outdir', tempBuildDir],
+      [
+        'wrangler',
+        'pages',
+        'functions',
+        'build',
+        './functions',
+        '--outdir',
+        tempBuildDir,
+        '--output-routes-path',
+        tempRoutesPath,
+      ],
       { stdio: 'inherit' },
     );
 
@@ -94,16 +186,41 @@ function run() {
 
     // Copy the compiled worker to .open-next/functions/
     const compiledWorker = path.join(tempBuildDir, 'index.js');
+    const compiledRoutes = tempRoutesPath;
+    const copiedArtifacts = [];
+    const missingArtifacts = [];
+
+    fs.mkdirSync(outputFunctionsDir, { recursive: true });
 
     if (fs.existsSync(compiledWorker)) {
-      fs.mkdirSync(outputFunctionsDir, { recursive: true });
-
-      // Copy the compiled worker as _worker.js in the functions directory
-      // Cloudflare Pages will use this as the functions worker
-      fs.copyFileSync(compiledWorker, path.join(outputFunctionsDir, '_worker.js'));
+      const destination = path.join(outputFunctionsDir, '_worker.js');
+      fs.copyFileSync(compiledWorker, destination);
+      copiedArtifacts.push(destination);
       console.log('[next-on-pages] Copied compiled worker to .open-next/functions/_worker.js');
     } else {
+      missingArtifacts.push({ type: 'worker', path: compiledWorker, stage: 'wrangler-output' });
       console.warn('[next-on-pages] Compiled worker not found');
+    }
+
+    if (fs.existsSync(compiledRoutes)) {
+      const destination = path.join(outputFunctionsDir, '_routes.json');
+      fs.copyFileSync(compiledRoutes, destination);
+      copiedArtifacts.push(destination);
+      console.log('[next-on-pages] Copied routes manifest to .open-next/functions/_routes.json');
+    } else {
+      missingArtifacts.push({ type: 'routes', path: compiledRoutes, stage: 'wrangler-output' });
+      console.warn('[next-on-pages] Routes manifest not found in wrangler build output');
+    }
+
+    const requiredOutputs = [
+      { type: 'worker', path: path.join(outputFunctionsDir, '_worker.js'), stage: 'functions-artifact' },
+      { type: 'routes', path: path.join(outputFunctionsDir, '_routes.json'), stage: 'functions-artifact' },
+    ];
+
+    for (const artifact of requiredOutputs) {
+      if (!fs.existsSync(artifact.path)) {
+        missingArtifacts.push(artifact);
+      }
     }
 
     // Clean up temp directory
@@ -112,51 +229,28 @@ function run() {
     } catch (error) {
       console.warn(`[next-on-pages] Failed to clean up temporary directory: ${error.message}`);
     }
+
+    if (missingArtifacts.length > 0) {
+      console.error('[next-on-pages] Pages Functions build artifacts are incomplete', {
+        missingArtifacts,
+        hint: 'wrangler pages functions build should output index.js and _routes.json',
+      });
+      process.exit(1);
+    }
+
+    removeExcludedPatterns(path.join(outputFunctionsDir, '_routes.json'), ['/api/*', '/oauth/*'], {
+      label: 'functions/_routes.json',
+    });
+
+    console.log('[next-on-pages] Pages Functions artifacts prepared', {
+      artifacts: copiedArtifacts,
+    });
   } else {
     console.warn('[next-on-pages] functions/ directory not found');
   }
 
   const routesPath = path.join(outputDir, '_routes.json');
-
-  try {
-    if (fs.existsSync(routesPath)) {
-      const routes = JSON.parse(fs.readFileSync(routesPath, 'utf8'));
-      let updated = false;
-
-      if (routes.exclude === undefined) {
-        routes.exclude = [];
-        updated = true;
-      } else if (!Array.isArray(routes.exclude)) {
-        routes.exclude = [routes.exclude].filter(
-          (pattern) => typeof pattern === 'string' && pattern.length > 0,
-        );
-        updated = true;
-      }
-
-      const requiredExcludes = ['/api/*', '/oauth/*'];
-      const existingExcludes = new Set(routes.exclude);
-
-      for (const pattern of requiredExcludes) {
-        if (!existingExcludes.has(pattern)) {
-          routes.exclude.push(pattern);
-          existingExcludes.add(pattern);
-          updated = true;
-        }
-      }
-
-      if (updated) {
-        fs.writeFileSync(routesPath, `${JSON.stringify(routes, null, 2)}\n`);
-        console.log('[next-on-pages] _routes.json exclude を更新しました', {
-          routesPath,
-          exclude: routes.exclude,
-        });
-      }
-    } else {
-      console.warn(`[next-on-pages] _routes.json が見つかりません: ${routesPath}`);
-    }
-  } catch (error) {
-    console.warn(`[next-on-pages] _routes.json の補正に失敗しました: ${error.message}`);
-  }
+  ensureRoutesManifest(routesPath, ['/api/*', '/oauth/*'], { label: '_routes.json' });
 
   const metadataPath = path.join(outputDir, '_worker.js', 'metadata.json');
   const flags = (env.NEXT_ON_PAGES_COMPATIBILITY_FLAGS || defaultCompatibilityFlags)
