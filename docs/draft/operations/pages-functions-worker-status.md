@@ -42,6 +42,8 @@ ttl_days: 30
 
 ## 2025-11-09 メモ: デプロイ環境で `/api/*` が 404 になる件
 
-- Cloudflare Pages のビルドログで `ensureRoutesManifest(... ['/api/*', '/oauth/*'])` により `.open-next/_routes.json` の `exclude` に API パターンが再注入されていた。これによりリクエストが Next.js 側に届かず静的配信で 404 になる。
-- `scripts/run-next-on-pages.cjs` の `ensureRoutesManifest` 呼び出しから `/api/*`, `/oauth/*` を除去し、Next on Pages が生成した `_routes.json` をそのまま採用するよう修正済み。また `scripts/verify-routes.cjs` で `_routes.json.exclude` にこれらのパターンが含まれていないことをチェックするように変更。
-- ローカル検証: `rm -rf .open-next && npm run build` 後、`.open-next/_routes.json` の `exclude` に `/api/*` が含まれないこと、`.open-next/functions/_routes.json` には API ルートが列挙されていることを確認。
+- `@cloudflare/next-on-pages` v1.13.x は `_routes.json` に `["/*"]` しか出力せず、素のままだと `/api/*` や `/oauth/*` のリクエストも Next.js ワーカーで処理されてしまい 404 になる（`x-matched-path: /404`）。
+- `scripts/run-next-on-pages.cjs` 終了時に `_routes.json` を補正し、`exclude` に `/api/*` と `/oauth/*` を強制的に追加する。これにより Pages Functions Worker にルーティングされる。
+- 逆に Pages Functions 側の `_routes.json` に `/api/*`・`/oauth/*` が含まれていると静的配信にフォールバックしてしまうため、`removeExcludedPatterns` で除去する。
+- `scripts/verify-routes.cjs` は上記条件を CI で検証する（`.open-next/_routes.json` に必須パターンが揃っているか、`.open-next/functions/_routes.json` に禁止パターンが含まれないか）。
+- ローカル検証は `rm -rf .open-next && npm run build` の後、`npx wrangler pages dev .open-next/static --functions .open-next/functions --local true --port 8788` を起動し、`curl http://localhost:8788/api/session` が 200 / 401 系レスポンスを返すことを確認する。
