@@ -12,7 +12,9 @@ function fail(reason, extra = {}) {
 function main() {
   const outputDir = path.resolve('.open-next');
   const routesPath = path.join(outputDir, '_routes.json');
-  const functionsWorkerPath = path.join(outputDir, 'functions', '_worker.js');
+  const functionsDir = path.join(outputDir, 'functions');
+  const functionsWorkerPath = path.join(functionsDir, '_worker.js');
+  const functionsRoutesPath = path.join(functionsDir, '_routes.json');
 
   console.log('[verify-routes] チェック開始', { outputDir });
 
@@ -52,6 +54,42 @@ function main() {
     });
   }
 
+  let functionsRoutes;
+  if (!fs.existsSync(functionsRoutesPath)) {
+    fail('Pages Functions の _routes.json が見つかりません', {
+      functionsRoutesPath,
+      hint: 'scripts/run-next-on-pages.cjs が wrangler build 後に成果物をコピーしているか確認してください。',
+    });
+  } else {
+    try {
+      const raw = fs.readFileSync(functionsRoutesPath, 'utf8');
+      functionsRoutes = JSON.parse(raw);
+    } catch (error) {
+      fail('Pages Functions の _routes.json の読み込みに失敗しました', {
+        functionsRoutesPath,
+        error: error.message,
+      });
+    }
+  }
+
+  if (functionsRoutes) {
+    const functionsExclude = Array.isArray(functionsRoutes.exclude)
+      ? functionsRoutes.exclude.filter((value) => typeof value === 'string')
+      : [];
+
+    const functionsMissingPatterns = REQUIRED_EXCLUDE_PATTERNS.filter(
+      (pattern) => !functionsExclude.includes(pattern),
+    );
+
+    if (functionsMissingPatterns.length > 0) {
+      fail('Pages Functions の _routes.json exclude に必須パターンが不足しています', {
+        functionsRoutesPath,
+        missingPatterns: functionsMissingPatterns,
+        currentExclude: functionsExclude,
+      });
+    }
+  }
+
   if (process.exitCode && process.exitCode !== 0) {
     console.error('[verify-routes] チェック失敗です。上記の項目を解消してください。');
     return;
@@ -61,6 +99,7 @@ function main() {
     routesPath,
     exclude,
     functionsWorkerPath,
+    functionsRoutesPath,
     required: REQUIRED_EXCLUDE_PATTERNS,
   });
 }
