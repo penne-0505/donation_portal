@@ -14,6 +14,7 @@ summary:
   scope:
     - "`.open-next/_routes.json` の `exclude` 配列に `/api/*` と `/oauth/*` が含まれているか"
     - "`.open-next/functions/_worker.js` が生成されているか"
+    - "`.open-next/functions/_routes.json` の `exclude` に `/api/*` と `/oauth/*` が含まれているか"
   constraints:
     - "Node.js v22.21.0 (npm 11.4.2) 環境で実行"
 ---
@@ -28,9 +29,10 @@ Cloudflare Pages 本番環境で `/api/*` と `/oauth/*` が 404 を返す回帰
 4. `.open-next/functions/_worker.js` が生成されているか（存在とファイルサイズ）を確認する。
 
 ## 観測結果
-- `npm run build` 実行後、`[next-on-pages] _routes.json exclude を更新しました` ログが出力された。【ac75db†L1-L13】
-- 検証スクリプトが起動し、`[verify-routes] ✅ すべての必須項目を確認しました` と出力された。【ac75db†L14-L27】
+- `npm run build` 実行後、`[next-on-pages] _routes.json exclude を更新しました` ログが出力された。【705da8†L11-L23】
+- 検証スクリプトが起動し、`[verify-routes] ✅ すべての必須項目を確認しました` と出力された（`.open-next/functions/_routes.json` の検証結果を含む）。【705da8†L24-L33】
 - `.open-next/_routes.json` の `exclude` 配列に `/_next/static/*`、`/api/*`、`/oauth/*` が揃っていることを直接確認した。【c031ee†L1-L13】
+- `.open-next/functions/_routes.json` の `exclude` 配列に `/api/*` と `/oauth/*` が含まれていることを直接確認した。【6ace64†L1-L11】
 - `.open-next/functions/_worker.js` が 66KB の成果物として生成されている（`ls -lh` にて確認）。【24c93a†L1-L3】
 
 ## 考察
