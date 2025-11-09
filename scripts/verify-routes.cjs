@@ -3,6 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const REQUIRED_EXCLUDE_PATTERNS = ['/api/*', '/oauth/*'];
+const FORBIDDEN_FUNCTIONS_EXCLUDE_PATTERNS = ['/api/*', '/oauth/*'];
 
 function fail(reason, extra = {}) {
   console.error('[verify-routes] ❌ 検証に失敗しました', { reason, ...extra });
@@ -77,14 +78,14 @@ function main() {
       ? functionsRoutes.exclude.filter((value) => typeof value === 'string')
       : [];
 
-    const functionsMissingPatterns = REQUIRED_EXCLUDE_PATTERNS.filter(
-      (pattern) => !functionsExclude.includes(pattern),
+    const forbiddenPatterns = functionsExclude.filter((pattern) =>
+      FORBIDDEN_FUNCTIONS_EXCLUDE_PATTERNS.includes(pattern),
     );
 
-    if (functionsMissingPatterns.length > 0) {
-      fail('Pages Functions の _routes.json exclude に必須パターンが不足しています', {
+    if (forbiddenPatterns.length > 0) {
+      fail('Pages Functions の _routes.json exclude に禁止パターンが含まれています', {
         functionsRoutesPath,
-        missingPatterns: functionsMissingPatterns,
+        forbiddenPatterns,
         currentExclude: functionsExclude,
       });
     }
@@ -101,6 +102,7 @@ function main() {
     functionsWorkerPath,
     functionsRoutesPath,
     required: REQUIRED_EXCLUDE_PATTERNS,
+    forbiddenFunctions: FORBIDDEN_FUNCTIONS_EXCLUDE_PATTERNS,
   });
 }
 

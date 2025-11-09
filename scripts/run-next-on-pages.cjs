@@ -65,6 +65,39 @@ function ensureRoutesManifest(routesPath, requiredExcludes, { label } = {}) {
   }
 }
 
+function removeExcludedPatterns(routesPath, forbiddenPatterns, { label } = {}) {
+  const manifestLabel = label ?? routesPath;
+
+  try {
+    if (!fs.existsSync(routesPath)) {
+      console.warn(`[next-on-pages] ${manifestLabel} が見つかりません: ${routesPath}`);
+      return;
+    }
+
+    const routes = JSON.parse(fs.readFileSync(routesPath, 'utf8'));
+
+    if (!Array.isArray(routes.exclude) || routes.exclude.length === 0) {
+      return;
+    }
+
+    const excludeSet = new Set(forbiddenPatterns);
+    const filteredExclude = routes.exclude.filter(
+      (pattern) => typeof pattern === 'string' && !excludeSet.has(pattern),
+    );
+
+    if (filteredExclude.length !== routes.exclude.length) {
+      routes.exclude = filteredExclude;
+      fs.writeFileSync(routesPath, `${JSON.stringify(routes, null, 2)}\n`);
+      console.log(`[next-on-pages] ${manifestLabel} exclude から禁止パターンを除去しました`, {
+        routesPath,
+        removed: forbiddenPatterns,
+      });
+    }
+  } catch (error) {
+    console.warn(`[next-on-pages] ${manifestLabel} の補正（禁止パターン除去）に失敗しました: ${error.message}`);
+  }
+}
+
 function run() {
   const outputDir = path.resolve('.open-next');
   removePreviousBuild(outputDir);
@@ -205,7 +238,7 @@ function run() {
       process.exit(1);
     }
 
-    ensureRoutesManifest(path.join(outputFunctionsDir, '_routes.json'), ['/api/*', '/oauth/*'], {
+    removeExcludedPatterns(path.join(outputFunctionsDir, '_routes.json'), ['/api/*', '/oauth/*'], {
       label: 'functions/_routes.json',
     });
 
