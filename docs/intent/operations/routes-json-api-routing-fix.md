@@ -1,10 +1,10 @@
 ---
 title: '_routes.json API Routing Configuration Fix'
 domain: 'operations'
-status: 'active'
-version: '1.0.0'
+status: 'superseded'
+version: '1.0.1'
 created: '2025-11-05'
-updated: '2025-11-05'
+updated: '2025-11-09'
 related_issues: []
 related_prs: []
 references:
@@ -13,6 +13,8 @@ references:
   - '../../../scripts/run-next-on-pages.cjs'
   - './.open-next/_routes.json'
 ---
+
+> **2025-11-09 更新**: 2025-11-09 時点の再調査で、`@cloudflare/next-on-pages` の出力が `include: ["/*"]` のみを含む `_routes.json` を生成し、Pages Functions へのフォールバックが無効化されていることが判明した。本ドキュメントは当時の結論を記録するために保存し、最新の対応内容は `docs/intent/operations/api-routing-regression-2025-resolution.md` を参照すること。
 
 ## 背景
 
