@@ -16,6 +16,7 @@
     "ui:build": "node scripts/run-next-on-pages.cjs",
     "build": "node scripts/build.cjs",
     "cf:build": "node scripts/run-wrangler-build.cjs",
+    "verify:routes": "node scripts/verify-routes.cjs",
   "format": "node scripts/run-prettier.cjs --check \"app/**/*.{ts,tsx}\" \"components/**/*.{ts,tsx}\" \"lib/**/*.ts\" \"src/**/*.ts\" \"tests/**/*.ts\" \"functions/**/*.ts\" \"docs/guide/**/*.md\" README.md",
   "format:write": "node scripts/run-prettier.cjs --write \"app/**/*.{ts,tsx}\" \"components/**/*.{ts,tsx}\" \"lib/**/*.ts\" \"src/**/*.ts\" \"tests/**/*.ts\" \"functions/**/*.ts\" \"docs/guide/**/*.md\" README.md",
     "dev": "node scripts/run-wrangler-dev.cjs",
