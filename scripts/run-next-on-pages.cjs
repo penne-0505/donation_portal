@@ -250,7 +250,7 @@ function run() {
   }
 
   const routesPath = path.join(outputDir, '_routes.json');
-  ensureRoutesManifest(routesPath, ['/api/*', '/oauth/*'], { label: '_routes.json' });
+  ensureRoutesManifest(routesPath, [], { label: '_routes.json' });
 
   const metadataPath = path.join(outputDir, '_worker.js', 'metadata.json');
   const flags = (env.NEXT_ON_PAGES_COMPATIBILITY_FLAGS || defaultCompatibilityFlags)

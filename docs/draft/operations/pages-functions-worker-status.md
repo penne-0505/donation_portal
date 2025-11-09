@@ -39,3 +39,9 @@ ttl_days: 30
 - `wrangler pages dev` や Pages 本番ではプラットフォーム側が `ASSETS` を自動注入するが、スタンドアロンの `wrangler dev` では CLI で静的アセットを明示する必要がある。`wrangler dev --help` にも `--assets` オプション（「Static assets to be served. Replaces Workers Sites.」）が記載されている。
 - Pages プロジェクトでは `ASSETS` というバインディング名が予約済みのため、`wrangler.json` に `assets.binding = "ASSETS"` を追加すると `Processing wrangler.json configuration: The name 'ASSETS' is reserved ...` エラーになる。設定ファイルではなくコマンド引数で差し込む。
 - 対応策: `npm run ui:build` の後に `npx wrangler dev .open-next/functions/_worker.js --assets .open-next/static --local true --port 8789` を実行する。`--assets` 指定で `env.ASSETS.fetch` が利用可能になり、フォールバックで 500 が発生しなくなる。もし `--assets` を付け忘れた場合でも、`functions/_middleware.ts` が 501 を返すフェッチャーを暫定挿入するため、TypeError ではなく明示的なエラーレスポンスになる。
+
+## 2025-11-09 メモ: デプロイ環境で `/api/*` が 404 になる件
+
+- Cloudflare Pages のビルドログで `ensureRoutesManifest(... ['/api/*', '/oauth/*'])` により `.open-next/_routes.json` の `exclude` に API パターンが再注入されていた。これによりリクエストが Next.js 側に届かず静的配信で 404 になる。
+- `scripts/run-next-on-pages.cjs` の `ensureRoutesManifest` 呼び出しから `/api/*`, `/oauth/*` を除去し、Next on Pages が生成した `_routes.json` をそのまま採用するよう修正済み。
+- ローカル検証: `rm -rf .open-next && npm run build` 後、`.open-next/_routes.json` の `exclude` に `/api/*` が含まれないこと、`.open-next/functions/_routes.json` には API ルートが列挙されていることを確認。
