@@ -39,3 +39,6 @@ if (process.env.NEXT_ON_PAGES_BUILD === '1') {
 const env = { ...process.env, NEXT_ON_PAGES_BUILD: '1' };
 console.log('[debug][build] invoking run-next-on-pages with env', snapshotEnv(env));
 run('node', ['scripts/run-next-on-pages.cjs'], env);
+
+console.log('[debug][build] verifying routing artifacts');
+run('node', ['scripts/verify-routes.cjs']);
