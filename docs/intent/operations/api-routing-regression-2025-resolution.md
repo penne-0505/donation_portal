@@ -2,7 +2,7 @@
 title: 'API Routing Regression (2025-11) Resolution'
 domain: 'operations'
 status: 'active'
-version: '1.0.0'
+version: '1.1.0'
 created: '2025-11-09'
 updated: '2025-11-09'
 related_issues: []
@@ -30,15 +30,19 @@ references:
 1. `scripts/run-next-on-pages.cjs` で Next on Pages のビルド完了後に `_routes.json` を読み込み、`exclude` 配列へ `/api/*` と `/oauth/*` を追加する。
 2. 既存の `exclude` 設定を尊重しつつ不足分のみを追記し、JSON のフォーマットを整えて保存する。
 3. `_routes.json` が存在しない、あるいは破損している場合には警告ログを出力し、ビルド失敗にはしない（CI/CD で検出可能なログとする）。
+4. Pages Functions 用に生成される `.open-next/functions/_routes.json` からは `/api/*`・`/oauth/*` を除去し、API ルートが静的配信へフォールバックしないよう維持する。
 
 ## 実装内容
 
 - `scripts/run-next-on-pages.cjs`
   - `_routes.json` の存在確認と JSON パースを追加。
   - `exclude` 配列に `/api/*`・`/oauth/*` を追加する処理を実装し、変更があった場合のみ上書き保存するようにした。
+  - Pages Functions 用の `_routes.json` から `/api/*`・`/oauth/*` を除外する処理を追加し、Functions のエンドポイントが 404 になる回帰を防止した。
   - 処理の成否を `console.log` / `console.warn` で出力してビルドログから検証できるようにした。
 - `docs/intent/operations/routes-json-api-routing-fix.md`
   - 過去の結論を参照用に残しつつ、本対応によって内容が上書きされたことを明示した。
+- `scripts/verify-routes.cjs`
+  - `.open-next/_routes.json` に `/api/*`・`/oauth/*` が含まれていることを確認するのに加え、Functions 側の `_routes.json` に同パターンが含まれていないことを検証するよう拡張した。
 
 ## 動作確認
 

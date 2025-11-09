@@ -2,9 +2,9 @@
 title: 'Donation Portal 本番環境セットアップ & 移行ガイド'
 domain: 'donation-portal'
 status: 'active'
-version: '1.0.1'
+version: '1.0.2'
 created: '2025-11-01'
-updated: '2025-11-01'
+updated: '2025-11-09'
 related_issues: []
 related_prs: []
 references:
@@ -58,7 +58,8 @@ QA 手順やローンチ後の運用監視は [Phase 6 QA & Release Runbook](./p
 - 補足: `npm run build` は Next.js の成果物と既存 Pages Functions を `.open-next/` 配下に集約します。追加のコピー処理は不要です。
 - Compatibility date: `2025-10-30`
 - Compatibility flags: `nodejs_compat` を Cloudflare Pages の Project Settings で明示的に追加
-- `_routes.json` はビルド後に `scripts/run-next-on-pages.cjs` が `/api/*`・`/oauth/*` を `exclude` に追加し、Pages Functions へのルーティングを保証します。
+- `_routes.json` はビルド後に `scripts/run-next-on-pages.cjs` が `/api/*`・`/oauth/*` を `exclude` に追加し、Next.js ワーカー経由にならないよう制御します。
+- `.open-next/functions/_routes.json` からは同パターンを除外し、Pages Functions の API ルートが 404 にならないよう `scripts/run-next-on-pages.cjs` が自動補正します。
 - Node.js 互換フラグはビルド時にも `NEXT_ON_PAGES_COMPATIBILITY_FLAGS=nodejs_compat` が付与されるよう `scripts/run-next-on-pages.cjs` に組み込んでいます。Cloudflare Pages 側でも同じフラグを Production/Preview 両環境に設定してください。
 - ビルド成果物には `.open-next/_worker.js/metadata.json` を生成し、互換性設定（`compatibility_date` / `compatibility_flags`）を明示的にバンドルしています。Pages ダッシュボード側の設定と合わせて二重で有効化される想定です。
 
