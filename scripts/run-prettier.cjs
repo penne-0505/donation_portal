@@ -38,9 +38,9 @@ function run() {
     });
     process.exit(result.status ?? 1);
   } catch (error) {
-    console.warn('[format] Prettier が見つかりませんでした。`npm install prettier` を実行してください。');
-    console.warn(`[format] 詳細: ${error.message}`);
-    process.exit(0);
+    console.error('[format] Prettier が見つかりませんでした。`npm install prettier` を実行してください。');
+    console.error(`[format] 詳細: ${error.message}`);
+    process.exit(1);
   }
 }
 

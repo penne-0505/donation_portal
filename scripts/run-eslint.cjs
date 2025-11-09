@@ -53,9 +53,9 @@ function run() {
     });
     process.exit(result.status ?? 1);
   } catch (error) {
-    console.warn('[lint] ESLint が見つかりませんでした。`npm install eslint` を実行してください。');
-    console.warn(`[lint] 詳細: ${error.message}`);
-    process.exit(0);
+    console.error('[lint] ESLint が見つかりませんでした。`npm install eslint` を実行してください。');
+    console.error(`[lint] 詳細: ${error.message}`);
+    process.exit(1);
   }
 }
 

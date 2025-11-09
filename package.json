@@ -17,8 +17,8 @@
     "build": "node scripts/build.cjs",
     "cf:build": "node scripts/run-wrangler-build.cjs",
     "verify:routes": "node scripts/verify-routes.cjs",
-  "format": "node scripts/run-prettier.cjs --check \"app/**/*.{ts,tsx}\" \"components/**/*.{ts,tsx}\" \"lib/**/*.ts\" \"src/**/*.ts\" \"tests/**/*.ts\" \"functions/**/*.ts\" \"docs/guide/**/*.md\" README.md",
-  "format:write": "node scripts/run-prettier.cjs --write \"app/**/*.{ts,tsx}\" \"components/**/*.{ts,tsx}\" \"lib/**/*.ts\" \"src/**/*.ts\" \"tests/**/*.ts\" \"functions/**/*.ts\" \"docs/guide/**/*.md\" README.md",
+  "format": "node scripts/run-prettier.cjs --check \"app/**/*.{ts,tsx,css,html}\" \"components/**/*.{ts,tsx,css}\" \"lib/**/*.ts\" \"src/**/*.ts\" \"tests/**/*.ts\" \"functions/**/*.ts\" \"docs/guide/**/*.md\" README.md",
+  "format:write": "node scripts/run-prettier.cjs --write \"app/**/*.{ts,tsx,css,html}\" \"components/**/*.{ts,tsx,css}\" \"lib/**/*.ts\" \"src/**/*.ts\" \"tests/**/*.ts\" \"functions/**/*.ts\" \"docs/guide/**/*.md\" README.md",
     "dev": "node scripts/run-wrangler-dev.cjs",
     "prepare": "husky"
   },
@@ -56,17 +56,17 @@
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "npm run format:write",
-      "npm run lint"
+      "node scripts/run-prettier.cjs --write --ignore-unknown",
+      "node scripts/run-eslint.cjs"
     ],
     "*.{html,css}": [
-      "npm run format:write"
+      "node scripts/run-prettier.cjs --write --ignore-unknown"
     ],
     "docs/guide/**/*.md": [
-      "npm run format:write"
+      "node scripts/run-prettier.cjs --write --ignore-unknown"
     ],
     "README.md": [
-      "npm run format:write"
+      "node scripts/run-prettier.cjs --write --ignore-unknown"
     ]
   }
 }

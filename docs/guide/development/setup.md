@@ -120,13 +120,13 @@ Cloudflare Pages 上で Donation Portal を開発するための初期セット�
 
 ## 開発用コマンド
 
-| コマンド            | 目的                                             | 備考                                                                                                                         |
-| ------------------- | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
-| `npm run lint`      | ESLint による静的解析                            | `scripts/run-eslint.cjs` がグローバル `eslint` を呼び出します。TypeScript 用プラグインが未導入の場合は警告のみ表示されます。 |
-| `npm run format`    | Prettier によるフォーマットチェック              | `scripts/run-prettier.cjs` がグローバル `prettier` を利用します。                                                            |
-| `npm run typecheck` | TypeScript コンパイルチェック                    | グローバル `tsc` を利用し、型エラーを検出します。                                                                            |
-| `npm test`          | Node.js 標準テストランナーでユニットテストを実行 | OAuth／Checkout／Donors／Webhook の主要ユースケースが 52 件のテストで検証されます。                                          |
-| `npm run build`     | Next.js + Functions の Pages 向けビルド          | `.open-next/` にデプロイ用成果物を生成します。Cloudflare Pages と同一構成で検証できます。                                    |
+| コマンド            | 目的                                             | 備考                                                                                                                                        |
+| ------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run lint`      | ESLint による静的解析                            | `scripts/run-eslint.cjs` がグローバル `eslint` を呼び出します。未インストールの場合はエラー終了するため、依存関係を事前に導入してください。 |
+| `npm run format`    | Prettier によるフォーマットチェック              | `scripts/run-prettier.cjs` がグローバル `prettier` を利用します。未インストール時はエラー終了し、セットアップの不備を検知できます。         |
+| `npm run typecheck` | TypeScript コンパイルチェック                    | グローバル `tsc` を利用し、型エラーを検出します。                                                                                           |
+| `npm test`          | Node.js 標準テストランナーでユニットテストを実行 | OAuth／Checkout／Donors／Webhook の主要ユースケースが 52 件のテストで検証されます。                                                         |
+| `npm run build`     | Next.js + Functions の Pages 向けビルド          | `.open-next/` にデプロイ用成果物を生成します。Cloudflare Pages と同一構成で検証できます。                                                   |
 
 ## Cloudflare Pages との連携
 
