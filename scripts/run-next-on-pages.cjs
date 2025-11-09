@@ -116,31 +116,40 @@ function run() {
     console.warn('[next-on-pages] functions/ directory not found');
   }
 
-  // Ensure _routes.json excludes API/OAuth routes from the Next.js worker so that
-  // Cloudflare Pages Functions can handle them. Next on Pages emits `include: ["/*"]`
-  // by default, which causes API リクエストが Next.js ワーカーへ誤ってルーティングされる。
   const routesPath = path.join(outputDir, '_routes.json');
 
   try {
     if (fs.existsSync(routesPath)) {
       const routes = JSON.parse(fs.readFileSync(routesPath, 'utf8'));
-      const requiredExcludes = ['/api/*', '/oauth/*'];
-      const existingExclude = Array.isArray(routes.exclude) ? routes.exclude : [];
-      const missingPatterns = requiredExcludes.filter(
-        (pattern) => !existingExclude.includes(pattern),
-      );
+      let updated = false;
 
-      if (missingPatterns.length > 0) {
-        routes.exclude = [...existingExclude, ...missingPatterns];
-        fs.writeFileSync(routesPath, `${JSON.stringify(routes, null, 2)}\n`);
-        console.log('[next-on-pages] _routes.json updated with API excludes', {
-          routesPath,
-          added: missingPatterns,
-        });
+      if (routes.exclude === undefined) {
+        routes.exclude = [];
+        updated = true;
       } else if (!Array.isArray(routes.exclude)) {
-        // 既存の exclude が配列でなかった場合は、デフォルト値として再設定する。
-        routes.exclude = existingExclude;
+        routes.exclude = [routes.exclude].filter(
+          (pattern) => typeof pattern === 'string' && pattern.length > 0,
+        );
+        updated = true;
+      }
+
+      const requiredExcludes = ['/api/*', '/oauth/*'];
+      const existingExcludes = new Set(routes.exclude);
+
+      for (const pattern of requiredExcludes) {
+        if (!existingExcludes.has(pattern)) {
+          routes.exclude.push(pattern);
+          existingExcludes.add(pattern);
+          updated = true;
+        }
+      }
+
+      if (updated) {
         fs.writeFileSync(routesPath, `${JSON.stringify(routes, null, 2)}\n`);
+        console.log('[next-on-pages] _routes.json exclude を更新しました', {
+          routesPath,
+          exclude: routes.exclude,
+        });
       }
     } else {
       console.warn(`[next-on-pages] _routes.json が見つかりません: ${routesPath}`);
