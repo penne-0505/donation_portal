@@ -4,10 +4,11 @@
 
 ## 原則
 - ユーザーとは**日本語**で会話すること。
-- **Serenaを積極活用(projectは"ds_donation_system"とする)(使用可能な場合)**  
-- **Context7を利用する(使用可能な場合)**
-- **入念に現状実装やドキュメントを参照、分析してから実装を行こと。**
-- **`git rm`やファイル削除は禁止**（ユーザーに提案し、実行は待つ）
+- **Serenaを積極活用すること。**(projectは"ds_donation_system"とする)(使用可能な場合) 
+- **Context7を利用すること。**(使用可能な場合)
+- **入念に現状実装やドキュメントを参照、分析してから実装を行うこと。**
+- ユーザーからの指示がない限り、**python scriptによるコード解析やワンライナー実行は禁止**。
+- **`git rm`や`rm`などのファイル削除は禁止**（ユーザーに提案し、実行は待つ）
 - **[@docs/standards/documentation_guidelines.md](docs/standards/documentation_guidelines.md)と[@docs/standards/documentation_operations.md](docs/standards/documentation_operations.md)に従い、積極的にドキュメント運用・記述を行う**
 - 日付確認には`date`コマンドを使用すること
 
