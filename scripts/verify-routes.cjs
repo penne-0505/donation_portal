@@ -2,7 +2,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 
-const REQUIRED_EXCLUDE_PATTERNS = ['/api/*', '/oauth/*'];
+const FORBIDDEN_APP_EXCLUDE_PATTERNS = ['/api/*', '/oauth/*'];
 const FORBIDDEN_FUNCTIONS_EXCLUDE_PATTERNS = ['/api/*', '/oauth/*'];
 
 function fail(reason, extra = {}) {
@@ -37,14 +37,13 @@ function main() {
     ? routes.exclude.filter((value) => typeof value === 'string')
     : [];
 
-  const missingPatterns = REQUIRED_EXCLUDE_PATTERNS.filter((pattern) => !exclude.includes(pattern));
-
-  if (missingPatterns.length > 0) {
-    fail('_routes.json の exclude に必須パターンが不足しています', {
+  const forbiddenAppPatterns = exclude.filter((pattern) => FORBIDDEN_APP_EXCLUDE_PATTERNS.includes(pattern));
+  if (forbiddenAppPatterns.length > 0) {
+    fail('_routes.json の exclude に API/OAuth ルートが含まれています', {
       routesPath,
-      missingPatterns,
+      forbiddenAppPatterns,
       currentExclude: exclude,
-      hint: 'scripts/run-next-on-pages.cjs の補正処理が実行されているか確認してください。',
+      hint: 'Pages Functions 側で `/api/*` を処理するため、ルート除外を削除してください。',
     });
   }
 
@@ -101,7 +100,7 @@ function main() {
     exclude,
     functionsWorkerPath,
     functionsRoutesPath,
-    required: REQUIRED_EXCLUDE_PATTERNS,
+    forbiddenAppExclude: FORBIDDEN_APP_EXCLUDE_PATTERNS,
     forbiddenFunctions: FORBIDDEN_FUNCTIONS_EXCLUDE_PATTERNS,
   });
 }
