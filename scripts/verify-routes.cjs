@@ -2,8 +2,9 @@
 const fs = require('node:fs');
 const path = require('node:path');
 
-const REQUIRED_EXCLUDE_PATTERNS = ['/api/*', '/oauth/*'];
+const REQUIRED_EXCLUDE_PATTERNS = ['/_next/static/*'];
 const FORBIDDEN_FUNCTIONS_EXCLUDE_PATTERNS = ['/api/*', '/oauth/*'];
+const FORBIDDEN_PROJECT_EXCLUDE_PATTERNS = ['/api/*', '/oauth/*'];
 
 function fail(reason, extra = {}) {
   console.error('[verify-routes] ❌ 検証に失敗しました', { reason, ...extra });
@@ -14,6 +15,7 @@ function main() {
   const outputDir = path.resolve('.open-next');
   const routesPath = path.join(outputDir, '_routes.json');
   const functionsDir = path.join(outputDir, 'functions');
+  const advancedModeWorkerPath = path.join(outputDir, '_worker.js');
   const functionsWorkerPath = path.join(functionsDir, '_worker.js');
   const functionsRoutesPath = path.join(functionsDir, '_routes.json');
 
@@ -37,6 +39,17 @@ function main() {
     ? routes.exclude.filter((value) => typeof value === 'string')
     : [];
 
+  const forbiddenProjectPatterns = exclude.filter((pattern) =>
+    FORBIDDEN_PROJECT_EXCLUDE_PATTERNS.includes(pattern),
+  );
+  if (forbiddenProjectPatterns.length > 0) {
+    fail('_routes.json の exclude に API/OAuth ルートを含めないでください', {
+      routesPath,
+      forbiddenProjectPatterns,
+      currentExclude: exclude,
+    });
+  }
+
   const missingPatterns = REQUIRED_EXCLUDE_PATTERNS.filter((pattern) => !exclude.includes(pattern));
   if (missingPatterns.length > 0) {
     fail('_routes.json の exclude に必須パターンが不足しています', {
@@ -44,6 +57,13 @@ function main() {
       missingPatterns,
       currentExclude: exclude,
       hint: 'scripts/run-next-on-pages.cjs の補正処理が実行されているか確認してください。',
+    });
+  }
+
+  if (fs.existsSync(advancedModeWorkerPath)) {
+    fail('_worker.js が残っているため Cloudflare Pages が Advanced mode で動作してしまいます', {
+      advancedModeWorkerPath,
+      hint: 'scripts/run-next-on-pages.cjs が _worker.js を削除しているか確認してください。',
     });
   }
 

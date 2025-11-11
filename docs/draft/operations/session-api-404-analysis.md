@@ -4,7 +4,7 @@ domain: "operations"
 status: "proposed"
 version: 1
 created: "2025-11-05"
-updated: "2025-11-05"
+updated: "2025-11-11"
 related_issues: []
 related_prs: []
 references:
@@ -58,7 +58,13 @@ ttl_days: 30
 
 ## 推奨アクション
 - セッション API が必要な動作確認では `npm run dev` を使用する運用ルールを明文化する（`ui:dev` ではエラーになる旨を明記）。
-- `scripts/run-next-on-pages.cjs` を修正し、`wrangler pages functions build` をビルドフローに統合して `.open-next/functions/_worker.js` を生成する。
-- 生成された `_worker.bundle` / `_worker.js` を Cloudflare Pages デプロイ成果物に含めるよう `build` スクリプトを更新する。
+- `scripts/run-next-on-pages.cjs` を修正し、`wrangler pages functions build` をビルドフローに統合して `.open-next/functions/_worker.js` を生成する（対応済み）。
+- 生成された `_worker.bundle` / `_worker.js` を Cloudflare Pages デプロイ成果物に含めるよう `build` スクリプトを更新する（対応済み）。
 - UI 単体開発のためには `/api/session` のモックレイヤー（MSW等）を導入し、Functions 依存を回避する方針を検討する。
 - ビルド手順書（例: `docs/guide/development/setup.md`）に、`npm run build` 前後で `wrangler pages functions build` が実行されていることを確認するチェックリストを追加する。
+
+## 2025-11-11 Update: Advanced mode を撤廃
+- `_worker.js` を成果物から除外し、Cloudflare Pages の Advanced mode を無効化した。
+- `scripts/run-next-on-pages.cjs` が `.open-next/_worker.js` を削除し、`_routes.json` から `/api/*` `/oauth/*` の exclude を除去することで Functions ルートが正しく割り当てられる。
+- `scripts/verify-routes.cjs` に Advanced mode 残存チェックと exclude のバリデーションを追加し、`npm run build` 時点で構成破綻を検知できるようにした。
+- これにより `/api/*` `/oauth/*` を Cloudflare Pages Functions で提供しつつ、静的な Next.js アセットは Pages が直接配信する構成へ移行した。

@@ -3,6 +3,8 @@ const { spawnSync } = require('node:child_process');
 const fs = require('node:fs');
 const path = require('node:path');
 
+const ROUTE_EXCLUDE_PATTERNS = ['/_next/static/*'];
+
 function removePreviousBuild(outputDir) {
   try {
     fs.rmSync(outputDir, { recursive: true, force: true });
@@ -95,6 +97,27 @@ function removeExcludedPatterns(routesPath, forbiddenPatterns, { label } = {}) {
     }
   } catch (error) {
     console.warn(`[next-on-pages] ${manifestLabel} の補正（禁止パターン除去）に失敗しました: ${error.message}`);
+  }
+}
+
+function removeAdvancedModeWorker(outputDir) {
+  const workerDir = path.join(outputDir, '_worker.js');
+
+  if (!fs.existsSync(workerDir)) {
+    console.log('[next-on-pages] Advanced mode worker not found, skipping removal', {
+      workerDir,
+    });
+    return;
+  }
+
+  try {
+    fs.rmSync(workerDir, { recursive: true, force: true });
+    console.log('[next-on-pages] Removed _worker.js to disable Advanced mode', { workerDir });
+  } catch (error) {
+    console.warn('[next-on-pages] Failed to remove _worker.js directory', {
+      workerDir,
+      error: error.message,
+    });
   }
 }
 
@@ -249,30 +272,11 @@ function run() {
     console.warn('[next-on-pages] functions/ directory not found');
   }
 
+  removeAdvancedModeWorker(outputDir);
+
   const routesPath = path.join(outputDir, '_routes.json');
-  ensureRoutesManifest(routesPath, ['/api/*', '/oauth/*'], { label: '_routes.json' });
-
-  const metadataPath = path.join(outputDir, '_worker.js', 'metadata.json');
-  const flags = (env.NEXT_ON_PAGES_COMPATIBILITY_FLAGS || defaultCompatibilityFlags)
-    .split(',')
-    .map((flag) => flag.trim())
-    .filter(Boolean);
-
-  const metadata = {
-    compatibility_date: env.NEXT_ON_PAGES_COMPATIBILITY_DATE || defaultCompatibilityDate,
-    ...(flags.length > 0 ? { compatibility_flags: flags } : {}),
-  };
-
-  try {
-    fs.mkdirSync(path.dirname(metadataPath), { recursive: true });
-    fs.writeFileSync(metadataPath, `${JSON.stringify(metadata)}\n`);
-    console.log('[debug][run-next-on-pages] metadata.json written', {
-      metadataPath,
-      metadata,
-    });
-  } catch (error) {
-    console.warn(`[next-on-pages] _worker.js/metadata.json の生成に失敗しました: ${error.message}`);
-  }
+  removeExcludedPatterns(routesPath, ['/api/*', '/oauth/*'], { label: '_routes.json' });
+  ensureRoutesManifest(routesPath, ROUTE_EXCLUDE_PATTERNS, { label: '_routes.json' });
 }
 
 run();

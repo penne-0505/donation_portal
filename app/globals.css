@@ -4,6 +4,9 @@
   --font-sans:
     var(--font-inter), var(--font-noto-sans-jp), -apple-system, BlinkMacSystemFont, 'Segoe UI',
     system-ui, sans-serif;
+  --font-display:
+    var(--font-zen-kaku-gothic-new), var(--font-inter), var(--font-noto-sans-jp), -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   --color-root: #f7f9fb;
   --color-background: #ffffff;
   --color-foreground: #111827;
@@ -116,6 +119,16 @@
 }
 
 @layer utilities {
+  .font-hero {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+  }
+
+  .font-hero-sub {
+    font-family: var(--font-noto-sans-jp), var(--font-sans);
+    letter-spacing: 0;
+  }
+
   .bg-root {
     background-color: var(--bg-a);
     background-image:
@@ -507,7 +520,7 @@
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  :is(.glass, .glass-sm, .glass-md, .glass-lg, .glass-strong) {
+  :root:not([data-force-glass='true']) :is(.glass, .glass-sm, .glass-md, .glass-lg, .glass-strong) {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     background: rgba(255, 255, 255, 0.85);
