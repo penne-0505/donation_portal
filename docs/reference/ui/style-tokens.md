@@ -2,9 +2,9 @@
 title: "UI デザイントークン定義"
 domain: "donation-portal"
 status: "active"
-version: "0.1.2"
+version: "0.1.3"
 created: "2025-11-01"
-updated: "2025-11-02"
+updated: "2025-11-11"
 related_issues: []
 related_prs: []
 references:
@@ -20,8 +20,11 @@ Donation Portal の画面スタイルは `docs/archives/legacy-static/styles/bas
 
 | トークン | 値 | 用途 |
 | --- | --- | --- |
-| `--font-sans` | `'Inter', 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic UI', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif` | 画面全体の既定フォントファミリ |
-| `--font-display` | 上記と同一 | 見出し・ヒーローでのディスプレイ書体 |
+| `--font-sans` | `Mac`: `var(--font-sans-mac)` / `Windows・Linux`: `var(--font-sans-cross-platform)` | 画面全体の既定フォントファミリ |
+| `--font-sans-mac` | `-apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic UI', system-ui, sans-serif` | Mac 環境のベースフォント |
+| `--font-sans-cross-platform` | `var(--font-inter), var(--font-noto-sans-jp), 'Segoe UI', 'Hiragino Sans', 'Yu Gothic UI', system-ui, sans-serif` | Windows / Linux 環境のベースフォント |
+| `--font-zen-kaku` | `var(--font-zen-kaku-gothic-new), var(--font-noto-sans-jp), 'Hiragino Sans', 'Yu Gothic UI', system-ui, sans-serif` | ヒーローメッセージ用ディスプレイ書体 |
+| `--font-display` | `var(--font-zen-kaku)` を優先し、フォールバックとして `--font-sans` を参照 | 見出し・ヒーローでのディスプレイ書体 |
 | `--line-height-body` | `1.65` | 本文の標準行間 |
 | `--line-height-tight` | `1.3` | ボタンやバッジ等の密度を高めたい要素 |
 | `--line-height-display` | `1.22` | 見出し (`h1–h3`) |
@@ -102,6 +105,8 @@ Light と Dark は `prefers-color-scheme` で自動切り替えし、同一ト�
 | `--focus-ring` | `0 0 0 3px rgba(88, 101, 242, 0.35)` | `0 0 0 3px rgba(129, 140, 248, 0.4)` | `:focus-visible` のリング |
 
 追加で `--transition-base` (`0.18s ease`) をすべてのインタラクション・トランジションに統一して利用する。
+
+プラットフォーム毎のフォント切り替えは Edge Middleware が `data-platform="mac|win|linux"` 属性を `<html>` に付与し、`--font-sans` が動的に切り替わる仕組みを採用する。ヒーローメッセージでは `font-zen-kaku` ユーティリティを使用し、「Zen Kaku Gothic New Bold」を優先適用する。フォントバイナリはレポジトリに同梱せず、`@fontsource-variable/inter`・`@fontsource/noto-sans-jp`・`@fontsource/zen-kaku-gothic-new` の woff2 を `next/font/local` から直接参照する。
 
 ## レイアウトユーティリティ
 

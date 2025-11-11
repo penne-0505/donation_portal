@@ -22,6 +22,6 @@
     "outDir": "dist",
     "sourceMap": true
   },
-  "include": ["src", "tests", "types", "functions", "components", "lib/ui", "app"],
+  "include": ["src", "tests", "types", "functions", "components", "lib/ui", "app", "middleware.ts"],
   "exclude": ["node_modules", "dist", "build"]
 }
