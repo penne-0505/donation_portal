@@ -28,10 +28,10 @@ export function HomePage() {
       >
         <div className="hero-focus mx-auto flex w-full max-w-4xl flex-col items-center">
           <div className="mb-3 space-y-3 sm:space-y-4">
-            <h1 className="text-balance text-4xl font-bold tracking-tight text-foreground md:text-5xl">
+            <h1 className="font-hero text-balance text-4xl font-bold tracking-tight text-foreground md:text-5xl">
               みんなで創る、みんなの世界
             </h1>
-            <p className="text-balance text-base text-muted-foreground md:text-lg">
+            <p className="font-hero-sub text-balance text-base text-muted-foreground md:text-lg">
               あなたの想いが、みんなの冒険を支えます。
             </p>
           </div>

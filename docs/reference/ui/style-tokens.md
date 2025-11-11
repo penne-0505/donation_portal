@@ -4,7 +4,7 @@ domain: "donation-portal"
 status: "active"
 version: "0.1.2"
 created: "2025-11-01"
-updated: "2025-11-02"
+updated: "2025-11-11"
 related_issues: []
 related_prs: []
 references:
@@ -14,14 +14,14 @@ references:
 
 # UI デザイントークン定義
 
-Donation Portal の画面スタイルは `docs/archives/legacy-static/styles/base.css` に定義されたデザイントークンとユーティリティを土台に構築する。ここでは Stage 1 で導入したトークンの一覧と、主要コンポーネントへの適用ルールを整理する。
+Donation Portal の画面スタイルは `docs/archives/legacy-static/styles/base.css` に定義されたデザイントークンとユーティリティを土台に構築する。ここでは Stage 1 で導入したトークンの一覧と、主要コンポーネントへの適用ルールを整理する。Inter / Noto Sans JP は `next/font/local` で自己ホストしており、Cloudflare Pages / Workers などネットワーク制限下でも同一のタイポグラフィを保証する。加えて、LP ヒーローの強調コピーには Zen Kaku Gothic New（`--font-display`）を用い、日本語の視認性を高める。リード文など中程度のメッセージは `--font-noto-sans-jp` を直接参照し、トーンの統一とサイズバランスを確保する。
 
 ## タイポグラフィ
 
 | トークン | 値 | 用途 |
 | --- | --- | --- |
-| `--font-sans` | `'Inter', 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic UI', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif` | 画面全体の既定フォントファミリ |
-| `--font-display` | 上記と同一 | 見出し・ヒーローでのディスプレイ書体 |
+| `--font-sans` | `var(--font-inter), var(--font-noto-sans-jp), 'Hiragino Sans', 'Yu Gothic UI', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif` | 画面全体の既定フォントファミリ |
+| `--font-display` | `var(--font-zen-kaku-gothic-new), var(--font-sans)` | LP ヒーローなど、強調コピー用の書体（700 のみ自己ホスト） |
 | `--line-height-body` | `1.65` | 本文の標準行間 |
 | `--line-height-tight` | `1.3` | ボタンやバッジ等の密度を高めたい要素 |
 | `--line-height-display` | `1.22` | 見出し (`h1–h3`) |

@@ -116,3 +116,7 @@ _worker.bundle
 _temp/
 temp/
 tmp/
+
+# Local font source artifacts (only .woff2 is tracked)
+app/fonts/*.ttf
+app/fonts/Inter-roman.var.woff2
