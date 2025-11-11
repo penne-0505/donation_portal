@@ -26,6 +26,6 @@ const ensureAssetsBinding = (env: EnvWithAssets): void => {
 };
 
 export const onRequest: PagesFunction = (context) => {
-  ensureAssetsBinding(context.env);
+  ensureAssetsBinding(context.env as EnvWithAssets);
   return context.next();
 };
