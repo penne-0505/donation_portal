@@ -70,7 +70,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { readonly children: ReactNode }) {
   return (
-    <html lang="ja">
+    <html lang="ja" data-force-glass="true">
       <body
         className={`${inter.variable} ${notoSansJp.variable} ${zenKakuGothicNew.variable} min-h-screen bg-root text-foreground antialiased overflow-x-hidden`}
       >
