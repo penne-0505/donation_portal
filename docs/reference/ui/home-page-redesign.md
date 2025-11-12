@@ -53,31 +53,81 @@ interface AppShellProps {
 }
 ```
 
-#### ヘッダー実装
+#### ヘッダー実装（PC／モバイル）
 
-```typescript
+```tsx
+const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+const mobileMenuId = useId();
+
 <header className="sticky top-0 z-40 px-4 pt-4">
-  <div className="mx-auto flex max-w-6xl items-center justify-between rounded-2xl glass-sm border-gradient-subtle px-5 py-3 shadow-minimal shadow-inner-light backdrop-blur transition-glass">
+  <div className="relative mx-auto flex max-w-6xl items-center justify-between rounded-2xl glass-sm border-gradient-subtle px-5 py-3 shadow-minimal shadow-inner-light backdrop-blur transition-glass">
     {/* Logo */}
     <Link href="/" className="text-base font-semibold ...">
-      Donation Portal
+      {ORGANIZATION_NAME}
     </Link>
 
-    {/* Nav */}
-    <nav className="flex items-center gap-4">
-      {/* Text Link */}
+    {/* Desktop Nav */}
+    <nav className="hidden items-center gap-4 md:flex">
       <Link href="/donors" onClick={handleDonorListClick} className="...">
         支援者一覧
       </Link>
-      
-      {/* Primary Button */}
-      <Button href="/donate" onClick={handleCtaClick} size="md" aria-label="寄付をはじめる">
+      <Button
+        href="/donate"
+        onClick={handleCtaClick}
+        size="md"
+        variant={buttonShouldBeDeemphasized ? 'outline' : 'primary'}
+        aria-label="寄付をはじめる"
+      >
         寄付する
       </Button>
     </nav>
+
+    {/* Mobile Hamburger */}
+    <Button
+      ref={mobileMenuButtonRef}
+      id={`${mobileMenuId}-trigger`}
+      variant="ghost"
+      size="sm"
+      className="md:hidden h-10 w-10 px-0"
+      aria-haspopup="menu"
+      aria-expanded={isMobileMenuOpen}
+      aria-controls={`${mobileMenuId}-panel`}
+      onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+      aria-label="メニューを開閉"
+    >
+      {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+    </Button>
+
+    {isMobileMenuOpen && (
+      <div
+        ref={mobileMenuPanelRef}
+        id={`${mobileMenuId}-panel`}
+        role="menu"
+        aria-labelledby={`${mobileMenuId}-trigger`}
+        className="absolute right-5 top-full mt-3 flex w-[min(320px,calc(100vw-2.5rem))] flex-col gap-3 rounded-2xl glass-sm border-gradient-subtle bg-root/95 p-4 shadow-minimal shadow-inner-light backdrop-blur md:hidden"
+      >
+        <Link href="/donors" onClick={closeMobileMenuWith(handleDonorListClick)} role="menuitem" className="...">
+          支援者一覧
+        </Link>
+        <Button
+          href="/donate"
+          onClick={closeMobileMenuWith(handleCtaClick)}
+          role="menuitem"
+          size="md"
+          variant={buttonShouldBeDeemphasized ? 'outline' : 'primary'}
+          aria-label="寄付をはじめる"
+        >
+          寄付する
+        </Button>
+      </div>
+    )}
   </div>
 </header>
 ```
+
+- `closeMobileMenuWith` はドロップダウン内の各アクション実行後にメニューを閉じるための小さなユーティリティ。
+- `mobileMenuButtonRef` と `mobileMenuPanelRef` は外側クリック検知に使用する ref。
+- `useEffect` で `pointerdown`／`keydown(Escape)`／`matchMedia('(min-width: 768px)')` を監視し、スマホメニューの開閉状態を適切にリセットする。
 
 #### フッター実装
 
