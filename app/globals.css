@@ -313,17 +313,33 @@
   }
 
   .border-gradient-subtle {
+    position: relative;
+    z-index: 0;
     border: 1px solid transparent;
-    background-image:
-      linear-gradient(transparent, transparent),
-      linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.18) 0%,
-        rgba(255, 255, 255, 0.08) 52%,
-        rgba(15, 23, 42, 0.16) 100%
-      );
-    background-origin: border-box;
-    background-clip: padding-box, border-box;
+  }
+
+  .border-gradient-subtle::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.26) 0%,
+      rgba(255, 255, 255, 0.14) 42%,
+      rgba(255, 255, 255, 0.08) 58%,
+      rgba(15, 23, 42, 0.18) 100%
+    );
+    mask:
+      linear-gradient(#fff 0 0) padding-box,
+      linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    -webkit-mask:
+      linear-gradient(#fff 0 0) padding-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    opacity: 0.92;
   }
 
   .glow-accent-subtle {
