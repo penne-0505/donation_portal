@@ -5,6 +5,7 @@ import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ConfettiCelebration } from '@/components/confetti-celebration';
+import { SectionHeading } from '@/components/ui/section-heading';
 import { ORGANIZATION_NAME } from '@/lib/ui/branding';
 
 export function ThanksPage() {
@@ -18,18 +19,30 @@ export function ThanksPage() {
   return (
     <div className="flex min-h-[70vh] items-center justify-center px-4 py-16 text-center page-enter">
       <ConfettiCelebration />
-      <Card className="flex w-full max-w-2xl flex-col gap-8 glass-lg p-10 sm:p-12">
+      <Card
+        surface="glass"
+        padding="lg"
+        className="flex w-full max-w-2xl flex-col gap-8 glass-lg p-10 sm:p-12"
+      >
         <div className="flex flex-col items-center gap-6">
           <span className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-foreground text-background animate-bounce-in">
             <CheckCircle2 className="h-8 w-8" aria-hidden />
           </span>
-          <h1 className="text-balance text-4xl font-bold tracking-tight text-foreground md:text-5xl">
-            ご支援ありがとうございます
-          </h1>
-          <p className="max-w-xl text-pretty text-lg leading-relaxed text-muted-foreground">
-            Stripe Checkout での寄付が完了しました。ご支援いただいたお気持ちは {ORGANIZATION_NAME}{' '}
-            の運営費に充てさせていただきます。
-          </p>
+          <SectionHeading
+            as="h1"
+            size="lg"
+            align="center"
+            headingId="thanks-heading"
+            descriptionId="thanks-description"
+            heading="ご支援ありがとうございます"
+            description={
+              <span className="max-w-xl text-pretty text-lg leading-relaxed text-muted-foreground">
+                Stripe Checkout での寄付が完了しました。ご支援いただいたお気持ちは{' '}
+                {ORGANIZATION_NAME}
+                の運営費に充てさせていただきます。
+              </span>
+            }
+          />
           <div className="inline-flex flex-col gap-2 rounded-lg glass-sm border-gradient-subtle px-4 py-3 shadow-minimal shadow-inner-light transition-glass">
             <span className="text-sm font-medium text-muted-foreground">あなたの支援が</span>
             <span className="text-lg font-semibold text-foreground">

@@ -9,6 +9,8 @@ const overrides = new Map([
   ['@/lib/ui/hooks/use-consent', path.join(projectRoot, 'dist', 'tests', 'mocks', 'ui-hooks.js')],
   ['@/lib/ui/hooks/use-checkout', path.join(projectRoot, 'dist', 'tests', 'mocks', 'ui-hooks.js')],
   ['@/lib/ui/hooks/use-donors', path.join(projectRoot, 'dist', 'tests', 'mocks', 'ui-hooks.js')],
+  ['@/lib/ui/hooks/use-donation-flow', path.join(projectRoot, 'dist', 'tests', 'mocks', 'ui-hooks.js')],
+  ['@/lib/ui/hooks/use-donor-directory', path.join(projectRoot, 'dist', 'tests', 'mocks', 'ui-hooks.js')],
   ['next/link', path.join(projectRoot, 'dist', 'tests', 'mocks', 'next-link.js')],
 ]);
 

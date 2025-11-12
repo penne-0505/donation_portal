@@ -4,7 +4,7 @@ domain: ui
 status: active
 version: 1
 created: 2025-11-02
-updated: 2025-11-02
+updated: 2025-11-12
 related_issues: []
 related_prs: []
 references:
@@ -191,6 +191,15 @@ Discordコミュニティの運営を支える寄付
 - **垂直余白**: `py-6`
 - **テキスト色**: `text-xs text-muted-foreground`（薄色）
 - **レイアウト**: `flex items-center justify-between`（左：copyright, 右：リンク）
+
+---
+
+## 実装メモ
+
+- ホームページのヒーロー／CTA セクションは `components/pages/home-page.tsx` に集約され、`SectionHeading`（`components/ui/section-heading.tsx`）と `Card` の `surface`/`padding` props で視覚トーンを統一しています。
+- ヘッダー／フッターを含む共通レイアウトは `app/(main)/layout.tsx` → `components/app-shell.tsx` で提供され、`HeroProvider` が LP ボタンのデエンファシス制御を担います。
+- 新しい UI foundation では `useHeroContext` と `useDonationFlow` の副作用を分離しているため、ホームページから寄付ボタンをクリックした際の `gtag('event','donate_start')` は `DonatePage` 側に一本化されています。
+- Tailwind v4 inline テーマの `glass-*`/`glow-*` クラスを直接参照せず、`Button` や `Card` の variants を経由することでデザインの一貫性を保ちます。
 
 ---
 

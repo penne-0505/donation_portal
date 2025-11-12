@@ -3,15 +3,11 @@ import assert from 'node:assert/strict';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { createElement } from 'react';
 import { CHECKOUT_PRESETS } from '@/lib/ui/checkout-presets';
-import type { CheckoutPreset, CheckoutState } from '@/lib/ui/types';
+import type { CheckoutPreset } from '@/lib/ui/types';
 import {
-  createCheckoutMock,
-  createConsentMock,
-  createSessionMock,
+  createDonationFlowMock,
   resetUIHookMocks,
-  setCheckoutHookMock,
-  setConsentHookMock,
-  setSessionHookMock,
+  setDonationFlowHookMock,
 } from '../mocks/ui-hooks';
 
 const { DonatePage } = await import('@/components/pages/donate-page');
@@ -27,12 +23,12 @@ describe('DonatePage React UI', () => {
 
   it('未ログイン時はログイン導線を表示し、CTA を無効化する', () => {
     let loginCalls = 0;
-    const session = createSessionMock();
-    session.status = { state: 'signed-out' };
-    session.login = () => {
+    const flow = createDonationFlowMock();
+    flow.session.status = { state: 'signed-out' };
+    flow.session.login = () => {
       loginCalls += 1;
     };
-    setSessionHookMock(session);
+    setDonationFlowHookMock(flow);
 
     render(createElement(DonatePage));
 
@@ -53,8 +49,11 @@ describe('DonatePage React UI', () => {
   });
 
   it('ログイン済みセッションでは表示名と同意状態を反映する', async () => {
-    const session = createSessionMock();
-    session.status = {
+    const flow = createDonationFlowMock();
+    flow.isSignedIn = true;
+    flow.displayName = 'テストユーザー';
+    flow.consent.value = true;
+    flow.session.status = {
       state: 'signed-in',
       session: {
         displayName: 'テストユーザー',
@@ -62,7 +61,7 @@ describe('DonatePage React UI', () => {
         expiresAt: Date.now() + 60_000,
       },
     };
-    setSessionHookMock(session);
+    setDonationFlowHookMock(flow);
 
     render(createElement(DonatePage));
 
@@ -84,8 +83,18 @@ describe('DonatePage React UI', () => {
   });
 
   it('同意チェックをオンにすると API を呼び出す', async () => {
-    const session = createSessionMock();
-    session.status = {
+    const consentCalls: boolean[] = [];
+    const consent = createDonationFlowMock().consent;
+    consent.value = false;
+    consent.toggle = async (nextValue: boolean) => {
+      consentCalls.push(nextValue);
+      return;
+    };
+    const flow = createDonationFlowMock();
+    flow.isSignedIn = true;
+    flow.displayName = 'Consent User';
+    flow.consent = consent;
+    flow.session.status = {
       state: 'signed-in',
       session: {
         displayName: 'Consent User',
@@ -93,15 +102,7 @@ describe('DonatePage React UI', () => {
         expiresAt: Date.now() + 60_000,
       },
     };
-    setSessionHookMock(session);
-
-    const consentCalls: boolean[] = [];
-    const consent = createConsentMock();
-    consent.updateConsent = async (nextValue: boolean) => {
-      consentCalls.push(nextValue);
-      return true;
-    };
-    setConsentHookMock(consent);
+    setDonationFlowHookMock(flow);
 
     render(createElement(DonatePage));
 
@@ -117,38 +118,35 @@ describe('DonatePage React UI', () => {
 
     await waitFor(() => {
       assert.deepEqual(consentCalls, [true]);
-      assert.equal(consentToggle.getAttribute('aria-checked'), 'true');
     });
   });
 
-  it('プラン選択後の CTA で Checkout を開始し、インパクトカードを表示する', async () => {
-    const session = createSessionMock();
-    session.status = {
-      state: 'signed-in',
-      session: {
-        displayName: 'Checkout User',
-        consentPublic: true,
-        expiresAt: Date.now() + 60_000,
-      },
-    };
-    setSessionHookMock(session);
+  it('プラン選択で selectPreset/checkout.submit を呼び出す', async () => {
+    const primaryPreset = CHECKOUT_PRESETS[0];
+    const flow = createDonationFlowMock();
+    flow.isSignedIn = true;
+    flow.selectedPreset = primaryPreset;
+    flow.presets = CHECKOUT_PRESETS;
+    flow.checkout.isDisabled = false;
+    flow.checkout.ctaLabel = `¥${primaryPreset.amount.toLocaleString('ja-JP')} の寄付を進める`;
 
-    let resetErrorCalls = 0;
     const presetsUsed: CheckoutPreset[] = [];
-    const checkout = createCheckoutMock();
-    checkout.startCheckout = async (preset: CheckoutPreset) => {
+    flow.selectPreset = (preset: CheckoutPreset) => {
       presetsUsed.push(preset);
     };
-    checkout.resetError = () => {
-      resetErrorCalls += 1;
+
+    let submitCalls = 0;
+    flow.checkout.submit = async () => {
+      submitCalls += 1;
     };
-    setCheckoutHookMock(checkout);
+
+    setDonationFlowHookMock(flow);
 
     render(createElement(DonatePage));
 
-    const primaryPreset = CHECKOUT_PRESETS[0];
     const planRadio = screen.getByRole('radio', { name: new RegExp(primaryPreset.label) });
     fireEvent.click(planRadio);
+    assert.equal(presetsUsed[0]?.id, primaryPreset.id);
 
     const cta = screen.getByRole('button', {
       name: new RegExp(`¥${primaryPreset.amount.toLocaleString('ja-JP')}`),
@@ -156,35 +154,16 @@ describe('DonatePage React UI', () => {
     fireEvent.click(cta);
 
     await waitFor(() => {
-      assert.equal(presetsUsed.length, 1);
-    });
-
-    assert.equal(presetsUsed[0]?.id, primaryPreset.id);
-    assert.equal(resetErrorCalls, 1);
-
-    await waitFor(() => {
-      assert.ok(screen.getByText(/選択したプラン/));
+      assert.equal(submitCalls, 1);
     });
   });
 
-  it('Checkout フックがエラー状態のときはエラーメッセージを表示する', () => {
-    const session = createSessionMock();
-    session.status = {
-      state: 'signed-in',
-      session: {
-        displayName: 'Error User',
-        consentPublic: true,
-        expiresAt: Date.now() + 60_000,
-      },
-    };
-    setSessionHookMock(session);
-
-    const checkout = createCheckoutMock();
-    checkout.state = {
-      isProcessing: false,
-      error: 'Stripe Checkout の開始に失敗しました。時間をおいて再試行してください。',
-    } as CheckoutState;
-    setCheckoutHookMock(checkout);
+  it('Checkout がエラー状態のときはメッセージを表示する', () => {
+    const flow = createDonationFlowMock();
+    flow.isSignedIn = true;
+    flow.checkout.error = 'Stripe Checkout の開始に失敗しました。時間をおいて再試行してください。';
+    flow.selectedPreset = CHECKOUT_PRESETS[0];
+    setDonationFlowHookMock(flow);
 
     render(createElement(DonatePage));
 
