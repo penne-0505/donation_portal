@@ -314,12 +314,16 @@
 
   .border-gradient-subtle {
     border: 1px solid transparent;
-    border-image: linear-gradient(
+    background-image:
+      linear-gradient(transparent, transparent),
+      linear-gradient(
         180deg,
-        rgba(255, 255, 255, 0.25) 0%,
-        rgba(255, 255, 255, 0.1) 100%
-      )
-      1;
+        rgba(255, 255, 255, 0.18) 0%,
+        rgba(255, 255, 255, 0.08) 52%,
+        rgba(15, 23, 42, 0.16) 100%
+      );
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
   }
 
   .glow-accent-subtle {
