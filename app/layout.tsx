@@ -69,8 +69,9 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { readonly children: ReactNode }) {
+  const surfaceMode = process.env.NEXT_PUBLIC_SURFACE_MODE ?? 'glass';
   return (
-    <html lang="ja" data-force-glass="true">
+    <html lang="ja" data-surface-mode={surfaceMode === 'glass' ? undefined : surfaceMode}>
       <body
         className={`${inter.variable} ${notoSansJp.variable} ${zenKakuGothicNew.variable} min-h-screen bg-root text-foreground antialiased overflow-x-hidden`}
       >
