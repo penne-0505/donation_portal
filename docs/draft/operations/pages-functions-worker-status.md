@@ -40,6 +40,12 @@ ttl_days: 30
 - Pages プロジェクトでは `ASSETS` というバインディング名が予約済みのため、`wrangler.json` に `assets.binding = "ASSETS"` を追加すると `Processing wrangler.json configuration: The name 'ASSETS' is reserved ...` エラーになる。設定ファイルではなくコマンド引数で差し込む。
 - 対応策: `npm run ui:build` の後に `npx wrangler dev .open-next/functions/_worker.js --assets .open-next/static --local true --port 8789` を実行する。`--assets` 指定で `env.ASSETS.fetch` が利用可能になり、フォールバックで 500 が発生しなくなる。もし `--assets` を付け忘れた場合でも、`functions/_middleware.ts` が 501 を返すフェッチャーを暫定挿入するため、TypeError ではなく明示的なエラーレスポンスになる。
 
+## 2025-11-11 メモ: CI での型エラー対応
+
+- `PagesFunction` の `context.env` はデフォルトだと `unknown` 型のため、`functions/_middleware.ts` で `ensureAssetsBinding(context.env)` を呼ぶと `EnvWithAssets` との整合性で `TS2345` が発生する (`npm test` の tsc ステップで検出)。
+- `context.env as EnvWithAssets` の型アサーションを通してから `ensureAssetsBinding` に渡すよう修正し、CI でのビルド不可を解消した。
+- 将来 `wrangler types` で生成した `Env` 定義を Pages Functions の型引数として渡せるようになった際は、型アサーションを外してジェネリクスで縛る方法に切り替える。
+
 ## 2025-11-09 メモ: デプロイ環境で `/api/*` が 404 になる件
 
 - `@cloudflare/next-on-pages` v1.13.x は `_routes.json` に `["/*"]` しか出力せず、素のままだと `/api/*` や `/oauth/*` のリクエストも Next.js ワーカーで処理されてしまい 404 になる（`x-matched-path: /404`）。

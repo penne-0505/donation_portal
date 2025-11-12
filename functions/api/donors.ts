@@ -60,11 +60,11 @@ function parseLimit(raw: string | null):
 
   const numeric = Number.parseInt(raw, 10);
   if (!Number.isFinite(numeric)) {
-    return { ok: false, message: 'limit は数値で指定してください (1-200)。' };
+    return { ok: false, message: 'limit は数値で指定してください (1-100)。' };
   }
 
-  if (numeric < 1 || numeric > 200) {
-    return { ok: false, message: 'limit は 1 以上 200 以下で指定してください。' };
+  if (numeric < 1 || numeric > 100) {
+    return { ok: false, message: 'limit は 1 以上 100 以下で指定してください。' };
   }
 
   return { ok: true, value: numeric };
