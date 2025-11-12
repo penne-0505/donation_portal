@@ -67,7 +67,7 @@ Next.js (App Router) を利用した React 版 UI が `/donate`・`/donors`・`/
 
 ### Donors 一覧 (`useDonors`)
 
-- `/api/donors?limit=200` (GET) で最新の表示名を取得。
+- `/api/donors?limit=100` (GET) で最新の表示名を取得。
 - ローディング中は Skeleton 文言、空の場合はプレースホルダーを表示。
 - 成功時の総数は `count` を優先、未定義の場合は配列長を利用。
 
