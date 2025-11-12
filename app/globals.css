@@ -324,13 +324,21 @@
     inset: 0;
     border-radius: inherit;
     pointer-events: none;
-    background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.26) 0%,
-      rgba(255, 255, 255, 0.14) 42%,
-      rgba(255, 255, 255, 0.08) 58%,
-      rgba(15, 23, 42, 0.18) 100%
-    );
+    background:
+      radial-gradient(120% 150% at 50% 0%, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 70%),
+      radial-gradient(
+        140% 160% at 50% 120%,
+        rgba(15, 23, 42, 0.18),
+        rgba(15, 23, 42, 0.04) 68%,
+        rgba(15, 23, 42, 0) 92%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.26) 0%,
+        rgba(255, 255, 255, 0.14) 40%,
+        rgba(148, 163, 184, 0.08) 68%,
+        rgba(30, 41, 59, 0.12) 100%
+      );
     mask:
       linear-gradient(#fff 0 0) padding-box,
       linear-gradient(#fff 0 0);
