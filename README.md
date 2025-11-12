@@ -1,6 +1,6 @@
 # Donation Portal
 
-Discord コミュニティ向けの任意寄付を受け付ける Cloudflare Pages プロジェクトです。Stripe Checkout で単発・定期寄付を処理し、Discord OAuth で取得した表示名を寄付者の同意がある場合のみ公開します。Stripe の Customer metadata を単一のデータソース（SSOT）として利用し、自前の永続ストアは保持しません。
+Discord コミュニティ向けの任意寄付を受け付ける Cloudflare Pages プロジェクトです。Stripe Checkout で単発・定期寄付を処理し、Discord OAuth で取得した表示名を寄付者の同意がある場合のみ公開します。Stripe の Customer metadata を単一のデータソース（SSOT）として利用し、自前の永続ストアは用意しません。
 
 ## プロジェクト概要
 
@@ -77,7 +77,7 @@ Discord コミュニティ向けの任意寄付を受け付ける Cloudflare Pag
 
 詳細解説やトラブルシュートは `docs/guide/development/setup.md` を参照してください。
 
-## 環境変数
+## シークレット
 
 `.env.example` に全一覧があります。主要な項目は以下の通りです。
 
@@ -111,8 +111,7 @@ Discord コミュニティ向けの任意寄付を受け付ける Cloudflare Pag
 1. Cloudflare Pages の Build 設定を以下の通りに構成します。
    - Build command: `npm run build`
    - Output directory: `.open-next`
-   - Functions directory: `.open-next/functions`
-   - Compatibility date: `2025-10-30`
+   - Compatibility date: `2025-10-30`(適宜更新してください。)
    - Compatibility flags: `nodejs_compat`
 2. Production/Preview の双方に `.env.example` の Secrets を登録します。
 3. GitHub 連携デプロイ、または `npx wrangler pages deploy .open-next` 相当のコマンドで公開します。
@@ -122,7 +121,7 @@ Discord コミュニティ向けの任意寄付を受け付ける Cloudflare Pag
 ## ドキュメント運用
 
 - 仕様変更や実装追加時は関連ドキュメント（guide/reference/plan/intent）を必ず更新します。
-- 執筆時は `docs/standards/documentation_guidelines.md` と `docs/standards/documentation_operations.md` のフローに従って草案→計画→意図→ガイド/リファレンスへ昇格させてください。
+- 執筆時は `docs/standards/documentation_guidelines.md` と `docs/standards/documentation_operations.md` のフローに従って草案→計画→意図→(ガイド/リファレンス)へ昇格させてください。
 - ドキュメント更新内容に関連する Issue/PR は front-matter の `related_issues` / `related_prs` に追記します。
 
 ---
