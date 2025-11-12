@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
-import type { ReactNode } from 'react';
+import { ArrowRight, Menu, X } from 'lucide-react';
+import { useState, type ReactNode } from 'react';
 import { cn } from '@/lib/ui/cn';
 import { ORGANIZATION_NAME } from '@/lib/ui/branding';
 import { useHeroContext } from '@/lib/ui/contexts/hero-context';
@@ -15,6 +15,7 @@ interface AppShellProps {
 
 export function AppShell({ children, className }: AppShellProps) {
   const { buttonShouldBeDeemphasized } = useHeroContext();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleCtaClick = () => {
     // 計測イベント発火
@@ -30,17 +31,21 @@ export function AppShell({ children, className }: AppShellProps) {
     }
   };
 
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen((prev) => !prev);
+  };
+
   return (
     <div className="app-shell relative flex min-h-screen flex-col bg-root text-foreground">
       <header className="sticky top-0 z-40 px-4 pt-4">
-        <div className="mx-auto flex max-w-6xl items-center justify-between rounded-2xl glass-sm border-gradient-subtle px-5 py-3 shadow-minimal shadow-inner-light backdrop-blur transition-glass">
+        <div className="mx-auto flex max-w-6xl items-center justify-between rounded-2xl glass-sm border-gradient-subtle px-5 py-3 shadow-minimal shadow-inner-light backdrop-blur transition-glass relative">
           <Link
             href="/"
             className="text-base font-semibold tracking-tight text-foreground transition-colors transition-macos hover:opacity-80"
           >
             {ORGANIZATION_NAME}
           </Link>
-          <nav className="flex items-center gap-4">
+          <nav className="hidden items-center gap-4 md:flex">
             <Link
               href="/donors"
               onClick={handleDonorListClick}
@@ -66,6 +71,58 @@ export function AppShell({ children, className }: AppShellProps) {
               </span>
             </Button>
           </nav>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="md:hidden h-10 w-10 px-0"
+            onClick={toggleMobileMenu}
+            aria-label="メニューを開閉"
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-menu"
+          >
+            {isMobileMenuOpen ? (
+              <X className="h-5 w-5" aria-hidden />
+            ) : (
+              <Menu className="h-5 w-5" aria-hidden />
+            )}
+          </Button>
+          {isMobileMenuOpen && (
+            <div
+              id="mobile-menu"
+              className="absolute left-4 right-4 top-full mt-3 flex flex-col gap-3 rounded-2xl glass-sm border-gradient-subtle bg-root/95 p-4 shadow-minimal shadow-inner-light backdrop-blur md:hidden"
+            >
+              <Link
+                href="/donors"
+                onClick={() => {
+                  handleDonorListClick();
+                  setIsMobileMenuOpen(false);
+                }}
+                className="rounded-xl px-3 py-2 text-sm font-medium text-muted-foreground transition-colors transition-macos hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/25 focus-visible:ring-offset-2"
+              >
+                支援者一覧
+              </Link>
+              <Button
+                href="/donate"
+                onClick={() => {
+                  handleCtaClick();
+                  setIsMobileMenuOpen(false);
+                }}
+                size="md"
+                variant={buttonShouldBeDeemphasized ? 'outline' : 'primary'}
+                className={cn(
+                  'w-full justify-center gap-2 transition-all duration-200',
+                  buttonShouldBeDeemphasized && 'opacity-80 hover:opacity-100',
+                )}
+                data-state={buttonShouldBeDeemphasized ? 'deemphasized' : 'active'}
+                aria-label="寄付をはじめる"
+              >
+                <span className="flex items-center justify-center gap-2">
+                  寄付する
+                  <ArrowRight className="h-4 w-4" aria-hidden />
+                </span>
+              </Button>
+            </div>
+          )}
         </div>
       </header>
       <main
@@ -73,7 +130,7 @@ export function AppShell({ children, className }: AppShellProps) {
       >
         {children}
       </main>
-      <footer className="relative z-10 px-4 pb-6 text-center text-xs text-muted-foreground">
+      <footer className="relative z-10 px-4 pb-6 text-center text-[11px] text-muted-foreground md:text-xs">
         <div className="mx-auto flex max-w-6xl items-center justify-between rounded-2xl glass-sm border-gradient-subtle px-5 py-4 shadow-minimal shadow-inner-light transition-glass">
           {' '}
           <span>© 2025 {ORGANIZATION_NAME}</span>
