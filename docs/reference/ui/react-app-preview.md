@@ -94,9 +94,9 @@ Next.js (App Router) を利用した React 版 UI が `/donate`・`/donors`・`/
 | `components/donation-impact.tsx` | 寄付プランの鼓舞コンテンツ | 選択したメニューに応じたコピー/アイコンを出し分け。 |
 | `components/donor-pill.tsx` | Donors リストのタグ表示 | Flex wrap を前提。 |
 | `components/confetti-celebration.tsx` | /thanks での祝砲演出 | `canvas-confetti` を動的 import。 |
-| `components/donate/session-panel.tsx` | Discord ログイン UI | `useDonationFlow.session` を参照し、ログイン/ログアウトを制御。 |
+| `components/donate/session-panel.tsx` | Discord ログイン UI | `useDonationFlow.session` を参照し、ログイン/ログアウトを制御。セクション見出しと Discord ログインボタンを同じ行に配置し、`sm` 以上は横並び、狭幅は縦積みで自動切り替え。 |
 | `components/donate/consent-panel.tsx` | 掲示同意 UI | トグルとエラー表示を `consent` オブジェクトに委譲。 |
-| `components/donate/plan-selection-panel.tsx` | プラン選択 + CTA | `presets` と `checkout` state を表示。 |
+| `components/donate/plan-selection-panel.tsx` | プラン選択 + CTA | `presets` と `checkout` state を表示。`checkout.isDisabled` の間は CTA の hover シャドウを抑止し、未ログイン時も視覚的な浮上が発生しないようにしている。 |
 | `components/donate/flow-steps-panel.tsx` | 手順表示 | 3 ステップをカード化。 |
 | `components/donors/donor-list-panel.tsx` | 支援者一覧 | `refreshDonors` ボタン付きで一覧表示。 |
 | `components/donors/consent-management-panel.tsx` | 掲示同意管理 | ログイン状態に応じて撤回/ログイン導線を出し分け。 |

@@ -90,14 +90,24 @@
     will-change: background-position;
   }
 
-  .donate-cta-animated:hover::before,
-  .donate-cta-animated:focus-visible::before {
+  .donate-cta-animated:not(:disabled):not([aria-disabled='true']):hover::before,
+  .donate-cta-animated:not(:disabled):not([aria-disabled='true']):focus-visible::before {
     opacity: 1;
   }
 
-  .donate-cta-animated:hover::after,
-  .donate-cta-animated:focus-visible::after {
+  .donate-cta-animated:not(:disabled):not([aria-disabled='true']):hover::after,
+  .donate-cta-animated:not(:disabled):not([aria-disabled='true']):focus-visible::after {
     background: linear-gradient(160deg, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.78));
+  }
+
+  .donate-cta-animated:disabled::before,
+  .donate-cta-animated[aria-disabled='true']::before {
+    opacity: 0;
+  }
+
+  .donate-cta-animated:disabled::after,
+  .donate-cta-animated[aria-disabled='true']::after {
+    background: linear-gradient(160deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.86));
   }
 }
 

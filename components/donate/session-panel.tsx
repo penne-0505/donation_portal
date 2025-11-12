@@ -27,10 +27,27 @@ export function DonateSessionPanel({
   return (
     <Card surface="glass" padding="lg" className="p-0">
       <div className="flex flex-col gap-6 p-6 sm:p-8">
-        <SectionHeading
-          heading="Discord ログイン"
-          description="Discordで本人確認をしてから寄付フローに進みます。現在のログイン状態を確認してください。"
-        />
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <SectionHeading
+            heading="Discord ログイン"
+            description="Discordで本人確認をしてから寄付フローに進みます。現在のログイン状態を確認してください。"
+            className="sm:flex-1"
+          />
+          {!isSignedIn ? (
+            <Button
+              variant="discord"
+              size="md"
+              onClick={onLogin}
+              disabled={isRefreshing}
+              className="group w-full gap-2 sm:w-auto sm:shrink-0"
+            >
+              <span className="flex items-center gap-2">
+                <DiscordIcon className="h-5 w-5 text-white" aria-hidden />
+                Discord でログイン
+              </span>
+            </Button>
+          ) : null}
+        </div>
 
         {status.state === 'error' ? (
           <div
@@ -64,20 +81,7 @@ export function DonateSessionPanel({
               </span>
             </Button>
           </div>
-        ) : (
-          <Button
-            variant="discord"
-            size="md"
-            onClick={onLogin}
-            disabled={isRefreshing}
-            className="group w-full gap-2 sm:w-auto sm:shrink-0"
-          >
-            <span className="flex items-center gap-2">
-              <DiscordIcon className="h-5 w-5 text-white" aria-hidden />
-              Discord でログイン
-            </span>
-          </Button>
-        )}
+        ) : null}
       </div>
     </Card>
   );
