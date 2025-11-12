@@ -4,7 +4,7 @@ domain: "donation-portal"
 status: "active"
 version: "0.1.2"
 created: "2025-11-01"
-updated: "2025-11-11"
+updated: "2025-11-12"
 related_issues: []
 related_prs: []
 references:
@@ -51,7 +51,7 @@ Donation Portal の画面スタイルは `docs/archives/legacy-static/styles/bas
 - `.glass-lg`（ヒーローカード）は `background: rgba(255, 255, 255, 0.14)`、`backdrop-filter: blur(20px) saturate(170%)`、`box-shadow: 0 16px 48px rgba(15, 23, 42, 0.14)` を既定とする。
 - `.glass` / `.glass-md`（標準カード）は `background: rgba(255, 255, 255, 0.12)`、`blur(16px) saturate(165%)`、`box-shadow: 0 10px 40px rgba(15, 23, 42, 0.12)`。
 - `.glass-sm`（チップ・小要素）は `background: rgba(255, 255, 255, 0.1)`、`blur(12px) saturate(150%)`、`box-shadow: 0 6px 24px rgba(15, 23, 42, 0.08)`。
-- すべての `.glass*` には `border: 1px solid rgba(255, 255, 255, 0.35)` と `linear-gradient(180deg, rgba(255, 255, 255, 0.5), transparent)` の縁光ハイライトを共通適用する。
+- すべての `.glass*` は `.border-gradient-subtle` を重ね、`border: 1px solid transparent` と `background-image: linear-gradient(transparent, transparent), linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.08) 52%, rgba(15, 23, 42, 0.16) 100%)` を `background-origin: border-box`／`background-clip: padding-box, border-box` で適用し、角の白浮きを抑えたガラス縁を形成する。
 | `--space-sm` | `0.75rem` | セクション内の段落間 |
 | `--space-md` | `1rem` | カード内の基本余白 |
 | `--space-lg` | `1.5rem` | カードの外側余白、スタック間隔 |

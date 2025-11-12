@@ -25,7 +25,7 @@ describe('DonatePage React UI', () => {
     cleanup();
   });
 
-  it('未ログイン時はログイン導線を表示し、寄付操作を無効化する', () => {
+  it('未ログイン時はログイン導線を表示し、CTA を無効化する', () => {
     let loginCalls = 0;
     const session = createSessionMock();
     session.status = { state: 'signed-out' };
@@ -41,17 +41,15 @@ describe('DonatePage React UI', () => {
     assert.equal(loginCalls, 1);
 
     const consentToggle = screen.getByRole('switch', {
-      name: '支援者ページに表示名を掲載することに同意します',
+      name: 'ニックネームの掲示に同意する',
     }) as HTMLButtonElement;
     assert.equal(consentToggle.disabled, true);
     assert.equal(consentToggle.getAttribute('aria-checked'), 'false');
 
-    for (const preset of CHECKOUT_PRESETS) {
-      const button = screen.getByRole('button', {
-        name: new RegExp(preset.label),
-      }) as HTMLButtonElement;
-      assert.equal(button.disabled, true, `${preset.id} should be disabled when signed-out`);
-    }
+    const cta = screen.getByRole('button', {
+      name: 'プランを選択して寄付を進める',
+    }) as HTMLButtonElement;
+    assert.equal(cta.disabled, true);
   });
 
   it('ログイン済みセッションでは表示名と同意状態を反映する', async () => {
@@ -75,7 +73,7 @@ describe('DonatePage React UI', () => {
     assert.ok(screen.getByText('テストユーザー'));
 
     const consentToggle = screen.getByRole('switch', {
-      name: '支援者ページに表示名を掲載することに同意します',
+      name: 'ニックネームの掲示に同意する',
     }) as HTMLButtonElement;
     await waitFor(() => {
       assert.equal(consentToggle.getAttribute('aria-checked'), 'true');
@@ -108,7 +106,7 @@ describe('DonatePage React UI', () => {
     render(createElement(DonatePage));
 
     const consentToggle = screen.getByRole('switch', {
-      name: '支援者ページに表示名を掲載することに同意します',
+      name: 'ニックネームの掲示に同意する',
     }) as HTMLButtonElement;
 
     await waitFor(() => {
@@ -123,7 +121,7 @@ describe('DonatePage React UI', () => {
     });
   });
 
-  it('寄付メニューの選択で Checkout を開始しインパクトカードを表示する', async () => {
+  it('プラン選択後の CTA で Checkout を開始し、インパクトカードを表示する', async () => {
     const session = createSessionMock();
     session.status = {
       state: 'signed-in',
@@ -149,8 +147,13 @@ describe('DonatePage React UI', () => {
     render(createElement(DonatePage));
 
     const primaryPreset = CHECKOUT_PRESETS[0];
-    const button = screen.getByRole('button', { name: new RegExp(primaryPreset.label) });
-    fireEvent.click(button);
+    const planRadio = screen.getByRole('radio', { name: new RegExp(primaryPreset.label) });
+    fireEvent.click(planRadio);
+
+    const cta = screen.getByRole('button', {
+      name: new RegExp(`¥${primaryPreset.amount.toLocaleString('ja-JP')}`),
+    });
+    fireEvent.click(cta);
 
     await waitFor(() => {
       assert.equal(presetsUsed.length, 1);

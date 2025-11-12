@@ -4,7 +4,7 @@ domain: ui
 status: active
 version: 1
 created: 2025-11-02
-updated: 2025-11-02
+updated: 2025-11-12
 related_issues: []
 related_prs: []
 references:
@@ -53,37 +53,98 @@ interface AppShellProps {
 }
 ```
 
-#### ヘッダー実装
+#### ヘッダー実装（PC／モバイル）
 
-```typescript
+```tsx
+const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+const mobileMenuId = useId();
+
 <header className="sticky top-0 z-40 px-4 pt-4">
-  <div className="mx-auto flex max-w-6xl items-center justify-between rounded-2xl glass-sm border-gradient-subtle px-5 py-3 shadow-minimal shadow-inner-light backdrop-blur transition-glass">
+  <div className="relative mx-auto flex max-w-6xl items-center justify-between rounded-2xl glass-sm border-gradient-subtle px-5 py-3 shadow-minimal shadow-inner-light backdrop-blur transition-glass">
     {/* Logo */}
     <Link href="/" className="text-base font-semibold ...">
-      Donation Portal
+      {ORGANIZATION_NAME}
     </Link>
 
-    {/* Nav */}
-    <nav className="flex items-center gap-4">
-      {/* Text Link */}
+    {/* Desktop Nav */}
+    <nav className="hidden items-center gap-4 md:flex">
       <Link href="/donors" onClick={handleDonorListClick} className="...">
         支援者一覧
       </Link>
-      
-      {/* Primary Button */}
-      <Button href="/donate" onClick={handleCtaClick} size="md" aria-label="寄付をはじめる">
+      <Button
+        href="/donate"
+        onClick={handleCtaClick}
+        size="md"
+        variant={buttonShouldBeDeemphasized ? 'outline' : 'primary'}
+        aria-label="寄付をはじめる"
+      >
         寄付する
       </Button>
     </nav>
+
+    {/* Mobile Hamburger */}
+    <Button
+      ref={mobileMenuButtonRef}
+      id={`${mobileMenuId}-trigger`}
+      variant="ghost"
+      size="sm"
+      className="md:hidden h-10 w-10 px-0"
+      aria-haspopup="menu"
+      aria-expanded={isMobileMenuOpen}
+      aria-controls={`${mobileMenuId}-panel`}
+      onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+      aria-label="メニューを開閉"
+    >
+      {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+    </Button>
+
+    {isMobileMenuOpen && (
+      <div
+        ref={mobileMenuPanelRef}
+        id={`${mobileMenuId}-panel`}
+        role="menu"
+        aria-labelledby={`${mobileMenuId}-trigger`}
+        className="absolute right-5 top-full mt-3 flex w-[min(320px,calc(100vw-2.5rem))] flex-col gap-3 rounded-2xl glass-sm border-gradient-subtle bg-root/95 p-4 shadow-minimal shadow-inner-light backdrop-blur md:hidden"
+      >
+        <Link href="/donors" onClick={closeMobileMenuWith(handleDonorListClick)} role="menuitem" className="...">
+          支援者一覧
+        </Link>
+        <Button
+          href="/donate"
+          onClick={closeMobileMenuWith(handleCtaClick)}
+          role="menuitem"
+          size="md"
+          variant={buttonShouldBeDeemphasized ? 'outline' : 'primary'}
+          aria-label="寄付をはじめる"
+        >
+          寄付する
+        </Button>
+      </div>
+    )}
   </div>
 </header>
 ```
 
+- `closeMobileMenuWith` はドロップダウン内の各アクション実行後にメニューを閉じるための小さなユーティリティ。
+- `mobileMenuButtonRef` と `mobileMenuPanelRef` は外側クリック検知に使用する ref。
+- `useEffect` で `pointerdown`／`keydown(Escape)`／`matchMedia('(min-width: 768px)')` を監視し、スマホメニューの開閉状態を適切にリセットする。
+
 #### フッター実装
 
-```typescript
-<footer className="border-t border-border/60 py-6 text-center text-xs text-muted-foreground">
-  <div className="mx-auto flex max-w-6xl items-center justify-between px-5">
+- LP（`/`）ではヒーローと調和させるため、ガラス風カードで囲み、その他のページでは **装飾を付けずプレーン表示** とする。`usePathname()` で現在のパスを取得し、`isLandingPage` フラグで出し分ける。
+
+```tsx
+const pathname = usePathname();
+const isLandingPage = pathname === '/';
+
+<footer className="relative z-10 px-4 pb-6 text-center text-[11px] text-muted-foreground md:text-xs">
+  <div
+    className={cn(
+      'mx-auto flex max-w-6xl items-center justify-between px-5 py-4',
+      isLandingPage &&
+        'rounded-2xl glass-sm border-gradient-subtle shadow-minimal shadow-inner-light transition-glass',
+    )}
+  >
     <span>© 2025 {ORGANIZATION_NAME}</span>
     <div className="flex items-center gap-4">
       <Link href="/privacy" className="...">
@@ -158,7 +219,7 @@ export function HomePage() {
 ##### H1 + リード
 
 ```typescript
-<div className="space-y-6">
+<div className="mb-5 space-y-3 sm:mb-6 sm:space-y-4">
   <h1 className="text-balance text-4xl font-bold tracking-tight text-foreground md:text-5xl">
     Discordコミュニティの運営を支える寄付
   </h1>
@@ -169,6 +230,7 @@ export function HomePage() {
 ```
 
 **クラス詳細**:
+- `mb-5 sm:mb-6`: CTA ブロックまでの縦余白を確保（SP 20px / PC 24px）
 - `text-balance`: 行揃え最適化（短い最終行を避ける）
 - `text-4xl md:text-5xl`: SP 2.25rem / PC 3rem
 - `text-gray-600`: 薄色、コントラスト 4.5:1 確保
@@ -177,7 +239,7 @@ export function HomePage() {
 ##### CTA ボタン 2 個
 
 ```typescript
-<div className="flex flex-col items-center gap-3 sm:flex-row">
+<div className="mb-6 flex flex-col items-center gap-3 sm:mb-8 sm:flex-row">
   <Button
     href="/donate"
     onClick={handleCTAClick}
@@ -203,6 +265,7 @@ export function HomePage() {
 ```
 
 **クラス詳細**:
+- `mb-6 sm:mb-8`: バッジ群との前後余白（SP 24px / PC 32px）を確保
 - `gap-3`: ボタン間隔 12px（12 / 16 = 0.75rem）
 - `sm:flex-row`: SP `flex-col` (縦積み) / PC `flex-row` (横並び)
 - `px-10`: 左右パディング 40px
@@ -274,27 +337,104 @@ export function ThanksPage() {
 
 **ファイル**: `components/pages/donate-page.tsx`
 
-#### handleCheckout 計測追加
+#### シングルカラム構成
+- `/donate` は `max-w-5xl` の 1 カラム構成に統一。セクション順は「Discord ログイン → 掲示への同意 → 支援プラン（CTA 含む） → これからの流れ」。
+- `DonationImpact` は支援プランカード直下に配置し、選択済み preset が即座に可視化される。
+
+#### Discord ログインセクション
+- 見出しと Discord ログインボタンを同じ行に配置し、情報密度を上げる。`sm` 以上は横並び、狭い画面では縦積み。
+- 説明文は「Discord で本人確認してから寄付フローに進みます。現在のログイン状態を確認してください。」の 1 行に統一する。
+
+```tsx
+<div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+  <div className="space-y-2">
+    <h2 className="text-2xl font-semibold text-foreground">Discord ログイン</h2>
+    <p className="text-sm leading-relaxed text-muted-foreground">
+      Discord で本人確認してから寄付フローに進みます。現在のログイン状態を確認してください。
+    </p>
+  </div>
+  {!isSignedIn && (
+    <Button
+      variant="discord"
+      size="md"
+      onClick={login}
+      disabled={isRefreshing}
+      className="group w-full gap-2 sm:w-auto sm:shrink-0"
+    >
+      <span className="flex items-center gap-2">
+        <DiscordIcon className="h-5 w-5 text-white" aria-hidden />
+        Discord でログイン
+      </span>
+    </Button>
+  )}
+</div>
+```
+
+#### 掲示への同意トグル
+- ラベル文言は「ニックネームの掲示に同意します」とし、寄付者への説明を簡潔化。
+- `ConsentToggle` に `aria-labelledby={consentLabelId}` を割り当て、スイッチの accessible name がタイトル文言になるようにする。
+
+```tsx
+<div className="space-y-1">
+  <span id={consentLabelId} className="text-sm font-semibold text-foreground">
+    ニックネームの掲示に同意します
+  </span>
+  <p className="text-xs leading-relaxed text-muted-foreground">
+    Discord でログインすると同意の状態を変更できます。寄付後でも撤回が可能です。
+  </p>
+</div>
+```
+
+#### プランカード（radiogroup）
+- `CHECKOUT_PRESETS` を 1:1 で描画。選択状態は `selectedPreset` に保持し、`role="radiogroup"` と `role="radio"` を使ってキーボード操作に対応。
+- ボタンは `glass-sm` / `glass-md` トークンと `glow-accent-*` でアクセントを与え、選択中は `aria-checked="true"` を返す。
+- 未選択カードの hover/focus 時は `transform: translateY(-4px)` を維持しつつ、`box-shadow` を `0 12px 26px rgba(15, 23, 42, 0.14)` と `0 6px 16px rgba(15, 23, 42, 0.1)` の 2 層に抑え、浮き上がり感を過度に強調しない。
+
+```tsx
+<div role="radiogroup" aria-labelledby={planHeadingId} className="grid gap-4 md:grid-cols-3">
+  {CHECKOUT_PRESETS.map((preset) => {
+    const isSelected = selectedPreset?.id === preset.id;
+    return (
+      <button
+        key={preset.id}
+        type="button"
+        role="radio"
+        aria-checked={isSelected}
+        onClick={() => handlePlanSelect(preset)}
+        className={cn(
+          'rounded-2xl border px-5 py-4 text-left transition-glass',
+          isSelected ? 'glass-md glow-accent-medium' : 'glass-sm hover-glass',
+        )}
+      >
+        <p className="text-base font-semibold text-foreground">{preset.label}</p>
+        <p className="text-xs text-muted-foreground">{preset.description}</p>
+      </button>
+    );
+  })}
+</div>
+```
+
+#### 単一 CTA とステータス表示
+- CTA テキストは選択済み preset の金額を `ja-JP` で整形し、「`¥300 の寄付を進める`」形式で表示。`donate-cta-animated` を再利用し、`aria-live="polite"` で状態文言を読み上げる。
+- ログイン未完了 / プラン未選択 / Checkout 処理中の 3 状態を `ctaStatusMessage` で出し分け、UI テキストにも反映。
+
+#### handleCheckout（preset 依存排除）
 
 ```typescript
-const handleCheckout = useCallback(
-  async (preset: CheckoutPreset) => {
-    if (!isSignedIn) {
-      return;
-    }
-    setSelectedPreset(preset);
-    resetError();
-    
-    // 計測: donate_start（チェックアウト開始時）
-    if (typeof window !== 'undefined' && (window as any).gtag) {
-      (window as any).gtag('event', 'donate_start');
-    }
-    
-    await startCheckout(preset);
-  },
-  [isSignedIn, resetError, startCheckout],
-);
+const handleCheckout = useCallback(async () => {
+  if (!isSignedIn || !selectedPreset) {
+    return;
+  }
+  resetError();
+  if (typeof window !== 'undefined' && (window as any).gtag) {
+    (window as any).gtag('event', 'donate_start');
+  }
+  await startCheckout(selectedPreset);
+}, [isSignedIn, resetError, selectedPreset, startCheckout]);
 ```
+
+- `selectedPreset` はプランカードでのみ更新。CTA クリック時は現在の preset をそのまま Checkout へ渡す。
+- `ctaStatusMessage`（`aria-live`）で未ログイン/未選択/処理中を読み上げ、視覚的にも同じメッセージを表示する。
 
 ---
 

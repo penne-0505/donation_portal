@@ -78,7 +78,7 @@ Donation Portal の機能実装は Intent ドキュメントを起点に段階�
 
 - 認証: なし（公開 API）。
 - 機能: Stripe から `consent_public=true` の Customer を取得し、空白トリム済みの表示名配列と同意者総数を返す。
-- パラメータ: `limit`（1〜200, 既定100）, `order`（`desc`/`asc`/`random`）。バリデーション違反は 400。
+- パラメータ: `limit`（1〜100, 既定100）, `order`（`desc`/`asc`/`random`）。バリデーション違反は 400。
 - キャッシュ: 降順/昇順は `Cache-Control: public, max-age=60`、ランダムは `max-age=0` で 60 秒以内の新鮮さを担保。
 
 #### `POST /api/webhooks/stripe`
