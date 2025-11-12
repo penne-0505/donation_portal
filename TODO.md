@@ -18,7 +18,7 @@ Definitions to suppress Markdown warnings
 
 ## 後でタスク定義
 
-- 
+- スマホのvivaldiで見れる、codexでagent skillを使用する方法を実践する
 
 ---
 
