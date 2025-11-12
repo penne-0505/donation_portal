@@ -43,7 +43,6 @@ Donation Portal の画面スタイルは `docs/archives/legacy-static/styles/bas
 
 - ルート背景は `--bg-a`（#f7f9fb）、`--bg-b`（#eef2ff）、`--bg-c`（#fff7ed）を用いた 2 つの radial-gradient と、ベースの linear-gradient で構成する。
 - `.bg-root` を `body`／`AppShell` に適用し、背景は `radial-gradient(1000px 700px at 20% 0%, var(--bg-b) 0%, transparent 60%)` と `radial-gradient(900px 600px at 85% 20%, var(--bg-c) 0%, transparent 60%)` を重ねる。
-- `.app-shell::before` では `--background-noise-coarse` と `--background-noise-fine` を 8% 程度で重ね、Retina／非 Retina でのバンディングを抑える。
 - ベースカラー `--color-root` は `#f7f9fb` とし、`linear-gradient(#fff, var(--bg-a))` の終端色と一致させる。
 
 ### ガラスユーティリティ
