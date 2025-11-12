@@ -41,7 +41,7 @@ describe('DonatePage React UI', () => {
     assert.equal(loginCalls, 1);
 
     const consentToggle = screen.getByRole('switch', {
-      name: '支援者ページに表示名を掲載することに同意します',
+      name: 'ニックネームの掲示に同意する',
     }) as HTMLButtonElement;
     assert.equal(consentToggle.disabled, true);
     assert.equal(consentToggle.getAttribute('aria-checked'), 'false');
@@ -73,7 +73,7 @@ describe('DonatePage React UI', () => {
     assert.ok(screen.getByText('テストユーザー'));
 
     const consentToggle = screen.getByRole('switch', {
-      name: '支援者ページに表示名を掲載することに同意します',
+      name: 'ニックネームの掲示に同意する',
     }) as HTMLButtonElement;
     await waitFor(() => {
       assert.equal(consentToggle.getAttribute('aria-checked'), 'true');
@@ -106,7 +106,7 @@ describe('DonatePage React UI', () => {
     render(createElement(DonatePage));
 
     const consentToggle = screen.getByRole('switch', {
-      name: '支援者ページに表示名を掲載することに同意します',
+      name: 'ニックネームの掲示に同意する',
     }) as HTMLButtonElement;
 
     await waitFor(() => {

@@ -219,7 +219,7 @@ export function HomePage() {
 ##### H1 + リード
 
 ```typescript
-<div className="space-y-6">
+<div className="mb-5 space-y-3 sm:mb-6 sm:space-y-4">
   <h1 className="text-balance text-4xl font-bold tracking-tight text-foreground md:text-5xl">
     Discordコミュニティの運営を支える寄付
   </h1>
@@ -230,6 +230,7 @@ export function HomePage() {
 ```
 
 **クラス詳細**:
+- `mb-5 sm:mb-6`: CTA ブロックまでの縦余白を確保（SP 20px / PC 24px）
 - `text-balance`: 行揃え最適化（短い最終行を避ける）
 - `text-4xl md:text-5xl`: SP 2.25rem / PC 3rem
 - `text-gray-600`: 薄色、コントラスト 4.5:1 確保
@@ -238,7 +239,7 @@ export function HomePage() {
 ##### CTA ボタン 2 個
 
 ```typescript
-<div className="flex flex-col items-center gap-3 sm:flex-row">
+<div className="mb-6 flex flex-col items-center gap-3 sm:mb-8 sm:flex-row">
   <Button
     href="/donate"
     onClick={handleCTAClick}
@@ -264,6 +265,7 @@ export function HomePage() {
 ```
 
 **クラス詳細**:
+- `mb-6 sm:mb-8`: バッジ群との前後余白（SP 24px / PC 32px）を確保
 - `gap-3`: ボタン間隔 12px（12 / 16 = 0.75rem）
 - `sm:flex-row`: SP `flex-col` (縦積み) / PC `flex-row` (横並び)
 - `px-10`: 左右パディング 40px
@@ -339,9 +341,54 @@ export function ThanksPage() {
 - `/donate` は `max-w-5xl` の 1 カラム構成に統一。セクション順は「Discord ログイン → 掲示への同意 → 支援プラン（CTA 含む） → これからの流れ」。
 - `DonationImpact` は支援プランカード直下に配置し、選択済み preset が即座に可視化される。
 
+#### Discord ログインセクション
+- 見出しと Discord ログインボタンを同じ行に配置し、情報密度を上げる。`sm` 以上は横並び、狭い画面では縦積み。
+- 説明文は「Discord で本人確認してから寄付フローに進みます。現在のログイン状態を確認してください。」の 1 行に統一する。
+
+```tsx
+<div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+  <div className="space-y-2">
+    <h2 className="text-2xl font-semibold text-foreground">Discord ログイン</h2>
+    <p className="text-sm leading-relaxed text-muted-foreground">
+      Discord で本人確認してから寄付フローに進みます。現在のログイン状態を確認してください。
+    </p>
+  </div>
+  {!isSignedIn && (
+    <Button
+      variant="discord"
+      size="md"
+      onClick={login}
+      disabled={isRefreshing}
+      className="group w-full gap-2 sm:w-auto sm:shrink-0"
+    >
+      <span className="flex items-center gap-2">
+        <DiscordIcon className="h-5 w-5 text-white" aria-hidden />
+        Discord でログイン
+      </span>
+    </Button>
+  )}
+</div>
+```
+
+#### 掲示への同意トグル
+- ラベル文言は「ニックネームの掲示に同意します」とし、寄付者への説明を簡潔化。
+- `ConsentToggle` に `aria-labelledby={consentLabelId}` を割り当て、スイッチの accessible name がタイトル文言になるようにする。
+
+```tsx
+<div className="space-y-1">
+  <span id={consentLabelId} className="text-sm font-semibold text-foreground">
+    ニックネームの掲示に同意します
+  </span>
+  <p className="text-xs leading-relaxed text-muted-foreground">
+    Discord でログインすると同意の状態を変更できます。寄付後でも撤回が可能です。
+  </p>
+</div>
+```
+
 #### プランカード（radiogroup）
 - `CHECKOUT_PRESETS` を 1:1 で描画。選択状態は `selectedPreset` に保持し、`role="radiogroup"` と `role="radio"` を使ってキーボード操作に対応。
 - ボタンは `glass-sm` / `glass-md` トークンと `glow-accent-*` でアクセントを与え、選択中は `aria-checked="true"` を返す。
+- 未選択カードの hover/focus 時は `transform: translateY(-4px)` を維持しつつ、`box-shadow` を `0 12px 26px rgba(15, 23, 42, 0.14)` と `0 6px 16px rgba(15, 23, 42, 0.1)` の 2 層に抑え、浮き上がり感を過度に強調しない。
 
 ```tsx
 <div role="radiogroup" aria-labelledby={planHeadingId} className="grid gap-4 md:grid-cols-3">

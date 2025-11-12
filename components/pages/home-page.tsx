@@ -11,6 +11,9 @@ export function HomePage() {
     { icon: ShieldCheck, label: 'OAuthで同意管理' },
     { icon: Users, label: '支援者リストを公開' },
   ];
+  const ctaGlowContainerClass =
+    'inline-flex overflow-hidden rounded-2xl glass-sm border-gradient-subtle shadow-minimal shadow-inner-light transition-glass';
+  const ctaPrimaryGlowContainerClass = `${ctaGlowContainerClass} p-[1px]`;
 
   const handleCTAClick = () => {
     // 計測イベント: 寄付開始
@@ -27,7 +30,7 @@ export function HomePage() {
         className="flex flex-col items-center justify-center px-6 py-4 text-center sm:py-5 lg:py-6"
       >
         <div className="hero-focus mx-auto flex w-full max-w-4xl flex-col items-center">
-          <div className="mb-3 space-y-3 sm:space-y-4">
+          <div className="mb-5 space-y-3 sm:mb-6 sm:space-y-4">
             <h1 className="font-hero text-balance text-4xl font-bold tracking-tight text-foreground md:text-5xl">
               みんなで創る、みんなの世界
             </h1>
@@ -37,14 +40,14 @@ export function HomePage() {
           </div>
 
           {/* CTA ボタン2つ */}
-          <div className="relative mb-3 overflow-hidden rounded-2xl glass-sm border-gradient-subtle shadow-minimal shadow-inner-light transition-glass">
-            <div className="flex flex-col items-center gap-3 px-4 py-3 sm:flex-row">
+          <div className="mb-6 flex flex-col items-center justify-center gap-3 sm:mb-8 sm:flex-row">
+            <div className={ctaPrimaryGlowContainerClass}>
               <Button
                 href="/donate"
                 onClick={handleCTAClick}
                 size="md"
                 variant="primary"
-                className="donate-cta-animated gap-2 px-8"
+                className="donate-cta-animated cta-donate-glow gap-2 px-8"
                 aria-label="寄付をはじめる"
               >
                 <span className="flex items-center gap-2">
@@ -52,6 +55,8 @@ export function HomePage() {
                   <ArrowRight className="h-4 w-4" aria-hidden />
                 </span>
               </Button>
+            </div>
+            <div className={ctaGlowContainerClass}>
               <Button
                 href="/donors"
                 size="md"

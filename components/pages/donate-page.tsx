@@ -114,11 +114,28 @@ export function DonatePage() {
         <div className="space-y-6">
           <Card className="glass-lg p-0">
             <div className="flex flex-col gap-6 p-6 sm:p-8">
-              <div className="space-y-2">
-                <h2 className="text-2xl font-semibold text-foreground">Discord ログイン</h2>
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  Stripe Checkout で寄付を進める前に、Discord ログイン状態を確認してください。
-                </p>
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-semibold text-foreground">Discord ログイン</h2>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    Discord
+                    で本人確認してから寄付フローに進みます。現在のログイン状態を確認してください。
+                  </p>
+                </div>
+                {!isSignedIn ? (
+                  <Button
+                    variant="discord"
+                    size="md"
+                    onClick={login}
+                    disabled={isRefreshing}
+                    className="group w-full gap-2 sm:w-auto sm:shrink-0"
+                  >
+                    <span className="flex items-center gap-2">
+                      <DiscordIcon className="h-5 w-5 text-white" aria-hidden />
+                      Discord でログイン
+                    </span>
+                  </Button>
+                ) : null}
               </div>
 
               {status.state === 'error' ? (
@@ -131,49 +148,29 @@ export function DonatePage() {
                 </div>
               ) : null}
 
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                {isSignedIn ? (
-                  <>
-                    <div className="flex flex-1 items-center gap-3 rounded-xl glass-sm border-gradient-subtle px-4 py-3 text-left text-sm text-muted-foreground shadow-minimal shadow-inner-light transition-glass glow-status-success">
-                      <CheckCircle2 className="h-5 w-5 text-foreground" aria-hidden />
-                      <div className="flex flex-col">
-                        <span className="font-semibold text-foreground">ログイン済み</span>
-                        <span className="text-xs">{displayName}</span>
-                      </div>
+              {isSignedIn ? (
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <div className="flex flex-1 items-center gap-3 rounded-xl glass-sm border-gradient-subtle px-4 py-3 text-left text-sm text-muted-foreground shadow-minimal shadow-inner-light transition-glass glow-status-success">
+                    <CheckCircle2 className="h-5 w-5 text-foreground" aria-hidden />
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-foreground">ログイン済み</span>
+                      <span className="text-xs">{displayName}</span>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="md"
-                      onClick={logout}
-                      className="w-full sm:w-auto"
-                      disabled={isRefreshing}
-                    >
-                      <span className="flex items-center gap-2">
-                        <LogOut className="h-4 w-4" aria-hidden />
-                        ログアウト
-                      </span>
-                    </Button>
-                  </>
-                ) : (
+                  </div>
                   <Button
-                    variant="discord"
+                    variant="ghost"
                     size="md"
-                    onClick={login}
+                    onClick={logout}
+                    className="w-full sm:w-auto"
                     disabled={isRefreshing}
-                    className="group w-full gap-2"
                   >
                     <span className="flex items-center gap-2">
-                      Discord でログイン
-                      <DiscordIcon className="h-5 w-5 text-white" aria-hidden />
+                      <LogOut className="h-4 w-4" aria-hidden />
+                      ログアウト
                     </span>
                   </Button>
-                )}
-              </div>
-
-              <p className="text-xs text-muted-foreground">
-                ログイン状態は 60
-                分間保持されます。セッションの有効期限が切れた場合は再度ログインしてください。
-              </p>
+                </div>
+              ) : null}
             </div>
           </Card>
 
@@ -199,7 +196,7 @@ export function DonatePage() {
                   />
                   <div className="space-y-1">
                     <span id={consentLabelId} className="text-sm font-semibold text-foreground">
-                      支援者ページに表示名を掲載することに同意します
+                      ニックネームの掲示に同意する
                     </span>
                     <p
                       id={consentDescriptionId}
@@ -342,9 +339,9 @@ export function DonatePage() {
               </div>
               <ol className="grid gap-3 sm:grid-cols-3">
                 {[
-                  'Discord でログインし、掲示への同意を確認します。',
-                  '支援プランを 1 つ選択し、寄付ボタンから Stripe Checkout へ進みます。',
-                  '決済完了後は /thanks へ遷移し、Stripe のレシートのみが送付されます。',
+                  'Discord でログインします。',
+                  '支援プランを選択し、ボタンを押します。',
+                  'レシートが送付されます。',
                 ].map((step, index) => (
                   <li
                     key={step}
