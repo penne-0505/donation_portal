@@ -406,6 +406,27 @@
     filter: drop-shadow(0 0 8px rgba(88, 101, 242, 0.18));
   }
 
+  .plan-card {
+    transition:
+      transform 0.32s var(--ease-macos),
+      box-shadow 0.32s var(--ease-macos),
+      border-color 0.32s var(--ease-macos);
+    will-change: transform;
+  }
+
+  .plan-card:not([data-selected='true']):hover,
+  .plan-card:not([data-selected='true']):focus-visible {
+    transform: translateY(-4px);
+    box-shadow:
+      0 20px 40px rgba(15, 23, 42, 0.18),
+      0 12px 24px rgba(15, 23, 42, 0.12);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+
+  .plan-card[data-selected='true'] {
+    transform: translateY(-1px);
+  }
+
   .glow-status-success {
     box-shadow:
       0 0 0 1px rgba(34, 197, 94, 0.18),
@@ -552,5 +573,18 @@
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     background: rgba(255, 255, 255, 0.85);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plan-card {
+    transition: none;
+  }
+
+  .plan-card,
+  .plan-card:not([data-selected='true']):hover,
+  .plan-card:not([data-selected='true']):focus-visible,
+  .plan-card[data-selected='true'] {
+    transform: none !important;
   }
 }

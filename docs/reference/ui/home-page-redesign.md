@@ -4,7 +4,7 @@ domain: ui
 status: active
 version: 1
 created: 2025-11-02
-updated: 2025-11-02
+updated: 2025-11-12
 related_issues: []
 related_prs: []
 references:
@@ -324,27 +324,59 @@ export function ThanksPage() {
 
 **ファイル**: `components/pages/donate-page.tsx`
 
-#### handleCheckout 計測追加
+#### シングルカラム構成
+- `/donate` は `max-w-5xl` の 1 カラム構成に統一。セクション順は「Discord ログイン → 掲示への同意 → 支援プラン（CTA 含む） → これからの流れ」。
+- `DonationImpact` は支援プランカード直下に配置し、選択済み preset が即座に可視化される。
+
+#### プランカード（radiogroup）
+- `CHECKOUT_PRESETS` を 1:1 で描画。選択状態は `selectedPreset` に保持し、`role="radiogroup"` と `role="radio"` を使ってキーボード操作に対応。
+- ボタンは `glass-sm` / `glass-md` トークンと `glow-accent-*` でアクセントを与え、選択中は `aria-checked="true"` を返す。
+
+```tsx
+<div role="radiogroup" aria-labelledby={planHeadingId} className="grid gap-4 md:grid-cols-3">
+  {CHECKOUT_PRESETS.map((preset) => {
+    const isSelected = selectedPreset?.id === preset.id;
+    return (
+      <button
+        key={preset.id}
+        type="button"
+        role="radio"
+        aria-checked={isSelected}
+        onClick={() => handlePlanSelect(preset)}
+        className={cn(
+          'rounded-2xl border px-5 py-4 text-left transition-glass',
+          isSelected ? 'glass-md glow-accent-medium' : 'glass-sm hover-glass',
+        )}
+      >
+        <p className="text-base font-semibold text-foreground">{preset.label}</p>
+        <p className="text-xs text-muted-foreground">{preset.description}</p>
+      </button>
+    );
+  })}
+</div>
+```
+
+#### 単一 CTA とステータス表示
+- CTA テキストは選択済み preset の金額を `ja-JP` で整形し、「`¥300 の寄付を進める`」形式で表示。`donate-cta-animated` を再利用し、`aria-live="polite"` で状態文言を読み上げる。
+- ログイン未完了 / プラン未選択 / Checkout 処理中の 3 状態を `ctaStatusMessage` で出し分け、UI テキストにも反映。
+
+#### handleCheckout（preset 依存排除）
 
 ```typescript
-const handleCheckout = useCallback(
-  async (preset: CheckoutPreset) => {
-    if (!isSignedIn) {
-      return;
-    }
-    setSelectedPreset(preset);
-    resetError();
-    
-    // 計測: donate_start（チェックアウト開始時）
-    if (typeof window !== 'undefined' && (window as any).gtag) {
-      (window as any).gtag('event', 'donate_start');
-    }
-    
-    await startCheckout(preset);
-  },
-  [isSignedIn, resetError, startCheckout],
-);
+const handleCheckout = useCallback(async () => {
+  if (!isSignedIn || !selectedPreset) {
+    return;
+  }
+  resetError();
+  if (typeof window !== 'undefined' && (window as any).gtag) {
+    (window as any).gtag('event', 'donate_start');
+  }
+  await startCheckout(selectedPreset);
+}, [isSignedIn, resetError, selectedPreset, startCheckout]);
 ```
+
+- `selectedPreset` はプランカードでのみ更新。CTA クリック時は現在の preset をそのまま Checkout へ渡す。
+- `ctaStatusMessage`（`aria-live`）で未ログイン/未選択/処理中を読み上げ、視覚的にも同じメッセージを表示する。
 
 ---
 

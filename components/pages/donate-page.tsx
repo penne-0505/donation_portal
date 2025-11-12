@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ConsentToggle } from '@/components/consent-toggle';
 import { DonationImpact } from '@/components/donation-impact';
-import { DonationBadge } from '@/components/donation-badge';
 import { DiscordIcon } from '@/components/ui/discord-icon';
 import { cn } from '@/lib/ui/cn';
 import { ORGANIZATION_NAME } from '@/lib/ui/branding';
@@ -30,7 +29,6 @@ export function DonatePage() {
   const [consent, setConsent] = useState(false);
   const [selectedPreset, setSelectedPreset] = useState<CheckoutPreset | null>(null);
 
-  // Deemphasize the header donate button while on the donate page
   useEffect(() => {
     setShouldDeemphasizeButton(true);
     return () => {
@@ -64,6 +62,9 @@ export function DonatePage() {
   const presets = CHECKOUT_PRESETS;
   const consentLabelId = useId();
   const consentDescriptionId = useId();
+  const planHeadingId = useId();
+  const planDescriptionId = useId();
+  const ctaStatusId = useId();
 
   const handleConsentChange = useCallback(
     async (nextValue: boolean) => {
@@ -75,37 +76,56 @@ export function DonatePage() {
     [isSignedIn, consent, updateConsent],
   );
 
-  const handleCheckout = useCallback(
-    async (preset: CheckoutPreset) => {
-      if (!isSignedIn) {
-        return;
-      }
+  const handlePlanSelect = useCallback(
+    (preset: CheckoutPreset) => {
       setSelectedPreset(preset);
       resetError();
-      // 計測イベント: 寄付開始
-      if (typeof window !== 'undefined' && (window as any).gtag) {
-        (window as any).gtag('event', 'donate_start');
-      }
-      await startCheckout(preset);
     },
-    [isSignedIn, resetError, startCheckout],
+    [resetError],
   );
 
+  const handleCheckout = useCallback(async () => {
+    if (!isSignedIn || !selectedPreset) {
+      return;
+    }
+    resetError();
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('event', 'donate_start');
+    }
+    await startCheckout(selectedPreset);
+  }, [isSignedIn, resetError, selectedPreset, startCheckout]);
+
+  const ctaLabel = selectedPreset
+    ? `¥${selectedPreset.amount.toLocaleString('ja-JP')} の寄付を進める`
+    : 'プランを選択して寄付を進める';
+  const isCtaDisabled = !isSignedIn || !selectedPreset || checkoutState.isProcessing;
+
+  const ctaStatusMessage = !isSignedIn
+    ? 'Discord でログインすると寄付ボタンが有効になります。'
+    : !selectedPreset
+      ? 'まずは支援プランを 1 つ選択してください。'
+      : checkoutState.isProcessing
+        ? 'Stripe Checkout を準備しています…'
+        : '寄付ボタンを押すと Stripe Checkout に移動します。';
+
   return (
-    <div className="space-y-12 page-enter">
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+    <div className="page-enter">
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
         <div className="space-y-6">
-          <Card className="p-0">
+          <Card className="glass-lg p-0">
             <div className="flex flex-col gap-6 p-6 sm:p-8">
               <div className="space-y-2">
                 <h2 className="text-2xl font-semibold text-foreground">Discord ログイン</h2>
                 <p className="text-sm leading-relaxed text-muted-foreground">
-                  Stripe Checkout で寄付を進める前に、Discord ログインと掲示同意の状態を確認します。
+                  Stripe Checkout で寄付を進める前に、Discord ログイン状態を確認してください。
                 </p>
               </div>
 
               {status.state === 'error' ? (
-                <div className="flex items-start gap-3 rounded-xl border border-red-200/80 bg-red-50 px-4 py-3 text-sm text-red-700 transition-glass glow-status-error">
+                <div
+                  className="flex items-start gap-3 rounded-xl border border-red-200/80 bg-red-50 px-4 py-3 text-sm text-red-700 transition-glass glow-status-error"
+                  role="alert"
+                >
                   <AlertCircle className="mt-0.5 h-4 w-4" aria-hidden />
                   <span>{status.message}</span>
                 </div>
@@ -114,7 +134,7 @@ export function DonatePage() {
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 {isSignedIn ? (
                   <>
-                    <div className="flex flex-1 items-center gap-3 rounded-xl glass-sm border-gradient-subtle px-4 py-3 text-left text-sm text-muted-foreground shadow-minimal shadow-inner-light transition-glass glow-status-success animate-bounce-in">
+                    <div className="flex flex-1 items-center gap-3 rounded-xl glass-sm border-gradient-subtle px-4 py-3 text-left text-sm text-muted-foreground shadow-minimal shadow-inner-light transition-glass glow-status-success">
                       <CheckCircle2 className="h-5 w-5 text-foreground" aria-hidden />
                       <div className="flex flex-col">
                         <span className="font-semibold text-foreground">ログイン済み</span>
@@ -143,8 +163,8 @@ export function DonatePage() {
                     className="group w-full gap-2"
                   >
                     <span className="flex items-center gap-2">
-                      <DiscordIcon className="h-5 w-5 text-white" aria-hidden />
                       Discord でログイン
+                      <DiscordIcon className="h-5 w-5 text-white" aria-hidden />
                     </span>
                   </Button>
                 )}
@@ -167,7 +187,7 @@ export function DonatePage() {
                 </p>
               </div>
 
-              <div className="flex flex-col gap-3 rounded-xl glass-sm border-gradient-subtle px-4 py-4 shadow-minimal shadow-inner-light transition-glass">
+              <div className="flex flex-col gap-3 rounded-2xl glass-sm border-gradient-subtle px-4 py-4 shadow-minimal shadow-inner-light transition-glass">
                 <div className="flex items-start gap-4">
                   <ConsentToggle
                     aria-labelledby={consentLabelId}
@@ -198,7 +218,10 @@ export function DonatePage() {
               </div>
 
               {consentError ? (
-                <div className="flex items-start gap-2 rounded-md border border-red-200/70 bg-red-50 px-3 py-2 text-sm text-red-700 transition-glass glow-status-error">
+                <div
+                  className="flex items-start gap-2 rounded-md border border-red-200/70 bg-red-50 px-3 py-2 text-sm text-red-700 transition-glass glow-status-error"
+                  role="alert"
+                >
                   <AlertCircle className="mt-0.5 h-4 w-4" aria-hidden />
                   <span>{consentError}</span>
                 </div>
@@ -206,28 +229,133 @@ export function DonatePage() {
             </div>
           </Card>
 
-          {selectedPreset ? (
-            <div className="animate-bounce-in">
-              <DonationImpact mode={getImpactKey(selectedPreset)} amount={selectedPreset.amount} />
-            </div>
-          ) : null}
+          <Card className="glass-lg p-0">
+            <div className="flex flex-col gap-6 p-6 sm:p-8">
+              <div className="space-y-2">
+                <h2 id={planHeadingId} className="text-2xl font-semibold text-foreground">
+                  支援プラン
+                </h2>
+                <p id={planDescriptionId} className="text-sm text-muted-foreground">
+                  設定済みの寄付プランを 1:1 で表示します。1
+                  つ選択すると寄付ボタンが有効になります。
+                </p>
+              </div>
 
-          <Card className="border border-dashed border-white/25 p-0">
+              <div
+                role="radiogroup"
+                aria-labelledby={planHeadingId}
+                aria-describedby={planDescriptionId}
+                className="grid gap-4 md:grid-cols-3"
+              >
+                {presets.map((preset) => {
+                  const isSelected = selectedPreset?.id === preset.id;
+                  const intervalLabel =
+                    preset.mode === 'payment'
+                      ? '単発'
+                      : preset.interval === 'yearly'
+                        ? '年額'
+                        : '月額';
+
+                  return (
+                    <button
+                      key={preset.id}
+                      type="button"
+                      role="radio"
+                      aria-checked={isSelected}
+                      data-selected={isSelected ? 'true' : 'false'}
+                      onClick={() => handlePlanSelect(preset)}
+                      className={cn(
+                        'plan-card group flex h-full flex-col justify-between gap-4 rounded-2xl border px-5 py-4 text-left text-sm transition-glass focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/30 focus-visible:ring-offset-2',
+                        isSelected
+                          ? 'glass-md border-white/60 shadow-glass-elevated glow-accent-medium'
+                          : 'glass-sm border-gradient-subtle shadow-minimal',
+                      )}
+                    >
+                      <div className="space-y-1">
+                        <p className="text-base font-semibold text-foreground">{preset.label}</p>
+                        <p className="text-xs text-muted-foreground">{preset.description}</p>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                        <span className="rounded-full bg-foreground/10 px-3 py-1 text-foreground">
+                          {intervalLabel}
+                        </span>
+                        <span className="rounded-full bg-white/30 px-3 py-1 text-foreground">
+                          ¥{preset.amount.toLocaleString('ja-JP')}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="space-y-4">
+                <Button
+                  type="button"
+                  size="lg"
+                  className="donate-cta-animated w-full justify-center gap-2 text-base"
+                  onClick={() => void handleCheckout()}
+                  disabled={isCtaDisabled}
+                >
+                  <span className="flex items-center gap-2">
+                    {checkoutState.isProcessing ? (
+                      <LoaderCircle className="h-4 w-4 animate-spin" aria-hidden />
+                    ) : (
+                      <ArrowRight className="h-4 w-4" aria-hidden />
+                    )}
+                    {ctaLabel}
+                  </span>
+                </Button>
+
+                {checkoutState.error ? (
+                  <div
+                    className="flex items-start gap-2 rounded-xl border border-red-200/80 bg-red-50 px-4 py-3 text-sm text-red-700 transition-glass glow-status-error"
+                    role="alert"
+                  >
+                    <AlertCircle className="mt-0.5 h-4 w-4" aria-hidden />
+                    <span>{checkoutState.error}</span>
+                  </div>
+                ) : null}
+
+                <p id={ctaStatusId} className="text-xs text-muted-foreground" aria-live="polite">
+                  {ctaStatusMessage}
+                </p>
+              </div>
+
+              {selectedPreset ? (
+                <div className="fade-in-up">
+                  <DonationImpact
+                    mode={getImpactKey(selectedPreset)}
+                    amount={selectedPreset.amount}
+                  />
+                </div>
+              ) : null}
+            </div>
+          </Card>
+
+          <Card className="p-0">
             <div className="space-y-5 p-6 sm:p-8">
-              <h3 className="text-lg font-semibold text-foreground">これからの流れ</h3>
-              <ol className="space-y-3 text-sm text-muted-foreground">
-                <li className="flex gap-3">
-                  <span className="font-semibold text-foreground">1.</span>
-                  <span>Discord でログインし、掲示への同意を確認します。</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="font-semibold text-foreground">2.</span>
-                  <span>寄付メニューからプランを選び、Stripe Checkout を開始します。</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="font-semibold text-foreground">3.</span>
-                  <span>決済が完了するとサンクスページへ自動的に遷移します。</span>
-                </li>
+              <div className="space-y-1">
+                <h3 className="text-lg font-semibold text-foreground">これからの流れ</h3>
+                <p className="text-sm text-muted-foreground">
+                  対価や特典は提供していません。寄付手順のみを明確にしています。
+                </p>
+              </div>
+              <ol className="grid gap-3 sm:grid-cols-3">
+                {[
+                  'Discord でログインし、掲示への同意を確認します。',
+                  '支援プランを 1 つ選択し、寄付ボタンから Stripe Checkout へ進みます。',
+                  '決済完了後は /thanks へ遷移し、Stripe のレシートのみが送付されます。',
+                ].map((step, index) => (
+                  <li
+                    key={step}
+                    className="rounded-2xl glass-sm border-gradient-subtle px-4 py-4 text-sm text-muted-foreground shadow-minimal shadow-inner-light"
+                  >
+                    <span className="text-xs font-semibold uppercase tracking-wide text-foreground/70">
+                      Step {index + 1}
+                    </span>
+                    <p className="mt-2 text-foreground">{step}</p>
+                  </li>
+                ))}
               </ol>
               <p className="text-xs text-muted-foreground">
                 いただいた寄付は {ORGANIZATION_NAME}{' '}
@@ -235,99 +363,6 @@ export function DonatePage() {
               </p>
             </div>
           </Card>
-        </div>
-
-        <div className="space-y-6 lg:col-span-1">
-          <div className="space-y-6 lg:sticky lg:top-24">
-            <Card className="glass-lg p-0">
-              <div className="flex flex-col gap-6 p-6 sm:p-8">
-                <div className="space-y-2">
-                  <h2 className="text-2xl font-semibold text-foreground">寄付メニュー</h2>
-                  <p className="text-sm text-muted-foreground">
-                    Stripe Checkout で寄付を行います。カード決済のみ対応し、すべて税込の金額です。
-                  </p>
-                </div>
-
-                {checkoutState.error ? (
-                  <div className="flex items-start gap-2 rounded-xl border border-red-200/80 bg-red-50 px-4 py-3 text-sm text-red-700 transition-glass glow-status-error">
-                    <AlertCircle className="mt-0.5 h-4 w-4" aria-hidden />
-                    <span>{checkoutState.error}</span>
-                  </div>
-                ) : null}
-
-                <div className="space-y-4">
-                  {presets.map((preset: CheckoutPreset) => {
-                    const isSelected = selectedPreset?.id === preset.id;
-
-                    return (
-                      <button
-                        key={preset.id}
-                        type="button"
-                        onClick={() => void handleCheckout(preset)}
-                        disabled={!isSignedIn || checkoutState.isProcessing}
-                        data-active={isSelected ? 'true' : undefined}
-                        className={cn(
-                          'group w-full rounded-2xl glass-sm px-6 py-5 text-left text-sm transition-glass hover-glass shadow-minimal shadow-inner-light border-gradient-subtle disabled:cursor-not-allowed disabled:opacity-50',
-                          isSelected
-                            ? 'glow-accent-medium glass-md border-white/40'
-                            : 'glow-accent-subtle',
-                        )}
-                      >
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="space-y-1">
-                            <p className="text-base font-semibold text-foreground">
-                              {preset.label}
-                            </p>
-                            <p className="text-xs text-muted-foreground">{preset.description}</p>
-                          </div>
-                          <ArrowRight
-                            className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-hover:translate-x-1"
-                            aria-hidden
-                          />
-                        </div>
-                        <div className="mt-3 flex flex-col gap-3">
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            {preset.mode === 'payment' ? (
-                              <span className="rounded-full bg-foreground/10 px-2 py-0.5 text-foreground">
-                                単発
-                              </span>
-                            ) : (
-                              <span className="rounded-full bg-foreground/10 px-2 py-0.5 text-foreground">
-                                {preset.interval === 'yearly' ? '年額' : '月額'}
-                              </span>
-                            )}
-                          </div>
-                          <div className="flex flex-col gap-2">
-                            <DonationBadge type="stripe" />
-                            <DonationBadge type="oauth" />
-                            <DonationBadge type="list" />
-                          </div>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {!isSignedIn ? (
-                  <p className="text-xs text-muted-foreground">
-                    Discord でログインすると寄付ボタンが有効になります。
-                  </p>
-                ) : null}
-
-                <p className="text-xs text-muted-foreground">
-                  寄付ボタンを押すと Stripe Checkout
-                  に移動します。完了後は自動的にサンクスページへ戻ります。
-                </p>
-
-                {checkoutState.isProcessing ? (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <LoaderCircle className="h-4 w-4 animate-spin" aria-hidden />
-                    <span>Stripe Checkout を準備しています…</span>
-                  </div>
-                ) : null}
-              </div>
-            </Card>
-          </div>
         </div>
       </div>
     </div>
