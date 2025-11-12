@@ -131,9 +131,20 @@ const mobileMenuId = useId();
 
 #### フッター実装
 
-```typescript
-<footer className="border-t border-border/60 py-6 text-center text-xs text-muted-foreground">
-  <div className="mx-auto flex max-w-6xl items-center justify-between px-5">
+- LP（`/`）ではヒーローと調和させるため、ガラス風カードで囲み、その他のページでは **装飾を付けずプレーン表示** とする。`usePathname()` で現在のパスを取得し、`isLandingPage` フラグで出し分ける。
+
+```tsx
+const pathname = usePathname();
+const isLandingPage = pathname === '/';
+
+<footer className="relative z-10 px-4 pb-6 text-center text-[11px] text-muted-foreground md:text-xs">
+  <div
+    className={cn(
+      'mx-auto flex max-w-6xl items-center justify-between px-5 py-4',
+      isLandingPage &&
+        'rounded-2xl glass-sm border-gradient-subtle shadow-minimal shadow-inner-light transition-glass',
+    )}
+  >
     <span>© 2025 {ORGANIZATION_NAME}</span>
     <div className="flex items-center gap-4">
       <Link href="/privacy" className="...">

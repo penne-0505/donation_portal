@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { ArrowRight, Menu, X } from 'lucide-react';
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { cn } from '@/lib/ui/cn';
@@ -15,6 +16,8 @@ interface AppShellProps {
 
 export function AppShell({ children, className }: AppShellProps) {
   const { buttonShouldBeDeemphasized } = useHeroContext();
+  const pathname = usePathname();
+  const isLandingPage = pathname === '/';
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const mobileMenuId = useId();
   const mobileMenuTriggerId = `${mobileMenuId}-trigger`;
@@ -202,8 +205,13 @@ export function AppShell({ children, className }: AppShellProps) {
         {children}
       </main>
       <footer className="relative z-10 px-4 pb-6 text-center text-[11px] text-muted-foreground md:text-xs">
-        <div className="mx-auto flex max-w-6xl items-center justify-between rounded-2xl glass-sm border-gradient-subtle px-5 py-4 shadow-minimal shadow-inner-light transition-glass">
-          {' '}
+        <div
+          className={cn(
+            'mx-auto flex max-w-6xl items-center justify-between px-5 py-4',
+            isLandingPage &&
+              'rounded-2xl glass-sm border-gradient-subtle shadow-minimal shadow-inner-light transition-glass',
+          )}
+        >
           <span>© 2025 {ORGANIZATION_NAME}</span>
           <div className="flex items-center gap-4">
             <Link
