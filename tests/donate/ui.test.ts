@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { createElement } from 'react';
 import { CHECKOUT_PRESETS } from '@/lib/ui/checkout-presets';
+import { HeroProvider } from '@/lib/ui/contexts/hero-context';
 import type { CheckoutPreset } from '@/lib/ui/types';
 import {
   createDonationFlowMock,
@@ -11,6 +12,10 @@ import {
 } from '../mocks/ui-hooks';
 
 const { DonatePage } = await import('@/components/pages/donate-page');
+
+function renderDonatePage() {
+  return render(createElement(HeroProvider, undefined, createElement(DonatePage)));
+}
 
 describe('DonatePage React UI', () => {
   beforeEach(() => {
@@ -30,7 +35,7 @@ describe('DonatePage React UI', () => {
     };
     setDonationFlowHookMock(flow);
 
-    render(createElement(DonatePage));
+    renderDonatePage();
 
     const loginButton = screen.getByRole('button', { name: /Discord でログイン/ });
     fireEvent.click(loginButton);
@@ -63,7 +68,7 @@ describe('DonatePage React UI', () => {
     };
     setDonationFlowHookMock(flow);
 
-    render(createElement(DonatePage));
+    renderDonatePage();
 
     await waitFor(() => {
       assert.ok(screen.getByText('ログイン済み'));
@@ -104,7 +109,7 @@ describe('DonatePage React UI', () => {
     };
     setDonationFlowHookMock(flow);
 
-    render(createElement(DonatePage));
+    renderDonatePage();
 
     const consentToggle = screen.getByRole('switch', {
       name: 'ニックネームの掲示に同意する',
@@ -142,7 +147,7 @@ describe('DonatePage React UI', () => {
 
     setDonationFlowHookMock(flow);
 
-    render(createElement(DonatePage));
+    renderDonatePage();
 
     const planRadio = screen.getByRole('radio', { name: new RegExp(primaryPreset.label) });
     fireEvent.click(planRadio);
@@ -165,7 +170,7 @@ describe('DonatePage React UI', () => {
     flow.selectedPreset = CHECKOUT_PRESETS[0];
     setDonationFlowHookMock(flow);
 
-    render(createElement(DonatePage));
+    renderDonatePage();
 
     assert.ok(
       screen.getByText('Stripe Checkout の開始に失敗しました。時間をおいて再試行してください。'),
