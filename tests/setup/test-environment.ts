@@ -103,3 +103,40 @@ if (typeof window.IntersectionObserver !== 'function') {
 
 globalThis.requestAnimationFrame ||= (callback: FrameRequestCallback) => setTimeout(callback, 0);
 globalThis.cancelAnimationFrame ||= (id: number) => clearTimeout(id);
+
+if (typeof window.IntersectionObserver !== 'function') {
+  class MockIntersectionObserver {
+    constructor(_callback: IntersectionObserverCallback, _options?: IntersectionObserverInit) {
+      void _callback;
+      void _options;
+    }
+
+    observe() {
+      return;
+    }
+
+    unobserve() {
+      return;
+    }
+
+    disconnect() {
+      return;
+    }
+
+    takeRecords(): IntersectionObserverEntry[] {
+      return [];
+    }
+  }
+
+  Object.defineProperty(window, 'IntersectionObserver', {
+    value: MockIntersectionObserver,
+    configurable: true,
+    writable: true,
+  });
+
+  Object.defineProperty(globalThis, 'IntersectionObserver', {
+    value: MockIntersectionObserver,
+    configurable: true,
+    writable: true,
+  });
+}

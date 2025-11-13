@@ -4,6 +4,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { createElement } from 'react';
 import { HeroProvider } from '@/lib/ui/contexts/hero-context';
 import { CHECKOUT_PRESETS } from '@/lib/ui/checkout-presets';
+import { HeroProvider } from '@/lib/ui/contexts/hero-context';
 import type { CheckoutPreset } from '@/lib/ui/types';
 import {
   createDonationFlowMock,
