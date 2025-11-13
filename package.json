@@ -9,8 +9,8 @@
   },
   "scripts": {
     "lint": "node scripts/run-eslint.cjs .",
-    "test": "rm -rf dist && node scripts/run-tsc.cjs --project tsconfig.json && node --experimental-global-webcrypto --loader ./scripts/alias-loader.mjs --import ./dist/tests/setup/test-environment.js --test 'dist/tests/**/*.test.js'",
-    "test:coverage": "rm -rf dist && node scripts/run-tsc.cjs --project tsconfig.json && node --experimental-global-webcrypto --loader ./scripts/alias-loader.mjs --import ./dist/tests/setup/test-environment.js --test --experimental-test-coverage 'dist/tests/**/*.test.js'",
+    "test": "node scripts/run-tests.cjs",
+    "test:coverage": "node scripts/run-tests.cjs --coverage",
     "typecheck": "node scripts/run-tsc.cjs --noEmit",
     "ui:dev": "next dev",
     "ui:build": "node scripts/run-next-on-pages.cjs",
