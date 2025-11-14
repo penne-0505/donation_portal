@@ -2,20 +2,17 @@
 title: "UI Test Failures Analysis: DonatePage Hero Context Issue"
 domain: "donation-portal/ui/testing"
 status: "proposed"
-version: "0.1.0"
+version: "0.1.1"
 created: "2025-11-05"
-updated: "2025-11-05"
-state: "exploring"
+updated: "2025-11-14"
+state: "paused"
 hypothesis: "DonatePage のUI テストが失敗している原因は、HeroProvider が不要に呼び出されているか、テストセットアップが不適切である可能性がある"
 options:
   - "DonatePage から useHeroContext() の呼び出しを削除する（値を使用していないため）"
   - "テストモックに useHeroContext のモックを追加する"
   - "テストで DonatePage を HeroProvider でラップする"
   - "useHeroContext() の呼び出しを条件付きにして、テスト環境では呼び出さないようにする"
-open_questions:
-  - "なぜ DonatePage に useHeroContext() が追加されたのか？（値を使用していない）"
-  - "他のページコンポーネント（HomePage、DonorsPage）との設計の一貫性はどうあるべきか？"
-  - "HeroProvider の責任範囲とページコンポーネントの依存関係はどうあるべきか？"
+open_questions: []
 next_action_by: "@penne-0505"
 review_due: "2025-11-12"
 ttl_days: 30
@@ -35,6 +32,12 @@ references:
 ## 概要
 
 現在、UI関連のテストで `DonatePage React UI` の全5件のテストが失敗している。エラー内容は全て `useHeroContext must be used within a HeroProvider` である。本ドキュメントでは、この失敗の原因を分析し、コードの問題なのか、テストの想定が誤っているのかを考察する。
+
+### 2025-11-14 更新
+
+- `tests/mocks/ui-hooks.ts` に `useHeroContext` と `HeroProvider` のモックを実装し、`scripts/alias-loader.mjs` で差し替えることで UI テストの失敗を解消した。
+- `DonatePage` は `setShouldDeemphasizeButton` を利用してヒーローセクションの強調状態を制御しているため、Context 自体は正当な依存関係である。
+- 本ドキュメントは調査結果の記録として保持しつつ、当面の追加アクションは不要なため `state: paused` とする。
 
 ## 現状の問題
 
@@ -78,21 +81,22 @@ Error: useHeroContext must be used within a HeroProvider
 
 #### DonatePage の実装
 
-`components/pages/donate-page.tsx` (L27-28):
+`components/pages/donate-page.tsx` (L25-34):
 ```typescript
 export function DonatePage() {
-  useHeroContext();
+  const { setShouldDeemphasizeButton } = useHeroContext();
   const { status, login, logout, refresh, isRefreshing } = useSession();
+
+  useEffect(() => {
+    setShouldDeemphasizeButton(true);
+    return () => {
+      setShouldDeemphasizeButton(false);
+    };
+  }, [setShouldDeemphasizeButton]);
   // ...
 ```
 
-**重要な発見**: `useHeroContext()` が呼び出されているが、**その戻り値は使用されていない**。
-
-コンポーネント全体（327行）を調査した結果、`heroInView`、`heroRef`、`hasHeroSection` のいずれも使用されていないことを確認：
-```bash
-$ grep -E "hero(InView|Ref|Section)" components/pages/donate-page.tsx
-# （出力なし）
-```
+`DonatePage` はヒーローセクションに設置されたグローバル CTA ボタンの強調状態を制御するため、`setShouldDeemphasizeButton` を呼び出している。これにより、寄付フローへ進むページではヒーローセクションのボタンを抑制し、画面内の重複アクションを避けている。
 
 #### 他のページコンポーネントとの比較
 
@@ -179,31 +183,22 @@ export default function AppShellLayout({ children }: { readonly children: ReactN
 
 ### コードの問題か、テストの問題か？
 
-**結論: コードの問題**
+**結論: テストセットアップの問題**
 
 理由：
-1. **DonatePage は `useHeroContext()` の戻り値を使用していない**
-   - `heroInView`、`heroRef`、`hasHeroSection` のいずれも参照されていない
-   - 単に Context が利用可能かチェックしているだけで、機能的な意味がない
+1. **DonatePage は Context を利用してグローバル CTA の強調状態を制御している**
+   - `setShouldDeemphasizeButton` の呼び出しは実装上必要な副作用であり、依存自体は正当。
 
-2. **他のページコンポーネントとの設計の不一致**
-   - `HomePage`: Context の値を実際に使用（`heroRef`）
-   - `DonorsPage`: Context を使用しない
-   - `DonatePage`: Context を呼び出すが値を使用しない ← **不整合**
+2. **プロダクションでは常に HeroProvider 配下で描画される**
+   - `app/(main)/layout.tsx` でアプリ全体が `HeroProvider` にラップされているため、実運用ではエラーにならない。
 
-3. **テストが合理的な範囲をテストしている**
-   - テストはページコンポーネント単体の振る舞いを検証している
-   - 外部の Context Provider への依存を最小限にするのは良い設計
-   - `DonorsPage` のテストが成功していることから、テストアプローチ自体は正しい
+3. **テストモックが HeroContext を差し替えていなかった**
+   - `scripts/alias-loader.mjs` は主要な UI フックをモックへ差し替えているが、`@/lib/ui/contexts/hero-context` だけ未登録だった。
+   - そのため、テスト環境では Provider を持たない実装が呼ばれ、`useHeroContext must be used within a HeroProvider` が発生した。
 
 ### なぜこの状態になったのか？
 
-仮説：
-- 初期実装時に、全てのページで `useHeroContext()` を呼び出す方針だった可能性
-- または、後から `DonatePage` でも Hero セクションを追加する予定だった可能性
-- 実装が完了せず、不要な `useHeroContext()` 呼び出しだけが残った
-
-現在のコードベースを見る限り、Git履歴が浅く、具体的な導入経緯は不明。
+既存の UI テストは `useSession` などのフックをモック化する前提で設計されており、Context も同様に差し替える想定だった。しかし HeroContext の追加時にモック登録が抜け落ちたことで、テスト専用の実装との整合性が崩れたと推測される。
 
 ## 考察
 
@@ -223,38 +218,21 @@ export default function AppShellLayout({ children }: { readonly children: ReactN
 
 ### 推奨される修正方針
 
-#### オプション1: DonatePage から useHeroContext() を削除（推奨）
+#### オプション1: DonatePage から useHeroContext() を削除
+
+**評価**:
+- `setShouldDeemphasizeButton` はグローバル CTA の挙動を調整するために必要であり、削除すると UX が変化する。
+- そのため、本オプションは現在の要件と矛盾するため採用しない。
+
+#### オプション2: テストモックに useHeroContext を追加（採用）
 
 **理由**:
-- 最もシンプルで明確
-- 不要なコードを削除するのは常に良い実践
-- `DonorsPage` と設計を統一できる
-- テストの修正が不要
+- 本番実装の依存関係を維持したままテストの安定性を確保できる。
+- 既存のフックモック戦略（`useSession` など）と整合する。
 
-**影響**:
-- プロダクション環境での動作に影響なし（値を使用していないため）
-- テストが全て成功するようになる
-
-**変更内容**:
-```diff
-export function DonatePage() {
--  useHeroContext();
-  const { status, login, logout, refresh, isRefreshing } = useSession();
-```
-
-#### オプション2: テストモックに useHeroContext を追加
-
-**理由**:
-- 将来的に `DonatePage` でも Hero 機能を使う予定がある場合
-- コンポーネントの構造を変えずにテストを通す
-
-**欠点**:
-- 使用されていない Context への依存が残る
-- 設計の不明瞭さが継続する
-
-**変更内容**:
-1. `tests/mocks/ui-hooks.ts` に `useHeroContext` モックを追加
-2. `scripts/alias-loader.mjs` に Context のオーバーライドを追加
+**実施内容**:
+1. `tests/mocks/ui-hooks.ts` に `useHeroContext`／`HeroProvider` のモックを追加し、`setShouldDeemphasizeButton` の副作用を模倣。
+2. `scripts/alias-loader.mjs` に HeroContext のオーバーライドを登録し、テスト環境で自動的にモックを利用するようにした。
 
 #### オプション3: テストで HeroProvider を提供
 
@@ -289,56 +267,56 @@ React Testing Library の推奨事項：
 
 ### 問題の所在
 
-**コードに問題がある** - 具体的には `DonatePage` に不要な `useHeroContext()` 呼び出しが存在する。
+**テストモックの不足が原因** - HeroContext の差し替えが抜けていたため、Provider なしで `useHeroContext` が実行されていた。
 
 ### 根拠
 
-1. **機能的根拠の欠如**: Context の値を使用していない
-2. **設計の不整合**: 他のページ（`DonorsPage`）は Context を使用していない
-3. **テストの合理性**: テストは適切な粒度でコンポーネントを検証している
-4. **保守性の低下**: 不要な依存関係はコードの理解を困難にする
+1. **実装要件**: `setShouldDeemphasizeButton` は Donate ページで必要な挙動。
+2. **プロダクションの正常性**: `HeroProvider` にラップされた構成で問題が発生していない。
+3. **モック構成のギャップ**: 他の UI フックはモック化されているが、HeroContext だけ未対応だった。
 
 ### 推奨アクション
 
-**オプション1（DonatePage から useHeroContext() を削除）を推奨**
+**オプション2（HeroContext モックの追加）を採用・実施**
 
 理由：
-- YAGNI (You Aren't Gonna Need It) 原則に従う
-- コードをシンプルに保つ
-- テスタビリティを向上させる
-- 他のページとの設計を統一
-- 変更が最小限（1行削除のみ）
+- 本番コードを変更せずにテストを安定化できる。
+- 既存のテスト戦略と整合し、将来の Context 変更時にも拡張しやすい。
 
 ### 実装提案
 
 ```typescript
-// components/pages/donate-page.tsx
-export function DonatePage() {
-  // useHeroContext(); を削除
-  const { status, login, logout, refresh, isRefreshing } = useSession();
-  // ...残りのコードは変更なし
+// tests/mocks/ui-hooks.ts
+function useHeroContext() {
+  return state.hero;
 }
+
+function HeroProvider({ children }) {
+  return createElement(Fragment, null, children);
+}
+
+// scripts/alias-loader.mjs
+['@/lib/ui/contexts/hero-context', path.join(projectRoot, 'dist', 'tests', 'mocks', 'ui-hooks.js')]
 ```
 
 この変更により：
-- テストが全て成功する
-- プロダクション環境での動作に影響なし
-- コードの意図がより明確になる
-- 将来的に Hero 機能が必要になった場合は、その時点で再度追加すれば良い
+- `DonatePage React UI` を含む UI テストがすべて成功する。
+- Context への依存関係を維持したままテストを自己完結させられる。
+- 新たな UI コンポーネントでも HeroContext を利用しやすくなる。
 
 ## 補足: 他の観点からの検討
 
 ### パフォーマンスへの影響
 
 現状では影響は軽微だが：
-- 不要な Context の購読は、わずかながら再レンダリングのトリガーになり得る
-- `HeroProvider` の state 変更時に、`DonatePage` も再評価される（値を使っていなくても）
+- `HeroProvider` の state 変更時に `DonatePage` も再評価される点は把握しておく（`setShouldDeemphasizeButton` が必要なため許容範囲）。
+- テスト環境では軽量なモックを利用するため、実行コストへの影響は僅少。
 
 ### 将来の拡張性
 
-もし将来的に `DonatePage` でも Hero セクションを追加する場合：
-- その時点で `useHeroContext()` を追加し、実際に値を使用すれば良い
-- 現時点で "念のため" 呼び出しておく必要はない（YAGNI原則）
+将来的にヒーローセクション周辺のロジックが拡張された場合でも：
+- モック経由で Context の振る舞いを注入できるため、テストコードの変更コストは限定的。
+- 実装側で値の追加があれば、モックにフィールドを増やすだけで追随可能。
 
 ### セキュリティ・プライバシー
 
@@ -351,9 +329,8 @@ export function DonatePage() {
 ## 次のステップ
 
 1. 本ドキュメントのレビューと承認
-2. `DonatePage` から `useHeroContext()` の削除
-3. テストの実行と全テストの成功確認
-4. 設計ガイドラインの更新（Context 使用の基準を明文化）
+2. HeroContext に新たなフィールドを追加する際はモックの更新手順を開発チェックリストに追記する
+3. UI テストの定期実行で HeroContext モックが最新状態かどうかを監視する
 
 ## 参考資料
 
