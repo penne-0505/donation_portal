@@ -12,17 +12,13 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 const baseClasses =
-  'inline-flex items-center justify-center rounded-xl font-semibold transition-glass focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none';
+  'inline-flex items-center justify-center rounded-xl font-semibold transition-glass focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/20 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent disabled:opacity-45 disabled:pointer-events-none';
 
 const variants: Record<ButtonVariant, string> = {
-  primary:
-    'bg-slate-900 text-white shadow-[0_6px_20px_rgba(17,24,39,0.18)] hover:bg-slate-900/90 focus-visible:ring-slate-900/30',
-  secondary:
-    'glass-md text-foreground shadow-minimal shadow-inner-light border-gradient-subtle hover-glass focus-visible:ring-foreground/20',
-  ghost:
-    'glass-sm text-foreground border border-transparent shadow-minimal shadow-inner-light hover-glass focus-visible:ring-muted-foreground/25',
-  outline:
-    'glass-sm text-foreground border border-white/20 shadow-minimal shadow-inner-light hover-glass focus-visible:ring-muted-foreground/25',
+  primary: 'bg-panel-strong text-foreground shadow-minimal shadow-inner-light hover-glass',
+  secondary: 'glass-md text-foreground shadow-minimal shadow-inner-light hover-glass',
+  ghost: 'glass-sm text-muted-foreground hover-glass',
+  outline: 'bg-transparent text-foreground border border-white/25 shadow-minimal hover-glass',
   discord:
     'bg-[#5865f2] text-white shadow-[0_12px_32px_rgba(88,101,242,0.28)] hover:bg-[#4752c4] focus-visible:ring-[#5865f2]/35',
 };

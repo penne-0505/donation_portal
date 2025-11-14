@@ -91,9 +91,10 @@ export function DonatePlanSelectionPanel({
           <Button
             type="button"
             size="lg"
-            className="donate-cta-animated w-full justify-center gap-2 text-base"
+            className="donate-cta-animated w-full justify-center gap-2 text-base text-white"
             onClick={() => void onCheckout()}
             disabled={checkout.isDisabled}
+            data-accent="primary"
           >
             <span className="flex items-center gap-2">
               {checkout.isProcessing ? (

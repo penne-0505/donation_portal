@@ -2,14 +2,15 @@
 title: "UI デザイントークン定義"
 domain: "donation-portal"
 status: "active"
-version: "0.1.2"
+version: "0.2.0"
 created: "2025-11-01"
-updated: "2025-11-12"
+updated: "2025-11-14"
 related_issues: []
 related_prs: []
 references:
   - docs/archives/legacy-static/styles/base.css
   - docs/plan/donation-portal/ui-refresh-2025/plan.md
+  - docs/plan/frontend/glass-aesthetic-alignment/plan.md
 ---
 
 # UI デザイントークン定義
@@ -39,22 +40,25 @@ Donation Portal の画面スタイルは `docs/archives/legacy-static/styles/bas
 | `--space-3xs` | `0.25rem` | アイコンとラベルの最小余白 |
 | `--space-2xs` | `0.375rem` | メタラベル、タグ内余白 |
 | `--space-xs` | `0.5rem` | 小要素の縦余白、フォーム周辺 |
-### 背景グラデーション
+### 背景レイヤ
 
-- ルート背景は `--bg-a`（#f7f9fb）、`--bg-b`（#eef2ff）、`--bg-c`（#fff7ed）を用いた 2 つの radial-gradient と、ベースの linear-gradient で構成する。
-- `.bg-root` を `body`／`AppShell` に適用し、背景は `radial-gradient(1000px 700px at 20% 0%, var(--bg-b) 0%, transparent 60%)` と `radial-gradient(900px 600px at 85% 20%, var(--bg-c) 0%, transparent 60%)` を重ねる。
-- ベースカラー `--color-root` は `#f7f9fb` とし、`linear-gradient(#fff, var(--bg-a))` の終端色と一致させる。
+- ルート背景は `--surface-root`（#f6f8fb）をベースに、`--accent-ambient-strong`/`--accent-ambient-soft`（いずれも 3〜5% のアルファ）を使った 2 つの radial-gradient と `linear-gradient(180deg, #fff, var(--surface-root))` を重ねる。
+- `.bg-root` は上記 3 レイヤーを `background-position: 10% -8% / 92% -6% / center` で配置し、青系アクセントの面積を最小限に抑える。
+- `.bg-panel` / `.bg-panel-strong` は `--surface-panel`（rgba(255,255,255,0.86)）と `--surface-panel-strong`（rgba(255,255,255,0.94)）を背景に、`var(--surface-divider*)` のボーダーと `var(--surface-glint)` の内向きハイライトでカード面を構成する。
+- `.bg-gloss` は最上位の光沢レイヤで、白寄りのボーダーと `inset 0 1px 0 var(--surface-glint)` を付与し、Hero や帯状のエリアで使用する。
 
 ### ガラスユーティリティ
 
-- `.glass-lg`（ヒーローカード）は `background: rgba(255, 255, 255, 0.14)`、`backdrop-filter: blur(20px) saturate(170%)`、`box-shadow: 0 16px 48px rgba(15, 23, 42, 0.14)` を既定とする。
-- `.glass` / `.glass-md`（標準カード）は `background: rgba(255, 255, 255, 0.12)`、`blur(16px) saturate(165%)`、`box-shadow: 0 10px 40px rgba(15, 23, 42, 0.12)`。
-- `.glass-sm`（チップ・小要素）は `background: rgba(255, 255, 255, 0.1)`、`blur(12px) saturate(150%)`、`box-shadow: 0 6px 24px rgba(15, 23, 42, 0.08)`。
-- すべての `.glass*` は `.border-gradient-subtle` を重ね、`::before` 疑似要素で `padding: 1px` と
-  `background-clip: content-box, border-box` を組み合わせた二重レイヤーを描画する。
-  `linear-gradient(180deg, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0.18) 100%)`
-  をボーダーレイヤーとして用い、Lightning CSS が `mask-composite` を変換してしまう本番ビルドでも
-  ガラス縁が崩れないようマスク表現に頼らない構成へ切り替えている。
+- `.glass` / `.glass-md` は `border-image: var(--glass-border-soft) 1` と `linear-gradient(180deg, rgba(255,255,255,0.26), rgba(255,255,255,0.04))` を組み合わせ、`box-shadow: 0 1px 2px rgba(15,23,42,0.1)`（0〜2px の範囲）と `inset 0 1px 0 rgba(255,255,255,0.28)` で光沢を付ける。
+- `.glass-sm` は blur を抑えた `linear-gradient(180deg, rgba(255,255,255,0.2), rgba(255,255,255,0.04))` を使い、ミニバッジでも 0〜1px の柔らかい影に統一する。
+- `.glass-lg` / `.glass-strong` は `var(--glass-border-strong)` を参照し、`backdrop-filter: blur(24px) saturate(160%)` と `inset 0 1px 0 rgba(255,255,255,0.45)` で段階的に強い光沢を演出する。
+- `.glass-card` は 28px の blur と縦方向の `linear-gradient(180deg, rgba(255,255,255,0.34), rgba(255,255,255,0.08))` を使い、`::before` の radial ハイライトで macOS Liquid Glass に合わせた光表現を再現する。
+- `.border-gradient-subtle` 自体も `linear-gradient(180deg, rgba(255,255,255,0.62), rgba(15,23,42,0.18))` の縦グラデーションに置き換え、マスクや極端な drop-shadow に頼らずアウトラインを描画する。
+
+### ホバー / グローユーティリティ
+
+- `.glow-accent-subtle` / `.glow-accent-medium` / `.hover-glass` / `.hover-glow` / `.cta-donate-glow` はすべて `var(--motion-duration-standard)`（260ms）のトランジションで統一し、ホバー差分は白〜グレーの `inset`/`box-shadow` だけで表現する。
+- `.donate-cta-animated` はニュートラルな `var(--cta-layer-base)` レイヤを既定とし、`data-accent="primary"` のみ深いアクセントを持つ。`@media (prefers-reduced-motion: reduce)` では `::before/::after` のトランジションを落として視覚効果を抑制する。
 | `--space-sm` | `0.75rem` | セクション内の段落間 |
 | `--space-md` | `1rem` | カード内の基本余白 |
 | `--space-lg` | `1.5rem` | カードの外側余白、スタック間隔 |
@@ -128,7 +132,7 @@ Light と Dark は `prefers-color-scheme` で自動切り替えし、同一ト�
 
 | コンポーネント | 使用トークン | 備考 |
 | --- | --- | --- |
-| `.button` | `--radius-pill`, `--transition-base`, `--shadow-sm` | `button--primary` は `#111827` のソリッド背景（`box-shadow: 0 6px 20px rgba(17, 24, 39, 0.18)`）でコントラスト 4.5:1 以上を確保。`button--secondary` は `glass-sm` を利用。 |
+| `.button` | `--radius-pill`, `--transition-base`, `.glass-*` | `button--primary` は `bg-panel-strong` + `hover-glass` により透明度／ボーダー強度のみで差分を出し、`button--secondary` は `glass-md` を共有する。`.donate-cta-animated` を重ねる場合は `data-accent="primary"` を 1 ページ 1 箇所に限定して付与し、CTA テキストは `text-white` を追加して濃色背景とのコントラストを担保する。 |
 | `.alert` | `--radius-md`, `--color-*-soft` | 種別ごとに soft/border/strong トークンを組み合わせる。 |
 | `.donor-card` | `--radius-md`, `--shadow-xs`, `--color-surface-alt` | Donors リスト用のカード表現。空状態は `.donor-empty`。 |
 | `.checkout-action` | `.button` + `.tag` + `.button__meta` を組み合わせ、メニュー単位の補足を表示。 | `--space-3xs`, `--text-xs` |

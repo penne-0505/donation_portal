@@ -31,10 +31,10 @@ export const ConsentToggle = React.forwardRef<HTMLButtonElement, ConsentTogglePr
         data-state={checked ? 'on' : 'off'}
         disabled={disabled}
         className={cn(
-          'group relative inline-flex h-[31px] w-[51px] shrink-0 items-center rounded-full transition-all duration-200 ease-macos focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+          'group relative inline-flex h-[31px] w-[51px] shrink-0 items-center rounded-full transition-colors duration-200 ease-macos focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/25 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-45',
           checked
-            ? 'bg-gradient-to-b from-[#5865f2] to-[#4752c4] shadow-[0_1px_3px_rgba(0,0,0,0.12),inset_0_1px_1px_rgba(255,255,255,0.06)]'
-            : 'bg-gradient-to-b from-white/[0.20] to-white/[0.12] shadow-[0_1px_2px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.25)]',
+            ? 'bg-white/30 shadow-[0_0_0_1px_rgba(255,255,255,0.35),0_0_18px_rgba(255,255,255,0.15)]'
+            : 'bg-white/15 shadow-[0_0_0_1px_rgba(255,255,255,0.2),inset_0_1px_0_rgba(255,255,255,0.35)]',
           className,
         )}
         onClick={handleClick}
@@ -43,14 +43,14 @@ export const ConsentToggle = React.forwardRef<HTMLButtonElement, ConsentTogglePr
         <span
           aria-hidden="true"
           className={cn(
-            'pointer-events-none absolute inset-0 rounded-full border transition-all duration-200 ease-macos',
-            checked ? 'border-[#4752c4]/60' : 'border-white/30',
+            'pointer-events-none absolute inset-[1px] rounded-full border transition-colors duration-200 ease-macos',
+            checked ? 'border-white/60' : 'border-white/30',
           )}
         />
         <span
           aria-hidden="true"
           className={cn(
-            'relative z-10 flex h-[27px] w-[27px] items-center justify-center rounded-full bg-white shadow-[0_1px_3px_rgba(0,0,0,0.2),0_0_0_0.5px_rgba(0,0,0,0.06)] transition-all duration-200 ease-macos',
+            'relative z-10 flex h-[27px] w-[27px] items-center justify-center rounded-full bg-white shadow-[0_1px_3px_rgba(15,23,42,0.2),0_0_0_0.5px_rgba(15,23,42,0.08)] transition-transform duration-200 ease-macos',
             checked ? 'translate-x-[22px]' : 'translate-x-[2px]',
           )}
         />
