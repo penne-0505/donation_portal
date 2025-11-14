@@ -50,10 +50,11 @@ Donation Portal の画面スタイルは `docs/archives/legacy-static/styles/bas
 - `.glass-lg`（ヒーローカード）は `background: rgba(255, 255, 255, 0.14)`、`backdrop-filter: blur(20px) saturate(170%)`、`box-shadow: 0 16px 48px rgba(15, 23, 42, 0.14)` を既定とする。
 - `.glass` / `.glass-md`（標準カード）は `background: rgba(255, 255, 255, 0.12)`、`blur(16px) saturate(165%)`、`box-shadow: 0 10px 40px rgba(15, 23, 42, 0.12)`。
 - `.glass-sm`（チップ・小要素）は `background: rgba(255, 255, 255, 0.1)`、`blur(12px) saturate(150%)`、`box-shadow: 0 6px 24px rgba(15, 23, 42, 0.08)`。
-- すべての `.glass*` は `.border-gradient-subtle` を重ね、`border: 1px solid transparent` と
-  `background-image: radial-gradient(120% 150% at 50% 0%, rgba(255, 255, 255, 0.3), transparent 70%), radial-gradient(140% 160% at 50% 120%, rgba(15, 23, 42, 0.18), transparent 92%)`
-  を `background-origin: border-box`／`background-clip: padding-box, border-box` で適用し、
-  白からネイビーへ落ちる直線グラデーションを使わずに角の白浮きを抑えたガラス縁を形成する。
+- すべての `.glass*` は `.border-gradient-subtle` を重ね、`::before` 疑似要素で `padding: 1px` と
+  `background-clip: content-box, border-box` を組み合わせた二重レイヤーを描画する。
+  `linear-gradient(180deg, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0.18) 100%)`
+  をボーダーレイヤーとして用い、Lightning CSS が `mask-composite` を変換してしまう本番ビルドでも
+  ガラス縁が崩れないようマスク表現に頼らない構成へ切り替えている。
 | `--space-sm` | `0.75rem` | セクション内の段落間 |
 | `--space-md` | `1rem` | カード内の基本余白 |
 | `--space-lg` | `1.5rem` | カードの外側余白、スタック間隔 |

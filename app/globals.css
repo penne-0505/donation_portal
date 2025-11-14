@@ -317,22 +317,19 @@
     inset: 0;
     border-radius: inherit;
     pointer-events: none;
-    /* ! background該当箇所 */
-    background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.26) 0%,
-      rgba(255, 255, 255, 0.14) 42%,
-      rgba(255, 255, 255, 0.08) 58%,
-      rgba(15, 23, 42, 0.18) 100%
-    );
-    mask:
-      linear-gradient(#fff 0 0) padding-box,
-      linear-gradient(#fff 0 0);
-    mask-composite: exclude;
-    -webkit-mask:
-      linear-gradient(#fff 0 0) padding-box,
-      linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
+    box-sizing: border-box;
+    padding: 1px;
+    background:
+      linear-gradient(transparent, transparent) padding-box,
+      linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.26) 0%,
+          rgba(255, 255, 255, 0.14) 42%,
+          rgba(255, 255, 255, 0.08) 58%,
+          rgba(15, 23, 42, 0.18) 100%
+        )
+        border-box;
+    background-clip: content-box, border-box;
     opacity: 0.92;
   }
 
