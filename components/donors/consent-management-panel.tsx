@@ -39,16 +39,16 @@ export function ConsentManagementPanel({
         />
 
         {status.state === 'error' ? (
-          <div className="flex items-start gap-2 rounded-xl border border-red-200/80 bg-red-50 px-4 py-3 text-sm text-red-700 transition-glass glow-status-error">
-            <AlertCircle className="mt-0.5 h-4 w-4" aria-hidden />
+          <div className="flex items-start gap-2 rounded-xl border border-white/30 px-4 py-3 text-sm text-foreground transition-glass glow-status-error">
+            <AlertCircle className="mt-0.5 h-4 w-4 text-red-500" aria-hidden />
             <span>{status.message}</span>
           </div>
         ) : null}
 
         {isSignedIn ? (
           <div className="space-y-4">
-            <div className="flex items-center gap-3 rounded-xl glass-sm border-gradient-subtle px-4 py-3 text-left text-sm text-muted-foreground shadow-minimal shadow-inner-light transition-glass glow-status-success">
-              <CheckCircle2 className="h-5 w-5 text-foreground" aria-hidden />
+            <div className="flex items-center gap-3 rounded-xl glass-sm border-gradient-subtle px-4 py-3 text-left text-sm text-muted-foreground transition-glass glow-status-success">
+              <CheckCircle2 className="h-5 w-5 text-emerald-500" aria-hidden />
               <div className="flex flex-col">
                 <span className="text-xs font-semibold text-foreground">現在の掲示状態</span>
                 <span>{consentPublic ? '同意しています' : '同意していません'}</span>
@@ -94,8 +94,8 @@ export function ConsentManagementPanel({
         )}
 
         {consentError ? (
-          <div className="flex items-start gap-2 rounded-md border border-red-200/70 bg-red-50 px-3 py-2 text-sm text-red-700 transition-glass glow-status-error">
-            <AlertCircle className="mt-0.5 h-4 w-4" aria-hidden />
+          <div className="flex items-start gap-2 rounded-md border border-white/30 px-3 py-2 text-sm text-foreground transition-glass glow-status-error">
+            <AlertCircle className="mt-0.5 h-4 w-4 text-red-500" aria-hidden />
             <span>{consentError}</span>
           </div>
         ) : null}

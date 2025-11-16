@@ -12,7 +12,7 @@ export function HomePage() {
     { icon: Users, label: '支援者リストを公開' },
   ];
   const ctaGlowContainerClass =
-    'inline-flex overflow-hidden rounded-2xl glass-sm border-gradient-subtle shadow-minimal shadow-inner-light transition-glass';
+    'inline-flex overflow-hidden rounded-2xl glass-sm border-gradient-subtle transition-glass';
   const ctaPrimaryGlowContainerClass = `${ctaGlowContainerClass} p-[1px]`;
 
   const handleCTAClick = () => {
@@ -75,7 +75,7 @@ export function HomePage() {
             {highlightBadges.map(({ icon: Icon, label }) => (
               <div
                 key={label}
-                className="rounded-full glass-sm border-gradient-subtle px-4 py-2 text-center text-xs font-medium text-foreground shadow-minimal shadow-inner-light transition-glass hover-glass md:text-sm select-none"
+                className="rounded-full glass-sm border-gradient-subtle px-4 py-2 text-center text-xs font-medium text-foreground transition-glass hover-glass md:text-sm select-none"
               >
                 <span className="flex items-center justify-center gap-2">
                   <Icon className="h-4 w-4" aria-hidden />

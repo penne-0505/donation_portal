@@ -47,13 +47,13 @@ export function DonorListPanel({
         </div>
 
         {error ? (
-          <div className="flex items-start gap-2 rounded-xl border border-red-200/80 bg-red-50 px-4 py-3 text-sm text-red-700 transition-glass glow-status-error">
-            <AlertCircle className="mt-0.5 h-4 w-4" aria-hidden />
+          <div className="flex items-start gap-2 rounded-xl border border-white/30 px-4 py-3 text-sm text-foreground transition-glass glow-status-error">
+            <AlertCircle className="mt-0.5 h-4 w-4 text-red-500" aria-hidden />
             <span>{error}</span>
           </div>
         ) : null}
 
-        <div className="min-h-[180px] rounded-2xl glass-sm border-gradient-subtle px-4 py-6 shadow-minimal shadow-inner-light transition-glass">
+        <div className="min-h-[180px] rounded-2xl glass-sm border-gradient-subtle px-4 py-6 transition-glass">
           {isLoading ? (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <RefreshCw className="h-4 w-4 animate-spin" aria-hidden />

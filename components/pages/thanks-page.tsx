@@ -22,7 +22,7 @@ export function ThanksPage() {
       <Card
         surface="glass"
         padding="lg"
-        className="flex w-full max-w-2xl flex-col gap-8 glass-lg p-10 sm:p-12"
+        className="flex w-full max-w-2xl flex-col gap-8 p-10 sm:p-12"
       >
         <div className="flex flex-col items-center gap-6">
           <span className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-foreground text-background animate-bounce-in">
@@ -43,7 +43,7 @@ export function ThanksPage() {
               </span>
             }
           />
-          <div className="inline-flex flex-col gap-2 rounded-lg glass-sm border-gradient-subtle px-4 py-3 shadow-minimal shadow-inner-light transition-glass">
+          <div className="inline-flex flex-col gap-2 rounded-lg glass-sm border-gradient-subtle px-4 py-3 transition-glass">
             <span className="text-sm font-medium text-muted-foreground">あなたの支援が</span>
             <span className="text-lg font-semibold text-foreground">
               コミュニティの未来を支えます
@@ -54,17 +54,17 @@ export function ThanksPage() {
           </p>
         </div>
 
-        <div className="rounded-lg glass-sm border border-dashed border-white/25 px-6 py-5 text-sm text-muted-foreground shadow-minimal shadow-inner-light transition-glass">
+        <div className="rounded-lg glass-sm border border-dashed border-white/25 px-6 py-5 text-sm text-muted-foreground transition-glass">
           この寄付は任意のものであり、対価や特典、税控除の対象にはなりません。領収書は Stripe
           から送信されるメールをご確認ください。
         </div>
 
         <div className="flex justify-center">
-          <div className="relative w-full max-w-sm overflow-hidden rounded-2xl glass-sm border-gradient-subtle shadow-minimal shadow-inner-light transition-glass">
+          <div className="relative w-full max-w-sm overflow-hidden rounded-2xl glass-sm border-gradient-subtle transition-glass">
             <Button
               href="/donors"
               size="md"
-              variant="primary"
+              variant="secondary"
               className="w-full gap-2 px-8 sm:text-base"
               aria-label="支援者一覧を見る"
             >

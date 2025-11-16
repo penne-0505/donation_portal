@@ -24,7 +24,7 @@ export function DonateFlowStepsPanel() {
           {steps.map((step, index) => (
             <li
               key={step}
-              className="rounded-2xl glass-sm border-gradient-subtle px-4 py-4 text-sm text-muted-foreground shadow-minimal shadow-inner-light"
+              className="rounded-2xl glass-sm border-gradient-subtle px-4 py-4 text-sm text-muted-foreground"
             >
               <span className="text-xs font-semibold uppercase tracking-wide text-foreground/70">
                 Step {index + 1}

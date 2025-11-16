@@ -36,7 +36,7 @@ export function DonatePlanSelectionPanel({
   ctaStatusId,
 }: DonatePlanSelectionPanelProps) {
   return (
-    <Card surface="glass" padding="lg" className="glass-lg p-0">
+    <Card surface="glass" padding="lg" className="p-0">
       <div className="flex flex-col gap-6 p-6 sm:p-8">
         <SectionHeading
           headingId={planHeadingId}
@@ -64,10 +64,10 @@ export function DonatePlanSelectionPanel({
                 data-selected={isSelected ? 'true' : 'false'}
                 onClick={() => onSelect(preset)}
                 className={cn(
-                  'plan-card group flex h-full flex-col justify-between gap-4 rounded-2xl border px-5 py-4 text-left text-sm transition-glass focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/30 focus-visible:ring-offset-2',
+                  'plan-card group flex h-full flex-col justify-between gap-4 rounded-2xl border px-5 py-4 text-left text-sm transition-glass focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/25 focus-visible:ring-offset-2',
                   isSelected
                     ? 'glass-md border-white/60 shadow-glass-elevated glow-accent-medium'
-                    : 'glass-sm border-gradient-subtle shadow-minimal',
+                    : 'glass-sm border-gradient-subtle',
                 )}
               >
                 <div className="space-y-1">
@@ -108,10 +108,10 @@ export function DonatePlanSelectionPanel({
 
           {checkout.error ? (
             <div
-              className="flex items-start gap-2 rounded-xl border border-red-200/80 bg-red-50 px-4 py-3 text-sm text-red-700 transition-glass glow-status-error"
+              className="flex items-start gap-2 rounded-xl border border-white/30 px-4 py-3 text-sm text-foreground transition-glass glow-status-error"
               role="alert"
             >
-              <AlertCircle className="mt-0.5 h-4 w-4" aria-hidden />
+              <AlertCircle className="mt-0.5 h-4 w-4 text-red-500" aria-hidden />
               <span>{checkout.error}</span>
             </div>
           ) : null}
