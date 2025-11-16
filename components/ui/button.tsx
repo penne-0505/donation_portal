@@ -24,7 +24,7 @@ const variants: Record<ButtonVariant, string> = {
   outline:
     'border-white/25 bg-transparent text-foreground hover:border-white/40 focus-visible:ring-foreground/15',
   discord:
-    'border-[#5865f2]/40 bg-[#5865f2]/10 text-[#5865f2] hover:bg-[#5865f2]/15 focus-visible:ring-[#5865f2]/30',
+    'border-transparent bg-[#5865f2] text-white shadow-soft hover:bg-[#4752c4] focus-visible:ring-[#5865f2]/35',
 };
 
 const accentMap: Record<ButtonVariant, string> = {

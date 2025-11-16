@@ -4,7 +4,7 @@ domain: "donation-portal"
 status: "active"
 version: "0.2.0"
 created: "2025-11-01"
-updated: "2025-11-15"
+updated: "2025-11-17"
 related_issues: []
 related_prs: []
 references:
@@ -49,10 +49,11 @@ Donation Portal の画面スタイルは `docs/archives/legacy-static/styles/bas
 
 ### ガラスユーティリティ
 
-- `.glass` / `.glass-md` は `border-image: var(--glass-border-soft) 1` と `linear-gradient(180deg, rgba(255,255,255,0.3), rgba(255,255,255,0.06))` を共有し、`var(--glass-shadow-soft)`（0〜2px）+ `inset 0 1px 0 rgba(255,255,255,0.3)` のみで立体感を表現する。
-- `.glass-sm` は blur を抑えたグラデーションでチップ／バッジにも使える薄さとし、`.glass-lg` / `.glass-strong` は `var(--glass-border-strong)` と 22px 程度の blur で一段強い層を作るが、いずれも 0〜2px のドロップシャドウに収める。
-- `.glass-card` は `linear-gradient(180deg, rgba(255,255,255,0.36), rgba(255,255,255,0.08))` と `border-image: var(--glass-border-strong)` で統一し、radial ハイライトの擬似要素を撤廃しても天面の光沢が維持されるよう再設計している。
-- `.border-gradient-subtle` は 1px の淡い縦グラデーション枠のみで装飾し、追加の drop-shadow に頼らず輪郭を描写する。
+- `.glass` / `.glass-md` は `border-image: var(--glass-border-soft) 1` を維持しつつ、`linear-gradient(145deg, rgba(255,255,255,0.62) → rgba(255,255,255,0.14))` + `linear-gradient(180deg, rgba(255,255,255,0.32) → rgba(255,255,255,0.22))` の 2 レイヤで左上から光が差し込む白グラデーションを再現する。全体には極薄の `--glass-shadow-soft`（0 8px 24px / 4.5%）と `inset 0 1px 0 rgba(255,255,255,0.3)` のみで浮遊感を付与し、`::before` の radial highlight で左上に柔らかい白影を落としている。
+- `.glass-sm` は `linear-gradient(140deg, rgba(255,255,255,0.55) → rgba(255,255,255,0.18))` を重ね、`box-shadow: inset 0 1px 0 rgba(255,255,255,0.42)` と radial highlight を共有してピルでもガラスらしさを維持する。`.glass-lg` / `.glass-strong` も `var(--glass-border-strong)` と 22px blur を保ちつつ、`linear-gradient(140deg, rgba(255,255,255,0.75) → rgba(255,255,255,0.28))` で左上発光を強めている。
+- `.glass-card` は `linear-gradient(140deg, rgba(255,255,255,0.68) → rgba(255,255,255,0.22))` をベースに、わずかな 2nd レイヤ（`linear-gradient(180deg, rgba(255,255,255,0.36) → rgba(255,255,255,0.3))`）を敷いて全面が均質な白レイヤで包まれるよう再構成している。
+- `.site-header .header-surface` は `glass-sm` ベースのまま `--glass-shadow-soft` + `inset 0 1px 0 rgba(255,255,255,0.42)` を重ね、sticky でも極薄の落ち影と左上ハイライトを維持する。`data-top="true"` 状態では影と背景を無効化してヒーローセクション上で溶け込ませる。
+- `.border-gradient-subtle` は 1px の縦グラデーション枠を全域ホワイトトーン（0.62 → 0.12）へ再調整し、画面下部にだけ落ちる影を発生させない。
 
 ### ホバー / グローユーティリティ
 

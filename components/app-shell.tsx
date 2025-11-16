@@ -108,8 +108,8 @@ export function AppShell({ children, className }: AppShellProps) {
 
   return (
     <div className="app-shell relative flex min-h-screen flex-col bg-root text-foreground">
-      <header className="sticky top-0 z-40 px-4 pt-4">
-        <div className="relative mx-auto flex max-w-6xl items-center justify-between rounded-2xl glass-sm border-gradient-subtle px-5 py-3 transition-glass">
+      <header className="site-header sticky top-0 z-40 px-4 pt-4">
+        <div className="header-surface relative mx-auto flex max-w-6xl items-center justify-between rounded-2xl glass-sm border-gradient-subtle px-5 py-3 transition-glass">
           <Link
             href="/"
             className="text-base font-semibold tracking-tight text-foreground transition-colors transition-macos hover:opacity-80"
