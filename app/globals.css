@@ -1,56 +1,83 @@
 @import 'tailwindcss';
 
+/* ==========================================================================
+   Donation Portal Global Styles
+   グローバルなテーマトークンとユーティリティを整理し、各スタイルの効果を把握しやすくする。
+   ========================================================================= */
+
+/* -- テーマトークン ------------------------------------------------------- */
 @theme inline {
+  /* フォントスタック: 本文とディスプレイで差し替え */
   --font-sans:
     var(--font-inter), var(--font-noto-sans-jp), -apple-system, BlinkMacSystemFont, 'Segoe UI',
     system-ui, sans-serif;
   --font-display:
     var(--font-zen-kaku-gothic-new), var(--font-inter), var(--font-noto-sans-jp), -apple-system,
     BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+
+  /* カラーパレット: ルート背景/文字/境界など */
   --color-root: #f7f9fb;
   --color-background: #ffffff;
   --color-foreground: #111827;
   --color-muted: #475569;
   --color-muted-foreground: #64748b;
   --color-border: rgba(15, 23, 42, 0.12);
+
+  /* サーフェス・アクセントの透明層 */
   --color-surface: rgba(255, 255, 255, 0.72);
   --color-surface-strong: rgba(255, 255, 255, 0.88);
   --color-accent: #5865f2;
   --shadow-soft: 0 1px 2px rgba(15, 23, 42, 0.04);
+
+  /* アニメーション用 easing */
   --ease-glass: cubic-bezier(0.24, 0.56, 0.28, 0.98);
   --ease-macos: cubic-bezier(0.4, 0, 0.2, 1);
   --transition-timing-function-macos: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* -- ルート変数: ガラス/アクセント用の細分化 ---------------------------- */
 :root {
   color-scheme: light;
-  --surface-root: #f6f8fb;
-  --surface-panel: rgba(255, 255, 255, 0.86);
-  --surface-panel-strong: rgba(255, 255, 255, 0.94);
-  --surface-gloss: rgba(255, 255, 255, 0.98);
-  --surface-divider: rgba(15, 23, 42, 0.08);
-  --surface-divider-strong: rgba(15, 23, 42, 0.16);
-  --surface-glint: rgba(255, 255, 255, 0.55);
-  --accent-ambient-soft: rgba(88, 101, 242, 0.035);
-  --accent-ambient: rgba(88, 101, 242, 0.05);
-  --accent-ambient-strong: rgba(88, 101, 242, 0.07);
-  --accent-ink: #111827;
-  --glass-border-soft: linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.08));
-  --glass-border-strong: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.88),
-    rgba(94, 105, 140, 0.24)
-  );
+
+  /* 背景レイヤー: 画面全体の明度や奥行き感を決定 */
+  --surface-root: #fdfefe;
+  --surface-root-muted: #f3f6fb;
+  --surface-panel: rgba(255, 255, 255, 0.9);
+  --surface-panel-strong: rgba(255, 255, 255, 0.96);
+  --surface-gloss: rgba(255, 255, 255, 0.985);
+  --surface-divider: rgba(15, 23, 42, 0.07);
+  --surface-divider-strong: rgba(15, 23, 42, 0.14);
+  --surface-glint: rgba(255, 255, 255, 0.58);
+
+  /* アクセントグラデーション: ヒーロー背景の光やディスコードカラーの揺らぎを再現 */
+  --accent-ambient-soft: rgba(88, 101, 242, 0.03);
+  --accent-ambient: rgba(88, 101, 242, 0.04);
+  --accent-ambient-strong: rgba(88, 101, 242, 0.05);
+  --accent-ink: #0f172a;
+
+  /* ガラスの境界/影: border-image + shadow で半透明カードの厚みを演出 */
+  --glass-border-soft: linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(15, 23, 42, 0.08));
+  --glass-border-strong: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(15, 23, 42, 0.15));
   --glass-shadow-soft: 0 1px 2px rgba(15, 23, 42, 0.08);
-  --glass-shadow-strong: 0 2px 4px rgba(15, 23, 42, 0.12);
+  --glass-shadow-strong: 0 2px 2px rgba(15, 23, 42, 0.12);
+
+  /* CTA・ハイライト: 立体的なボタンや強調バッジを支えるトークン */
   --glow-ambient-color: rgba(255, 255, 255, 0.6);
   --hover-ring: rgba(15, 23, 42, 0.12);
-  --cta-layer-base: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(243, 245, 250, 0.9));
-  --cta-layer-muted: rgba(17, 24, 39, 0.3);
-  --cta-layer-ink: rgba(17, 24, 39, 0.92);
-  --motion-duration-standard: 260ms;
+  --cta-layer-base: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(246, 248, 252, 0.85));
+  --cta-layer-muted: rgba(15, 23, 42, 0.1);
+  --cta-layer-ink: rgba(15, 18, 32, 0.92);
+  --cta-layer-primary: linear-gradient(180deg, rgba(12, 17, 31, 0.94), rgba(18, 22, 37, 0.88));
+  --motion-duration-standard: 240ms;
+
+  /* レガシーカラーパレット: フォールバック用途 */
+  --surface-legacy-root: #f6f8fb;
+  --surface-legacy-panel: rgba(255, 255, 255, 0.86);
+  --surface-legacy-panel-strong: rgba(255, 255, 255, 0.94);
+  --surface-legacy-gloss: rgba(255, 255, 255, 0.98);
 }
 
+/* -- ベースレイヤー: 全体の配色とリンク ---------------------------------- */
 @layer base {
   * {
     @apply border-border/70;
@@ -66,11 +93,14 @@
   }
 }
 
+/* -- コンポーネント層: 個別 UI ブロック ---------------------------------- */
 @layer components {
+  /* ルートレイアウト: ヘッダーやモーダルのブレンドを隔離し、背景ノイズの影響を防ぐ */
   .app-shell {
     isolation: isolate;
   }
 
+  /* CTA ボタン: 擬似要素でコアとハイライト層を分け、ホバーで発光→高揚感を出す */
   .donate-cta-animated {
     position: relative;
     isolation: isolate;
@@ -86,7 +116,7 @@
     background: var(--cta-layer-base);
     box-shadow:
       inset 0 0 0 1px var(--surface-divider),
-      0 1px 2px rgba(15, 23, 42, 0.18);
+      0 1px 2px rgba(15, 23, 42, 0.16);
     z-index: -2;
     transition:
       background var(--motion-duration-standard) var(--ease-macos),
@@ -98,10 +128,10 @@
   .donate-cta-animated::before {
     content: '';
     position: absolute;
-    inset: -20%;
-    border-radius: 999px;
-    background: radial-gradient(circle at 35% 50%, rgba(255, 255, 255, 0.25) 0%, transparent 55%);
-    opacity: 0;
+    inset: 10%;
+    border-radius: inherit;
+    background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.45), transparent 60%);
+    opacity: 0.2;
     transition: opacity var(--motion-duration-standard) var(--ease-macos);
     z-index: -1;
     pointer-events: none;
@@ -109,14 +139,14 @@
 
   .donate-cta-animated:not(:disabled):not([aria-disabled='true']):hover::before,
   .donate-cta-animated:not(:disabled):not([aria-disabled='true']):focus-visible::before {
-    opacity: 1;
+    opacity: 0.45;
   }
 
   .donate-cta-animated:not(:disabled):not([aria-disabled='true']):hover::after,
   .donate-cta-animated:not(:disabled):not([aria-disabled='true']):focus-visible::after {
     box-shadow:
       inset 0 0 0 1px var(--surface-divider-strong),
-      0 2px 6px rgba(15, 23, 42, 0.22);
+      0 1px 2px rgba(15, 23, 42, 0.18);
   }
 
   .donate-cta-animated:disabled::before,
@@ -131,20 +161,20 @@
   }
 
   .donate-cta-animated[data-accent='primary']::after {
-    background: linear-gradient(180deg, rgba(16, 21, 36, 0.95), rgba(19, 26, 44, 0.85));
+    background: var(--cta-layer-primary);
     box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.12),
-      0 2px 12px rgba(15, 23, 42, 0.32);
+      inset 0 0 0 1px rgba(255, 255, 255, 0.18),
+      0 2px 2px rgba(15, 23, 42, 0.2);
   }
 
   .donate-cta-animated[data-accent='primary']::before {
     background:
-      radial-gradient(circle at 30% 50%, rgba(88, 101, 242, 0.22), transparent 55%),
-      radial-gradient(circle at 70% 50%, rgba(255, 255, 255, 0.3), transparent 60%);
+      radial-gradient(circle at 45% 20%, rgba(88, 101, 242, 0.16), transparent 58%),
+      radial-gradient(circle at 60% 0%, rgba(255, 255, 255, 0.3), transparent 65%);
   }
 
   .donate-cta-animated[data-accent='primary']:not(:disabled):not([aria-disabled='true'])::before {
-    opacity: 0.65;
+    opacity: 0.55;
   }
 
   .donate-cta-animated[data-accent='primary']:not(:disabled):not(
@@ -158,147 +188,11 @@
 
   .donate-cta-animated[data-accent='primary']:disabled::after,
   .donate-cta-animated[data-accent='primary'][aria-disabled='true']::after {
-    background: linear-gradient(180deg, rgba(28, 34, 54, 0.84), rgba(24, 29, 46, 0.78));
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-  }
-}
-
-@layer utilities {
-  .font-hero {
-    font-family: var(--font-display);
-    letter-spacing: -0.01em;
+    background: linear-gradient(180deg, rgba(24, 30, 49, 0.82), rgba(20, 25, 43, 0.76));
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
   }
 
-  .font-hero-sub {
-    font-family: var(--font-noto-sans-jp), var(--font-sans);
-    letter-spacing: 0;
-  }
-
-  .bg-root {
-    background-color: var(--surface-root);
-    background-image:
-      radial-gradient(980px 680px at 10% -8%, var(--accent-ambient-strong) 0%, transparent 65%),
-      radial-gradient(1020px 640px at 90% -6%, var(--accent-ambient-soft) 0%, transparent 68%),
-      linear-gradient(180deg, #ffffff, var(--surface-root));
-    background-repeat: no-repeat;
-    background-position:
-      10% -8%,
-      92% -6%,
-      center;
-  }
-
-  .bg-panel,
-  .bg-surface {
-    background-color: var(--surface-panel);
-    border: 1px solid var(--surface-divider);
-  }
-
-  .bg-panel-strong,
-  .bg-surface-strong {
-    background-color: var(--surface-panel-strong);
-    border: 1px solid var(--surface-divider-strong);
-    box-shadow: inset 0 1px 0 var(--surface-glint);
-  }
-
-  .bg-gloss {
-    background-color: var(--surface-gloss);
-    border: 1px solid rgba(255, 255, 255, 0.7);
-    box-shadow: inset 0 1px 0 var(--surface-glint);
-  }
-
-  .text-muted-foreground {
-    color: var(--color-muted);
-  }
-
-  .shadow-soft {
-    box-shadow: var(--shadow-soft);
-  }
-}
-
-@layer utilities {
-  .transition-glass {
-    transition-property: background-color, border-color, color, filter, box-shadow, opacity;
-    transition-duration: var(--motion-duration-standard);
-    transition-timing-function: var(--ease-macos);
-  }
-
-  :is(.glass, .glass-sm, .glass-md, .glass-lg, .glass-strong) {
-    position: relative;
-    border: 1px solid transparent;
-    border-image: var(--glass-border-soft) 1;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0.04));
-    box-shadow:
-      0 1px 2px rgba(15, 23, 42, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.28);
-    backdrop-filter: blur(18px) saturate(135%) !important;
-    -webkit-backdrop-filter: blur(18px) saturate(135%) !important;
-  }
-
-  .glass-sm {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.04));
-    box-shadow:
-      0 1px 2px rgba(15, 23, 42, 0.08),
-      inset 0 1px 0 rgba(255, 255, 255, 0.22);
-  }
-
-  .glass-card {
-    position: relative;
-    border: 1px solid transparent;
-    border-image: var(--glass-border-strong) 1;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.08));
-    box-shadow:
-      0 2px 6px rgba(15, 23, 42, 0.12),
-      inset 0 1px 0 rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(28px) saturate(150%) !important;
-    -webkit-backdrop-filter: blur(28px) saturate(150%) !important;
-    overflow: hidden;
-  }
-
-  .glass-card::before {
-    content: '';
-    position: absolute;
-    inset: 1px;
-    border-radius: inherit;
-    background: radial-gradient(
-      circle at 22% 15%,
-      rgba(255, 255, 255, 0.5) 0%,
-      rgba(255, 255, 255, 0.12) 30%,
-      transparent 60%
-    );
-    opacity: 0.55;
-    pointer-events: none;
-  }
-
-  .glass-card > * {
-    position: relative;
-    z-index: 1;
-  }
-
-  .glass,
-  .glass-md {
-    border-image: var(--glass-border-soft) 1;
-  }
-
-  .glass-strong,
-  .glass-lg {
-    border-image: var(--glass-border-strong) 1;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0.12));
-    box-shadow:
-      0 2px 6px rgba(15, 23, 42, 0.14),
-      inset 0 1px 0 rgba(255, 255, 255, 0.45);
-    backdrop-filter: blur(24px) saturate(160%) !important;
-    -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
-  }
-
-  :is(.glass, .glass-sm, .glass-md, .glass-lg, .glass-strong)::after {
-    content: '';
-    position: absolute;
-    inset: 1px;
-    pointer-events: none;
-    border-radius: inherit;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0));
-  }
-
+  /* サイトヘッダー: ページ上部では完全透明、スクロールで薄いガラス層が現れ視認性UP */
   .site-header {
     backdrop-filter: blur(12px) saturate(150%);
     -webkit-backdrop-filter: blur(12px) saturate(150%);
@@ -330,23 +224,184 @@
   .site-header[data-top='true'] .header-surface::after {
     opacity: 0;
   }
+}
 
+/* -- ユーティリティ層 ----------------------------------------------------- */
+@layer utilities {
+  /* Typography ---------------------------------------------------------------- */
+  /* ヒーロー見出し: 目詰まりしたカーニングでガラス UI の硬質さを強調 */
+  .font-hero {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+  }
+
+  /* サブ見出し/本文: 日本語プロポーショナルの可読性を維持 */
+  .font-hero-sub {
+    font-family: var(--font-noto-sans-jp), var(--font-sans);
+    letter-spacing: 0;
+  }
+
+  /* 補足テキスト: 彩度を落として階層を示す */
+  .text-muted-foreground {
+    color: var(--color-muted);
+  }
+
+  /* Backgrounds: ページ/セクション用の大域背景 -------------------------------- */
+  /* ページ背景: 天井から光が降り注ぐような柔らかなグラデーション */
+  .bg-root {
+    background-color: var(--surface-root);
+    background-image:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.96), var(--surface-root)),
+      radial-gradient(1600px 820px at 50% -22%, var(--accent-ambient-soft), transparent 68%);
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  /* レガシー背景: SNS 共有画像などで旧テーマに合わせたいときに使用 */
+  .bg-root-legacy {
+    background-color: var(--surface-legacy-root);
+    background-image:
+      radial-gradient(980px 680px at 10% -8%, var(--accent-ambient-strong) 0%, transparent 65%),
+      radial-gradient(1020px 640px at 90% -6%, var(--accent-ambient-soft) 0%, transparent 68%),
+      linear-gradient(180deg, #ffffff, var(--surface-legacy-root));
+    background-repeat: no-repeat;
+    background-position:
+      10% -8%,
+      92% -6%,
+      center;
+  }
+
+  /* カード背景: 薄い枠と均質な白で本文カードを浮かせる */
+  .bg-panel,
+  .bg-surface {
+    background-color: var(--surface-panel);
+    border: 1px solid var(--surface-divider);
+  }
+
+  /* 強調カード: さらに厚い白と内側ハイライトで重要ブロックを前面へ */
+  .bg-panel-strong,
+  .bg-surface-strong {
+    background-color: var(--surface-panel-strong);
+    border: 1px solid var(--surface-divider-strong);
+    box-shadow: inset 0 1px 0 var(--surface-glint);
+  }
+
+  /* グロスカード: ほぼ不透明な白でモーダルなどの最前面に配置 */
+  .bg-gloss {
+    background-color: var(--surface-gloss);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow: inset 0 1px 0 var(--surface-glint);
+  }
+
+  /* Shadow helpers ------------------------------------------------------------- */
+  /* うっすら浮かせたい要素用のデフォルトシャドウ */
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+
+  /* 線のようにほぼ見えない影でカードエッジだけを立たせる */
   .shadow-minimal {
     box-shadow:
       0 1px 2px rgba(15, 23, 42, 0.05),
       var(--shadow-inner-light, 0 0 0 0 rgba(0, 0, 0, 0));
   }
 
+  /* 内向きの光を追加し、ガラス面の厚みを出す */
   .shadow-inner-light {
     --shadow-inner-light: inset 0 1px 0 rgba(255, 255, 255, 0.6);
   }
 
+  /* ガラスカードを 1 段だけ持ち上げる柔らかい影 */
   .shadow-glass-elevated {
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.55),
-      0 2px 8px rgba(15, 23, 42, 0.14);
+      0 2px 2px rgba(15, 23, 42, 0.12);
   }
 
+  /* Transitions ---------------------------------------------------------------- */
+  /* ガラス系ユーティリティのデフォルト遷移。光沢や枠の変化を一括管理 */
+  .transition-glass {
+    transition-property: background-color, border-color, color, filter, box-shadow, opacity;
+    transition-duration: var(--motion-duration-standard);
+    transition-timing-function: var(--ease-macos);
+  }
+
+  /* 全般的な UI 動作を macOS と同じ減衰カーブで統一 */
+  .transition-macos {
+    transition-duration: var(--motion-duration-standard);
+    transition-timing-function: var(--ease-macos);
+  }
+
+  /* Glass blocks: blur + border image で立体感 ---------------------------------- */
+  /* 透明カード: ぼかし＋斜めグラデで Apple 風の光沢ガラスを再現 */
+  :is(.glass, .glass-sm, .glass-md, .glass-lg, .glass-strong) {
+    position: relative;
+    border: 1px solid transparent;
+    border-image: var(--glass-border-soft) 1;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.06));
+    box-shadow:
+      var(--glass-shadow-soft),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(16px) saturate(135%) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(135%) !important;
+  }
+
+  /* 小型ガラス: ステータスピル等で使用、影を弱くして軽量感を出す */
+  .glass-sm {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.05));
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.42),
+      0 1px 1px rgba(15, 23, 42, 0.06);
+  }
+
+  /* ガラスカード: 丸ごとセクションを包む際に、厚みのあるボーダーで存在感を出す */
+  .glass-card {
+    position: relative;
+    border: 1px solid transparent;
+    border-image: var(--glass-border-strong) 1;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.36), rgba(255, 255, 255, 0.08));
+    box-shadow:
+      var(--glass-shadow-strong),
+      inset 0 1px 0 rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(20px) saturate(140%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(140%) !important;
+    overflow: hidden;
+  }
+
+  .glass-card > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 中型ガラス: 標準カード。柔らかい境界で背景との馴染みを重視 */
+  .glass,
+  .glass-md {
+    border-image: var(--glass-border-soft) 1;
+  }
+
+  /* 大型ガラス/強調: ぼかしを強めて奥行きを最大化 */
+  .glass-strong,
+  .glass-lg {
+    border-image: var(--glass-border-strong) 1;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.12));
+    box-shadow:
+      var(--glass-shadow-strong),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(22px) saturate(150%) !important;
+    -webkit-backdrop-filter: blur(22px) saturate(150%) !important;
+  }
+
+  :is(.glass, .glass-sm, .glass-md, .glass-lg, .glass-strong)::after {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    pointer-events: none;
+    border-radius: inherit;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0));
+  }
+
+  /* Border / Glow helpers ------------------------------------------------------ */
+  /* 枠のみに虹彩効果をのせ、触れられるガラス枠を強調 */
   .border-gradient-subtle {
     position: relative;
     z-index: 0;
@@ -374,6 +429,7 @@
     opacity: 0.85;
   }
 
+  /* 既定ガラスカードにわずかな外側グローを足し、視線を誘導 */
   .glow-accent-subtle {
     transition:
       box-shadow var(--motion-duration-standard) var(--ease-macos),
@@ -381,34 +437,36 @@
       background-color var(--motion-duration-standard) var(--ease-macos),
       color var(--motion-duration-standard) var(--ease-macos);
     box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.16),
-      0 1px 2px rgba(15, 23, 42, 0.08);
+      inset 0 0 0 1px rgba(255, 255, 255, 0.22),
+      0 0 0 1px rgba(15, 23, 42, 0.04);
   }
 
   .glow-accent-subtle:hover,
   .glow-accent-subtle:focus-visible {
     box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.3),
-      0 0 24px rgba(255, 255, 255, 0.12);
+      inset 0 0 0 1px rgba(255, 255, 255, 0.32),
+      0 0 12px rgba(15, 23, 42, 0.08);
   }
 
+  /* より強いグロー: 選択状態やホバーで輪郭を光らせる */
   .glow-accent-medium {
     transition:
       box-shadow var(--motion-duration-standard) var(--ease-macos),
       border-color var(--motion-duration-standard) var(--ease-macos);
     box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.24),
-      0 1px 3px rgba(15, 23, 42, 0.12);
+      inset 0 0 0 1px rgba(255, 255, 255, 0.32),
+      0 0 0 1px rgba(15, 23, 42, 0.06);
   }
 
   .glow-accent-medium:hover,
   .glow-accent-medium:focus-visible,
   .glow-accent-medium[data-active='true'] {
     box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.4),
-      0 0 28px rgba(255, 255, 255, 0.18);
+      inset 0 0 0 1px rgba(255, 255, 255, 0.42),
+      0 0 14px rgba(15, 23, 42, 0.12);
   }
 
+  /* リフト: カードが持ち上がったように境界・影だけ強調 */
   .hover-lift {
     transition:
       border-color var(--motion-duration-standard) var(--ease-macos),
@@ -421,11 +479,12 @@
   .hover-lift:focus-visible {
     transform: none;
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.55),
-      0 1px 3px rgba(15, 23, 42, 0.08);
-    border-color: rgba(255, 255, 255, 0.24);
+      inset 0 1px 0 rgba(255, 255, 255, 0.5),
+      0 1px 2px rgba(15, 23, 42, 0.08);
+    border-color: rgba(255, 255, 255, 0.28);
   }
 
+  /* グロー: アクションエリア全体を柔らかく光らせアフォーダンスを出す */
   .hover-glow {
     transition:
       box-shadow var(--motion-duration-standard) var(--ease-macos),
@@ -439,72 +498,11 @@
   .hover-glow:hover,
   .hover-glow:focus-visible {
     box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.22),
-      0 0 18px rgba(255, 255, 255, 0.14);
-  }
-
-  .cta-donate-glow {
-    transition:
-      box-shadow var(--motion-duration-standard) var(--ease-macos),
-      opacity var(--motion-duration-standard) var(--ease-macos);
-    box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.12),
-      0 1px 4px rgba(15, 23, 42, 0.18);
-  }
-
-  .cta-donate-glow:hover,
-  .cta-donate-glow:focus-visible {
-    box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.2),
-      0 0 28px rgba(255, 255, 255, 0.2);
-  }
-
-  .plan-card {
-    transition:
-      border-color var(--motion-duration-standard) var(--ease-macos),
-      box-shadow var(--motion-duration-standard) var(--ease-macos),
-      background-color var(--motion-duration-standard) var(--ease-macos),
-      opacity var(--motion-duration-standard) var(--ease-macos);
-  }
-
-  .plan-card:not([data-selected='true']):hover,
-  .plan-card:not([data-selected='true']):focus-visible {
-    box-shadow:
       inset 0 0 0 1px rgba(255, 255, 255, 0.26),
-      0 0 24px rgba(255, 255, 255, 0.14);
-    border-color: rgba(255, 255, 255, 0.32);
+      0 0 10px rgba(15, 23, 42, 0.1);
   }
 
-  .plan-card[data-selected='true'] {
-    box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.4),
-      0 0 30px rgba(255, 255, 255, 0.18);
-    border-color: rgba(255, 255, 255, 0.42);
-  }
-
-  .glow-status-success {
-    box-shadow:
-      0 0 0 1px rgba(34, 197, 94, 0.18),
-      0 0 18px rgba(34, 197, 94, 0.24);
-    transition:
-      box-shadow var(--motion-duration-standard) var(--ease-macos),
-      filter var(--motion-duration-standard) var(--ease-macos);
-  }
-
-  .glow-status-error {
-    box-shadow:
-      0 0 0 1px rgba(248, 113, 113, 0.28),
-      0 0 20px rgba(248, 113, 113, 0.3);
-    transition:
-      box-shadow var(--motion-duration-standard) var(--ease-macos),
-      filter var(--motion-duration-standard) var(--ease-macos);
-  }
-
-  .transition-macos {
-    transition-duration: var(--motion-duration-standard);
-    transition-timing-function: var(--ease-macos);
-  }
-
+  /* ガラスホバー: 背景グラデを動かし、表面が滑るような視覚変化 */
   .hover-glass {
     transition:
       background-image var(--motion-duration-standard) var(--ease-macos),
@@ -523,41 +521,119 @@
       rgba(255, 255, 255, 0.08) 100%
     );
     box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.26),
-      0 0 18px rgba(255, 255, 255, 0.14);
+      inset 0 0 0 1px rgba(255, 255, 255, 0.28),
+      0 0 12px rgba(15, 23, 42, 0.1);
   }
 
+  /* GPU に描画ヒントを与え、ホバー時の影変化を滑らかに */
+  .hover-glass,
+  .hover-glow,
+  .hover-lift,
+  .cta-donate-glow,
+  .plan-card,
+  .donate-cta-animated {
+    will-change: box-shadow, background-color, border-color;
+  }
+
+  /* 寄付ボタン固有の外周グロー。透明背景でも視認できる発光ライン */
+  .cta-donate-glow {
+    transition:
+      box-shadow var(--motion-duration-standard) var(--ease-macos),
+      opacity var(--motion-duration-standard) var(--ease-macos);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.18),
+      0 1px 2px rgba(15, 23, 42, 0.12);
+  }
+
+  .cta-donate-glow:hover,
+  .cta-donate-glow:focus-visible {
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.32),
+      0 0 16px rgba(15, 23, 42, 0.14);
+  }
+
+  /* プランカード: 選択肢間のマウス移動を視覚化するためのトランジション */
+  .plan-card {
+    transition:
+      border-color var(--motion-duration-standard) var(--ease-macos),
+      box-shadow var(--motion-duration-standard) var(--ease-macos),
+      background-color var(--motion-duration-standard) var(--ease-macos),
+      opacity var(--motion-duration-standard) var(--ease-macos);
+  }
+
+  .plan-card:not([data-selected='true']):hover,
+  .plan-card:not([data-selected='true']):focus-visible {
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.28),
+      0 0 12px rgba(15, 23, 42, 0.08);
+    border-color: rgba(255, 255, 255, 0.32);
+  }
+
+  /* 選択状態: 境界光と外周グローを強めて「決定済み」感を明示 */
+  .plan-card[data-selected='true'] {
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.38),
+      0 0 14px rgba(15, 23, 42, 0.1);
+    border-color: rgba(255, 255, 255, 0.42);
+  }
+
+  /* 成功バッジ: 淡い緑ガラスで安心感を伝える */
+  .glow-status-success {
+    box-shadow:
+      inset 0 0 0 1px rgba(34, 197, 94, 0.28),
+      0 1px 2px rgba(15, 23, 42, 0.06);
+    background-color: rgba(34, 197, 94, 0.07);
+    transition:
+      box-shadow var(--motion-duration-standard) var(--ease-macos),
+      background-color var(--motion-duration-standard) var(--ease-macos);
+  }
+
+  /* エラーバッジ: 赤の内向き影で注意喚起 */
+  .glow-status-error {
+    box-shadow:
+      inset 0 0 0 1px rgba(248, 113, 113, 0.32),
+      0 1px 2px rgba(15, 23, 42, 0.08);
+    background-color: rgba(248, 113, 113, 0.08);
+    transition:
+      box-shadow var(--motion-duration-standard) var(--ease-macos),
+      background-color var(--motion-duration-standard) var(--ease-macos);
+  }
+
+  /* Animations ----------------------------------------------------------------- */
+  /* ページ遷移時: 背景からふわっと現れ、サイト全体の静かな動きを演出 */
   .page-enter {
-    animation: pageEnter 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    animation: pageFadeIn 0.26s var(--ease-macos);
   }
 
-  @keyframes pageEnter {
+  @keyframes pageFadeIn {
     from {
       opacity: 0;
-      transform: translateY(12px);
+      filter: blur(12px);
     }
     to {
       opacity: 1;
-      transform: translateY(0);
+      filter: blur(0);
     }
   }
 
+  /* セクション単位のフェード。Y 軸方向に 1px も動かさず霧が晴れる印象を付与 */
   .fade-in-up {
-    animation: fadeInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    animation: elementFade 0.24s var(--ease-macos) forwards;
     opacity: 0;
   }
 
-  @keyframes fadeInUp {
+  @keyframes elementFade {
     from {
       opacity: 0;
-      transform: translateY(18px);
+      filter: blur(10px);
     }
     to {
       opacity: 1;
-      transform: translateY(0);
+      filter: blur(0);
     }
   }
 
+  /* アニメーション遅延: 連番要素に適用して段階的につながりを感じさせる */
   .stagger-1 {
     animation-delay: 0.05s;
   }
@@ -582,28 +658,26 @@
     animation-delay: 0.3s;
   }
 
+  /* 小さなポップ演出。成功モーダルなどでワンポイントの喜びを伝える */
   .animate-bounce-in {
-    animation: bounceIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    animation: subtlePop 0.28s var(--ease-macos);
   }
 
-  @keyframes bounceIn {
-    0% {
+  @keyframes subtlePop {
+    from {
       opacity: 0;
-      transform: scale(0.5);
-    }
-    50% {
-      opacity: 1;
-      transform: scale(1.03);
-    }
-    75% {
       transform: scale(0.97);
+      filter: blur(6px);
     }
-    100% {
+    to {
+      opacity: 1;
       transform: scale(1);
+      filter: blur(0);
     }
   }
 }
 
+/* -- Opaque surface mode: 透過禁止時のガラス調フォールバック -------------- */
 :root[data-surface-mode='opaque'] :is(.glass, .glass-sm, .glass-md, .glass-lg, .glass-strong) {
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
@@ -612,6 +686,7 @@
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.1);
 }
 
+/* -- prefers-reduced-motion: 動きに配慮した即時表示 ------------------------ */
 @media (prefers-reduced-motion: reduce) {
   .plan-card,
   .hover-glow,
@@ -626,5 +701,14 @@
   .donate-cta-animated::after {
     transition: none !important;
     opacity: 0 !important;
+  }
+
+  .page-enter,
+  .fade-in-up,
+  .animate-bounce-in {
+    animation: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
   }
 }
