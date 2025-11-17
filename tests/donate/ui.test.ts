@@ -2,7 +2,6 @@ import { describe, it, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { createElement } from 'react';
-import { HeroProvider } from '@/lib/ui/contexts/hero-context';
 import { CHECKOUT_PRESETS } from '@/lib/ui/checkout-presets';
 import { HeroProvider } from '@/lib/ui/contexts/hero-context';
 import type { CheckoutPreset } from '@/lib/ui/types';
@@ -42,11 +41,11 @@ describe('DonatePage React UI', () => {
     fireEvent.click(loginButton);
     assert.equal(loginCalls, 1);
 
-    const consentToggle = screen.getByRole('switch', {
+    const consentToggle = screen.getByRole('checkbox', {
       name: 'ニックネームの掲示に同意する',
-    }) as HTMLButtonElement;
+    }) as HTMLInputElement;
     assert.equal(consentToggle.disabled, true);
-    assert.equal(consentToggle.getAttribute('aria-checked'), 'false');
+    assert.equal(consentToggle.checked, false);
 
     const cta = screen.getByRole('button', {
       name: 'プランを選択して寄付を進める',
@@ -77,11 +76,11 @@ describe('DonatePage React UI', () => {
 
     assert.ok(screen.getByText('テストユーザー'));
 
-    const consentToggle = screen.getByRole('switch', {
+    const consentToggle = screen.getByRole('checkbox', {
       name: 'ニックネームの掲示に同意する',
-    }) as HTMLButtonElement;
+    }) as HTMLInputElement;
     await waitFor(() => {
-      assert.equal(consentToggle.getAttribute('aria-checked'), 'true');
+      assert.equal(consentToggle.checked, true);
     });
 
     const logoutButton = screen.getByRole('button', { name: /ログアウト/ }) as HTMLButtonElement;
@@ -112,12 +111,12 @@ describe('DonatePage React UI', () => {
 
     renderDonatePage();
 
-    const consentToggle = screen.getByRole('switch', {
+    const consentToggle = screen.getByRole('checkbox', {
       name: 'ニックネームの掲示に同意する',
-    }) as HTMLButtonElement;
+    }) as HTMLInputElement;
 
     await waitFor(() => {
-      assert.equal(consentToggle.getAttribute('aria-checked'), 'false');
+      assert.equal(consentToggle.checked, false);
     });
 
     fireEvent.click(consentToggle);
