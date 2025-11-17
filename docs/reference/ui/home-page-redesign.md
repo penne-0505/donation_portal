@@ -4,7 +4,7 @@ domain: ui
 status: active
 version: 1
 created: 2025-11-02
-updated: 2025-11-12
+updated: 2025-11-17
 related_issues: []
 related_prs: []
 references:
@@ -150,8 +150,8 @@ const isLandingPage = pathname === '/';
       <Link href="/privacy" className="...">
         プライバシーポリシー
       </Link>
-      <span className="text-border/40">•</span>
-      <Link href="/privacy#operator-info" className="...">
+      <span className="hidden text-border/40 sm:inline">•</span>
+      <Link href="/privacy#operator-info" className="hidden sm:inline ...">
         運営者情報
       </Link>
     </div>
@@ -159,6 +159,7 @@ const isLandingPage = pathname === '/';
 </footer>
 
 - `ORGANIZATION_NAME` は `@/lib/ui/branding` から import しているブランド定数。
+- `hidden sm:inline` を区切り記号と「運営者情報」リンクに付与し、スマートフォンでは自動的に非表示にしてタップ領域の混雑を避ける。
 ```
 
 #### 計測イベント

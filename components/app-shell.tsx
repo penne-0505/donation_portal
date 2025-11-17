@@ -220,10 +220,10 @@ export function AppShell({ children, className }: AppShellProps) {
             >
               プライバシーポリシー
             </Link>
-            <span className="text-border/40">•</span>
+            <span className="hidden text-border/40 sm:inline">•</span>
             <Link
               href="/privacy#operator-info"
-              className="transition-colors transition-macos hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground/25 focus-visible:ring-offset-2"
+              className="hidden transition-colors transition-macos hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground/25 focus-visible:ring-offset-2 sm:inline"
             >
               運営者情報
             </Link>
