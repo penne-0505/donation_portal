@@ -40,7 +40,7 @@ export function DonateConsentPanel({
               checked={consentValue}
               onCheckedChange={(nextValue) => void onToggle(nextValue)}
               disabled={!isSignedIn || isUpdating}
-              className="shrink-0"
+              containerClassName="shrink-0"
             />
             <div className="space-y-1">
               <span id={labelId} className="text-sm font-semibold text-foreground">
