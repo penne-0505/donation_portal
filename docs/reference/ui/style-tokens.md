@@ -2,7 +2,7 @@
 title: "UI デザイントークン定義"
 domain: "donation-portal"
 status: "active"
-version: "0.2.0"
+version: "0.2.1"
 created: "2025-11-01"
 updated: "2025-11-17"
 related_issues: []
@@ -46,7 +46,7 @@ Donation Portal の画面スタイルは `docs/archives/legacy-static/styles/bas
 - `.bg-root` は `linear-gradient(180deg, rgba(255,255,255,0.96), var(--surface-root))` に単一の radial グローを 1 枚だけ重ねる構成へ更新し、濃いラジアルグラデーションは `bg-root-legacy` でのみ参照できるようにする。
 - `.bg-panel` / `.bg-panel-strong` は `--surface-panel` 系の透過ホワイトを背景に、`--surface-divider` 系と `--surface-glint` で 1px の縦グラデーションボーダーを形成する。
 - `.bg-gloss` は最上位の光沢レイヤで、`rgba(255,255,255,0.985)` + `inset 0 1px 0 var(--surface-glint)` によって Hero や固定ヘッダーに薄いハイライトを与える。
-- `.app-shell` 直下に `app-shell-ambient` コンテナを置き、`app-shell-ambient__layer--soft` / `--veil` の 2 枚で `--ambient-orb-*` トークン由来のカラードームを常時描画する。`drift-orb-soft` / `drift-orb-veil` の 28s / 32s アニメーションで視差を与えつつ、`prefers-reduced-motion` では自動停止してガラス層の背面だけを静かに照らす。
+- `.app-shell` 直下に `app-shell-ambient` コンテナを置き、`app-shell-ambient__layer--soft` / `--veil` の 2 枚で `--ambient-orb-*` トークン由来のカラードームを常時描画する。`drift-orb-soft` / `drift-orb-veil` の 28s / 32s アニメーションで視差を与えつつ、`prefers-reduced-motion` では自動停止してガラス層の背面だけを静かに照らす。すべての `--ambient-orb-*` は Discord インディゴ系の単一色相（透過率 0.035〜0.05）にそろえており、ヒーロー背景がピンクやグリーンへ逸脱しないように制御している。
 
 ### ガラスユーティリティ
 

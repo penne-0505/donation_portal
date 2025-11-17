@@ -60,10 +60,11 @@
   --glass-border-strong: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(15, 23, 42, 0.15));
   --glass-shadow-soft: 0 8px 24px rgba(15, 23, 42, 0.045);
   --glass-shadow-strong: 0 18px 40px rgba(15, 23, 42, 0.06);
-  --ambient-orb-soft: rgba(99, 136, 255, 0.28);
-  --ambient-orb-violet: rgba(171, 89, 255, 0.26);
-  --ambient-orb-mint: rgba(16, 185, 129, 0.22);
-  --ambient-orb-dawn: rgba(251, 113, 133, 0.22);
+  /* アンビエントオーブ: Discord インディゴ系の単一色相で 3-5% の発光にそろえる */
+  --ambient-orb-soft: rgba(88, 101, 242, 0.05);
+  --ambient-orb-violet: rgba(118, 134, 255, 0.045);
+  --ambient-orb-mint: rgba(132, 146, 255, 0.04);
+  --ambient-orb-dawn: rgba(152, 165, 255, 0.035);
   --ambient-orb-blur: 60px;
 
   /* CTA・ハイライト: 立体的なボタンや強調バッジを支えるトークン */
