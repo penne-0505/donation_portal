@@ -36,7 +36,7 @@ export function DonationBadge({ type, className = '' }: DonationBadgeProps) {
     <div className={className}>
       <button
         type="button"
-        className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm glass-sm border-gradient-subtle text-foreground shadow-minimal shadow-inner-light transition-glass hover-glass focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/30 focus-visible:ring-offset-2"
+        className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm glass-sm border-gradient-subtle text-foreground transition-glass hover-glass focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/30 focus-visible:ring-offset-2"
         aria-describedby={tooltipId}
         onClick={() => setShowTooltip(!showTooltip)}
         onKeyDown={(e) => {
@@ -53,7 +53,7 @@ export function DonationBadge({ type, className = '' }: DonationBadgeProps) {
         <div
           id={tooltipId}
           role="tooltip"
-          className="mt-2 rounded-lg glass-sm border-gradient-subtle p-2 text-sm text-foreground shadow-minimal shadow-inner-light"
+          className="mt-2 rounded-lg glass-sm border-gradient-subtle p-2 text-sm text-foreground"
         >
           {config.tooltip}
         </div>

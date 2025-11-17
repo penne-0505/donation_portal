@@ -12,19 +12,27 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 const baseClasses =
-  'inline-flex items-center justify-center rounded-xl font-semibold transition-glass focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none';
+  'ui-button inline-flex items-center justify-center rounded-xl border font-semibold transition-glass focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent disabled:opacity-45 disabled:pointer-events-none';
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    'bg-slate-900 text-white shadow-[0_6px_20px_rgba(17,24,39,0.18)] hover:bg-slate-900/90 focus-visible:ring-slate-900/30',
+    'border-transparent bg-foreground text-white shadow-soft hover:bg-foreground/90 focus-visible:ring-foreground/15',
   secondary:
-    'glass-md text-foreground shadow-minimal shadow-inner-light border-gradient-subtle hover-glass focus-visible:ring-foreground/20',
+    'glass-md border-white/30 text-foreground shadow-minimal shadow-inner-light hover-glass focus-visible:ring-foreground/15',
   ghost:
-    'glass-sm text-foreground border border-transparent shadow-minimal shadow-inner-light hover-glass focus-visible:ring-muted-foreground/25',
+    'border-transparent bg-transparent text-muted-foreground hover:bg-white/10 focus-visible:ring-foreground/10',
   outline:
-    'glass-sm text-foreground border border-white/20 shadow-minimal shadow-inner-light hover-glass focus-visible:ring-muted-foreground/25',
+    'border-white/25 bg-transparent text-foreground hover:border-white/40 focus-visible:ring-foreground/15',
   discord:
-    'bg-[#5865f2] text-white shadow-[0_12px_32px_rgba(88,101,242,0.28)] hover:bg-[#4752c4] focus-visible:ring-[#5865f2]/35',
+    'border-transparent bg-[#5865f2] text-white shadow-soft hover:bg-[#4752c4] focus-visible:ring-[#5865f2]/35',
+};
+
+const accentMap: Record<ButtonVariant, string> = {
+  primary: 'primary',
+  secondary: 'surface',
+  ghost: 'ghost',
+  outline: 'outline',
+  discord: 'brand',
 };
 
 const sizes: Record<ButtonSize, string> = {
@@ -37,19 +45,20 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function 
   { className, variant = 'primary', size = 'md', href, type = 'button', children, ...props },
   ref,
 ) {
+  const dataAccent = accentMap[variant];
   const classes = cn(baseClasses, variants[variant], sizes[size], className);
 
   if (href) {
     const anchorProps = props as React.AnchorHTMLAttributes<HTMLAnchorElement>;
     return (
-      <Link href={href} className={classes} {...anchorProps}>
+      <Link href={href} className={classes} data-accent={dataAccent} {...anchorProps}>
         {children}
       </Link>
     );
   }
 
   return (
-    <button ref={ref} type={type} className={classes} {...props}>
+    <button ref={ref} type={type} className={classes} data-accent={dataAccent} {...props}>
       {children}
     </button>
   );

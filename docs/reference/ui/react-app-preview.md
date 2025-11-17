@@ -4,22 +4,28 @@ domain: "donation-portal"
 status: "active"
 version: "0.2.0"
 created: "2025-11-01"
-updated: "2025-11-01"
+updated: "2025-11-12"
 related_issues: []
 related_prs: []
 references:
   - docs/plan/donation-portal/react-ui-integration-2025/plan.md
   - docs/plan/donation-portal/react-ui-cutover-2025/plan.md
-  - app/(app-shell)/donate/page.tsx
-  - app/(app-shell)/donors/page.tsx
-  - app/(app-shell)/thanks/page.tsx
+  - docs/plan/ui/frontend-architecture-refresh/plan.md
+  - app/(main)/donate/page.tsx
+  - app/(main)/donors/page.tsx
+  - app/(main)/thanks/page.tsx
   - components/pages/donate-page.tsx
   - components/pages/donors-page.tsx
   - components/pages/thanks-page.tsx
+  - components/donate/session-panel.tsx
+  - components/donate/plan-selection-panel.tsx
+  - components/donors/donor-list-panel.tsx
   - lib/ui/hooks/use-session.ts
   - lib/ui/hooks/use-consent.ts
   - lib/ui/hooks/use-checkout.ts
   - lib/ui/hooks/use-donors.ts
+  - lib/ui/hooks/use-donation-flow.ts
+  - lib/ui/hooks/use-donor-directory.ts
 ---
 
 ## 概要
@@ -30,12 +36,12 @@ Next.js (App Router) を利用した React 版 UI が `/donate`・`/donors`・`/
 
 | ルート | ファイル | 説明 |
 | --- | --- | --- |
-| `/` | `app/(app-shell)/page.tsx` | React UI のランディング。寄付/Donors への導線を表示。 |
-| `/donate` | `app/(app-shell)/donate/page.tsx` | Discord OAuth を前提にした寄付フロー。セッション取得・同意更新・Stripe Checkout 起動を行う。 |
-| `/donors` | `app/(app-shell)/donors/page.tsx` | Donors 一覧取得と同意撤回を提供。 |
-| `/thanks` | `app/(app-shell)/thanks/page.tsx` | Stripe Checkout 成功後のサンクス画面。 |
+| `/` | `app/(main)/page.tsx` | React UI のランディング。寄付/Donors への導線を表示。 |
+| `/donate` | `app/(main)/donate/page.tsx` | Discord OAuth を前提にした寄付フロー。セッション取得・同意更新・Stripe Checkout 起動を行う。 |
+| `/donors` | `app/(main)/donors/page.tsx` | Donors 一覧取得と同意撤回を提供。 |
+| `/thanks` | `app/(main)/thanks/page.tsx` | Stripe Checkout 成功後のサンクス画面。 |
 
-全ページは `app/(app-shell)/layout.tsx` で共通ヘッダ (`components/app-shell.tsx`) を共有する。`app/new/*` からのアクセスは Next.js のリダイレクトで上記ルートへ転送される。
+全ページは `app/(main)/layout.tsx` で共通ヘッダ (`components/app-shell.tsx`) を共有する。`app/new/*` からのアクセスは Next.js のリダイレクトで上記ルートへ転送される。
 
 ## 状態管理フロー
 
@@ -61,9 +67,21 @@ Next.js (App Router) を利用した React 版 UI が `/donate`・`/donors`・`/
 
 ### Donors 一覧 (`useDonors`)
 
-- `/api/donors?limit=200` (GET) で最新の表示名を取得。
+- `/api/donors?limit=100` (GET) で最新の表示名を取得。
 - ローディング中は Skeleton 文言、空の場合はプレースホルダーを表示。
 - 成功時の総数は `count` を優先、未定義の場合は配列長を利用。
+
+### 寄付フロー集約 (`useDonationFlow`)
+
+- `useSession` / `useConsentMutation` / `useCheckout` / `CHECKOUT_PRESETS` を束ね、`DonatePage` に単一の hook を提供。
+- `consent` (`value`, `isUpdating`, `toggle`, `error`) と `checkout` (`ctaLabel`, `ctaStatusMessage`, `isDisabled`, `submit`) をオブジェクトで返す。
+- CTA クリック時に `gtag('event', 'donate_start')` を内包し、プラン選択や Consent 更新後は `session.refresh()` を呼び出す。
+
+### 支援者ディレクトリ (`useDonorDirectory`)
+
+- `useSession` / `useDonors` / `useConsentMutation` を統合し、`DonorsPage` が扱うべき副作用を hook 内に閉じ込める。
+- `revokeConsent()` は確認ダイアログを表示したのち `/api/consent` を false で更新し、成功時に `refreshDonors()` と `refreshSession()` をチェーンする。
+- `confirm` 関数はオプションで差し替え可能（テスト時はモックを注入）。
 
 ## UI コンポーネント
 
@@ -72,10 +90,17 @@ Next.js (App Router) を利用した React 版 UI が `/donate`・`/donors`・`/
 | `components/ui/button.tsx` | 主要操作・リンクのスタイル統一 | `href` を指定すると Next.js の `<Link>` を描画。 |
 | `components/ui/card.tsx` | ガラス風カード表現 | カード内の余白とシャドウを統一。 |
 | `components/ui/checkbox.tsx` | カスタムチェックボックス | 状態制御は `onCheckedChange` で行う。 |
+| `components/ui/section-heading.tsx` | セクション見出し | サイズ/揃え/ARIA の id を共通化。 |
 | `components/donation-impact.tsx` | 寄付プランの鼓舞コンテンツ | 選択したメニューに応じたコピー/アイコンを出し分け。 |
 | `components/donor-pill.tsx` | Donors リストのタグ表示 | Flex wrap を前提。 |
 | `components/confetti-celebration.tsx` | /thanks での祝砲演出 | `canvas-confetti` を動的 import。 |
-| `components/pages/*.tsx` | ページ固有の UI 構成 | `donate`/`donors` はクライアントコンポーネントとして hooks を利用。 |
+| `components/donate/session-panel.tsx` | Discord ログイン UI | `useDonationFlow.session` を参照し、ログイン/ログアウトを制御。セクション見出しと Discord ログインボタンを同じ行に配置し、`sm` 以上は横並び、狭幅は縦積みで自動切り替え。 |
+| `components/donate/consent-panel.tsx` | 掲示同意 UI | トグルとエラー表示を `consent` オブジェクトに委譲。 |
+| `components/donate/plan-selection-panel.tsx` | プラン選択 + CTA | `presets` と `checkout` state を表示。`checkout.isDisabled` の間は CTA の hover シャドウを抑止し、未ログイン時も視覚的な浮上が発生しないようにしている。 |
+| `components/donate/flow-steps-panel.tsx` | 手順表示 | 3 ステップをカード化。 |
+| `components/donors/donor-list-panel.tsx` | 支援者一覧 | `refreshDonors` ボタン付きで一覧表示。 |
+| `components/donors/consent-management-panel.tsx` | 掲示同意管理 | ログイン状態に応じて撤回/ログイン導線を出し分け。 |
+| `components/pages/*.tsx` | ページ固有の UI 構成 | `donate`/`donors` はクライアントコンポーネントとして各パネルと集約 hook を束ねる薄いオーケストレーター。 |
 
 Tailwind v4 のトークン定義は `app/globals.css` に集約し、旧静的 UI は `docs/archives/legacy-static/styles/base.css` と共存させている。
 

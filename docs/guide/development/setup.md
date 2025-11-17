@@ -80,9 +80,14 @@ Cloudflare Pages 上で Donation Portal を開発するための初期セット�
 
    - `http://localhost:3000/donate` や `http://localhost:3000/donors` で最新 UI を確認できます。
    - Cloudflare Pages 開発サーバ (`npm run dev`) へ反映する場合は `npm run ui:build` で `.open-next/` を再生成し、`public` と並行して配信します。
-   - React UI の構造と API 連携については `docs/reference/ui/react-app-preview.md` を参照してください。
 
-7. 別ターミナルで主要チェックを実行し、環境が正しく構築できているかを確認します。
+- React UI の構造と API 連携については `docs/reference/ui/react-app-preview.md` を参照してください。
+
+7. Tailwind CSS のビルド対象を管理する `tailwind.config.js` を必要に応じて更新します。
+   - 本プロジェクトでは `content` に `app/`, `components/`, `src/`, `lib/`, `functions/`, `docs/` を登録し、`glass-*` 系クラスを `safelist` に含めることで本番ビルドと開発サーバの見た目差を最小化しています。
+   - 動的に生成するクラスを追加した場合は、Tailwind が検出できる文字列リテラルとして記述するか、safelist に追記してください。
+
+8. 別ターミナルで主要チェックを実行し、環境が正しく構築できているかを確認します。
 
    ```bash
    npm run lint

@@ -2,9 +2,9 @@
 title: 'Donation Portal 本番環境セットアップ & 移行ガイド'
 domain: 'donation-portal'
 status: 'active'
-version: '1.0.2'
+version: '1.0.3'
 created: '2025-11-01'
-updated: '2025-11-09'
+updated: '2025-11-12'
 related_issues: []
 related_prs: []
 references:
@@ -73,18 +73,21 @@ QA 手順やローンチ後の運用監視は [Phase 6 QA & Release Runbook](./p
 1. Cloudflare Pages の対象プロジェクトで **Settings → Functions → Environment variables (Secrets)** を開きます。
 2. 下表の値を Production / Preview の両方に登録します。Live 専用値は Production のみに登録してください。
 
-| キー                    | 種別   | Production                                   | Preview                                             | 備考                                    |
-| ----------------------- | ------ | -------------------------------------------- | --------------------------------------------------- | --------------------------------------- |
-| `STRIPE_SECRET_KEY`     | Secret | Live 用 `sk_live_*`                          | Test 用 `sk_test_*`                                 | Live/Test の切替に合わせて更新          |
-| `STRIPE_WEBHOOK_SECRET` | Secret | Live 用 Signing secret                       | Test 用 Signing secret                              | Stripe Dashboard の endpoint ごとに取得 |
-| `PRICE_ONE_TIME_300`    | Secret | Live Price ID                                | Test Price ID                                       | 金額・通貨を事前に Dashboard で作成     |
-| `PRICE_SUB_MONTHLY_300` | Secret | Live Price ID                                | Test Price ID                                       | 月額プラン                              |
-| `PRICE_SUB_YEARLY_3000` | Secret | Live Price ID                                | Test Price ID                                       | 年額プラン                              |
-| `DISCORD_CLIENT_ID`     | Secret | 本番アプリの Client ID                       | Test アプリの Client ID                             | OAuth 連携用                            |
-| `DISCORD_CLIENT_SECRET` | Secret | 本番アプリの Secret                          | Test アプリの Secret                                | 再生成時は即時更新                      |
-| `DISCORD_REDIRECT_URI`  | Env    | `https://<project>.pages.dev/oauth/callback` | `https://<project>-<hash>.pages.dev/oauth/callback` | Discord Portal 側と一致させる           |
-| `APP_BASE_URL`          | Env    | `https://<project>.pages.dev`                | `https://<project>-<hash>.pages.dev`                | Functions のリダイレクト基準            |
-| `COOKIE_SIGN_KEY`       | Secret | 32 文字以上のランダム英数                    | 任意のランダム英数                                  | 切替時は古い Cookie を破棄              |
+| キー                       | 種別   | Production                                   | Preview                                             | 備考                                    |
+| -------------------------- | ------ | -------------------------------------------- | --------------------------------------------------- | --------------------------------------- |
+| `STRIPE_SECRET_KEY`        | Secret | Live 用 `sk_live_*`                          | Test 用 `sk_test_*`                                 | Live/Test の切替に合わせて更新          |
+| `STRIPE_WEBHOOK_SECRET`    | Secret | Live 用 Signing secret                       | Test 用 Signing secret                              | Stripe Dashboard の endpoint ごとに取得 |
+| `PRICE_ONE_TIME_300`       | Secret | Live Price ID                                | Test Price ID                                       | 金額・通貨を事前に Dashboard で作成     |
+| `PRICE_SUB_MONTHLY_300`    | Secret | Live Price ID                                | Test Price ID                                       | 月額プラン                              |
+| `PRICE_SUB_YEARLY_3000`    | Secret | Live Price ID                                | Test Price ID                                       | 年額プラン                              |
+| `DISCORD_CLIENT_ID`        | Secret | 本番アプリの Client ID                       | Test アプリの Client ID                             | OAuth 連携用                            |
+| `DISCORD_CLIENT_SECRET`    | Secret | 本番アプリの Secret                          | Test アプリの Secret                                | 再生成時は即時更新                      |
+| `DISCORD_REDIRECT_URI`     | Env    | `https://<project>.pages.dev/oauth/callback` | `https://<project>-<hash>.pages.dev/oauth/callback` | Discord Portal 側と一致させる           |
+| `APP_BASE_URL`             | Env    | `https://<project>.pages.dev`                | `https://<project>-<hash>.pages.dev`                | Functions のリダイレクト基準            |
+| `COOKIE_SIGN_KEY`          | Secret | 32 文字以上のランダム英数                    | 任意のランダム英数                                  | 切替時は古い Cookie を破棄              |
+| `NEXT_PUBLIC_SURFACE_MODE` | Env    | `opaque`                                     | （省略または `glass`）                              | UI を不透明モードで固定する場合に設定   |
+
+> `NEXT_PUBLIC_SURFACE_MODE=opaque` を Production のみで指定すると、Cloudflare Pages 上ではガラス表現を無効化し、ローカル（`glass` 既定値）の見た目との差異をなくせます。Preview では未設定のままガラス表現を維持し、UI 調整の比較検証が可能です。
 
 3. 変更は 2 名以上でペアレビューし、手順書やチケットに記録を残します。
 4. Secrets 登録後に **Save** を押し、Preview/Production それぞれで再デプロイを行います。

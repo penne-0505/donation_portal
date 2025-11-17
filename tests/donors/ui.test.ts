@@ -3,43 +3,32 @@ import assert from 'node:assert/strict';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { createElement } from 'react';
 import {
-  createConsentMock,
-  createDonorsMock,
-  createSessionMock,
+  createDonorDirectoryMock,
   resetUIHookMocks,
-  setConsentHookMock,
-  setDonorsHookMock,
-  setSessionHookMock,
+  setDonorDirectoryHookMock,
 } from '../mocks/ui-hooks';
 
 const { DonorsPage } = await import('@/components/pages/donors-page');
 
-const originalConfirm = window.confirm;
-
 describe('DonorsPage React UI', () => {
   beforeEach(() => {
     resetUIHookMocks();
-    window.confirm = originalConfirm;
   });
 
   afterEach(() => {
     cleanup();
-    window.confirm = originalConfirm;
   });
 
   it('未ログイン時はログイン導線を表示し、支援者一覧を読み込む', () => {
+    const directory = createDonorDirectoryMock();
+    directory.isSignedIn = false;
+    directory.donors = ['Alice', 'Bob'];
+    directory.total = 2;
     let loginCalls = 0;
-    const session = createSessionMock();
-    session.status = { state: 'signed-out' };
-    session.login = () => {
+    directory.login = () => {
       loginCalls += 1;
     };
-    setSessionHookMock(session);
-
-    const donors = createDonorsMock();
-    donors.donors = ['Alice', 'Bob'];
-    donors.total = 2;
-    setDonorsHookMock(donors);
+    setDonorDirectoryHookMock(directory);
 
     render(createElement(DonorsPage));
 
@@ -53,55 +42,26 @@ describe('DonorsPage React UI', () => {
   });
 
   it('支援者 API がエラーの場合はメッセージを表示する', () => {
-    const session = createSessionMock();
-    session.status = { state: 'signed-out' };
-    setSessionHookMock(session);
-
-    const donors = createDonorsMock();
-    donors.error = '支援者情報の取得に失敗しました。';
-    donors.isLoading = false;
-    setDonorsHookMock(donors);
+    const directory = createDonorDirectoryMock();
+    directory.donorError = '支援者情報の取得に失敗しました。';
+    setDonorDirectoryHookMock(directory);
 
     render(createElement(DonorsPage));
 
     assert.ok(screen.getByText('支援者情報の取得に失敗しました。'));
   });
 
-  it('掲示撤回操作で確認ダイアログと API 呼び出しを行う', async () => {
-    const session = createSessionMock();
-    session.status = {
-      state: 'signed-in',
-      session: {
-        displayName: 'Alice',
-        consentPublic: true,
-        expiresAt: Date.now() + 60_000,
-      },
+  it('掲示撤回ボタンでフックの revokeConsent を呼び出す', async () => {
+    const directory = createDonorDirectoryMock();
+    directory.isSignedIn = true;
+    directory.consentPublic = true;
+    directory.donors = ['Alice', 'Bob'];
+    directory.total = 2;
+    let revokeCalls = 0;
+    directory.revokeConsent = async () => {
+      revokeCalls += 1;
     };
-    setSessionHookMock(session);
-
-    const donors = createDonorsMock();
-    donors.donors = ['Alice', 'Bob'];
-    donors.total = 2;
-    setDonorsHookMock(donors);
-
-    let refreshCalls = 0;
-    donors.refresh = async () => {
-      refreshCalls += 1;
-    };
-
-    const consentCalls: boolean[] = [];
-    const consent = createConsentMock();
-    consent.updateConsent = async (nextValue: boolean) => {
-      consentCalls.push(nextValue);
-      return true;
-    };
-    setConsentHookMock(consent);
-
-    let confirmCalls = 0;
-    window.confirm = (() => {
-      confirmCalls += 1;
-      return true;
-    }) as typeof window.confirm;
+    setDonorDirectoryHookMock(directory);
 
     render(createElement(DonorsPage));
 
@@ -109,26 +69,19 @@ describe('DonorsPage React UI', () => {
     fireEvent.click(revokeButton);
 
     await waitFor(() => {
-      assert.equal(confirmCalls, 1);
-      assert.deepEqual(consentCalls, [false]);
-      assert.equal(refreshCalls, 1);
+      assert.equal(revokeCalls, 1);
     });
   });
 
   it('更新ボタンで支援者情報を再取得する', async () => {
-    const session = createSessionMock();
-    session.status = { state: 'signed-out' };
-    setSessionHookMock(session);
-
-    const donors = createDonorsMock();
-    donors.donors = ['Alice'];
-    donors.total = 1;
-    setDonorsHookMock(donors);
-
+    const directory = createDonorDirectoryMock();
+    directory.donors = ['Alice'];
+    directory.total = 1;
     let refreshCalls = 0;
-    donors.refresh = async () => {
+    directory.refreshDonors = async () => {
       refreshCalls += 1;
     };
+    setDonorDirectoryHookMock(directory);
 
     render(createElement(DonorsPage));
 

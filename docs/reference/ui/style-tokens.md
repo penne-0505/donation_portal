@@ -2,14 +2,15 @@
 title: "UI デザイントークン定義"
 domain: "donation-portal"
 status: "active"
-version: "0.1.2"
+version: "0.2.1"
 created: "2025-11-01"
-updated: "2025-11-12"
+updated: "2025-11-17"
 related_issues: []
 related_prs: []
 references:
   - docs/archives/legacy-static/styles/base.css
   - docs/plan/donation-portal/ui-refresh-2025/plan.md
+  - docs/plan/frontend/glass-aesthetic-alignment/plan.md
 ---
 
 # UI デザイントークン定義
@@ -39,19 +40,26 @@ Donation Portal の画面スタイルは `docs/archives/legacy-static/styles/bas
 | `--space-3xs` | `0.25rem` | アイコンとラベルの最小余白 |
 | `--space-2xs` | `0.375rem` | メタラベル、タグ内余白 |
 | `--space-xs` | `0.5rem` | 小要素の縦余白、フォーム周辺 |
-### 背景グラデーション
+### 背景レイヤ
 
-- ルート背景は `--bg-a`（#f7f9fb）、`--bg-b`（#eef2ff）、`--bg-c`（#fff7ed）を用いた 2 つの radial-gradient と、ベースの linear-gradient で構成する。
-- `.bg-root` を `body`／`AppShell` に適用し、背景は `radial-gradient(1000px 700px at 20% 0%, var(--bg-b) 0%, transparent 60%)` と `radial-gradient(900px 600px at 85% 20%, var(--bg-c) 0%, transparent 60%)` を重ねる。
-- `.app-shell::before` では `--background-noise-coarse` と `--background-noise-fine` を 8% 程度で重ね、Retina／非 Retina でのバンディングを抑える。
-- ベースカラー `--color-root` は `#f7f9fb` とし、`linear-gradient(#fff, var(--bg-a))` の終端色と一致させる。
+- ルート背景は `--surface-root`（#fdfefe）と `--surface-root-muted` の 2 トーンに `--accent-ambient-*`（3〜5% のアクセント）を薄く重ね、常にホワイト主体の階調を保つ。
+- `.bg-root` は `linear-gradient(180deg, rgba(255,255,255,0.96), var(--surface-root))` に単一の radial グローを 1 枚だけ重ねる構成へ更新し、濃いラジアルグラデーションは `bg-root-legacy` でのみ参照できるようにする。
+- `.bg-panel` / `.bg-panel-strong` は `--surface-panel` 系の透過ホワイトを背景に、`--surface-divider` 系と `--surface-glint` で 1px の縦グラデーションボーダーを形成する。
+- `.bg-gloss` は最上位の光沢レイヤで、`rgba(255,255,255,0.985)` + `inset 0 1px 0 var(--surface-glint)` によって Hero や固定ヘッダーに薄いハイライトを与える。
+- `.app-shell` 直下に `app-shell-ambient` コンテナを置き、`app-shell-ambient__layer--soft` / `--veil` の 2 枚で `--ambient-orb-*` トークン由来のカラードームを常時描画する。`drift-orb-soft` / `drift-orb-veil` の 28s / 32s アニメーションで視差を与えつつ、`prefers-reduced-motion` では自動停止してガラス層の背面だけを静かに照らす。すべての `--ambient-orb-*` は Discord インディゴ系の単一色相（透過率 0.035〜0.05）にそろえており、ヒーロー背景がピンクやグリーンへ逸脱しないように制御している。
 
 ### ガラスユーティリティ
 
-- `.glass-lg`（ヒーローカード）は `background: rgba(255, 255, 255, 0.14)`、`backdrop-filter: blur(20px) saturate(170%)`、`box-shadow: 0 16px 48px rgba(15, 23, 42, 0.14)` を既定とする。
-- `.glass` / `.glass-md`（標準カード）は `background: rgba(255, 255, 255, 0.12)`、`blur(16px) saturate(165%)`、`box-shadow: 0 10px 40px rgba(15, 23, 42, 0.12)`。
-- `.glass-sm`（チップ・小要素）は `background: rgba(255, 255, 255, 0.1)`、`blur(12px) saturate(150%)`、`box-shadow: 0 6px 24px rgba(15, 23, 42, 0.08)`。
-- すべての `.glass*` は `.border-gradient-subtle` を重ね、`border: 1px solid transparent` と `background-image: linear-gradient(transparent, transparent), linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.08) 52%, rgba(15, 23, 42, 0.16) 100%)` を `background-origin: border-box`／`background-clip: padding-box, border-box` で適用し、角の白浮きを抑えたガラス縁を形成する。
+- `.glass` / `.glass-md` は `border-image: var(--glass-border-soft) 1` を維持しつつ、`linear-gradient(145deg, rgba(255,255,255,0.62) → rgba(255,255,255,0.14))` + `linear-gradient(180deg, rgba(255,255,255,0.32) → rgba(255,255,255,0.22))` の 2 レイヤで左上から光が差し込む白グラデーションを再現する。全体には極薄の `--glass-shadow-soft`（0 8px 24px / 4.5%）と `inset 0 1px 0 rgba(255,255,255,0.3)` のみで浮遊感を付与し、`::before` の radial highlight で左上に柔らかい白影を落としている。
+- `.glass-sm` は `linear-gradient(140deg, rgba(255,255,255,0.55) → rgba(255,255,255,0.18))` を重ね、`box-shadow: inset 0 1px 0 rgba(255,255,255,0.42)` と radial highlight を共有してピルでもガラスらしさを維持する。`.glass-lg` / `.glass-strong` も `var(--glass-border-strong)` と 22px blur を保ちつつ、`linear-gradient(140deg, rgba(255,255,255,0.75) → rgba(255,255,255,0.28))` で左上発光を強めている。
+- `.glass-card` は `linear-gradient(140deg, rgba(255,255,255,0.68) → rgba(255,255,255,0.22))` をベースに、わずかな 2nd レイヤ（`linear-gradient(180deg, rgba(255,255,255,0.36) → rgba(255,255,255,0.3))`）を敷いて全面が均質な白レイヤで包まれるよう再構成している。
+- `.site-header .header-surface` は `glass-sm` ベースのまま `--glass-shadow-soft` + `inset 0 1px 0 rgba(255,255,255,0.42)` を重ね、sticky でも極薄の落ち影と左上ハイライトを維持する。`data-top="true"` 状態では影と背景を無効化してヒーローセクション上で溶け込ませる。
+- `.border-gradient-subtle` は 1px の縦グラデーション枠を全域ホワイトトーン（0.62 → 0.12）へ再調整し、画面下部にだけ落ちる影を発生させない。
+
+### ホバー / グローユーティリティ
+
+- `.glow-accent-subtle` / `.glow-accent-medium` / `.hover-glass` / `.hover-glow` / `.cta-donate-glow` は `var(--motion-duration-standard)`（240ms）に短縮し、白・グレー由来の 0〜2px / 0〜14px 程度の柔らかい光だけでホバー差分を作る。彩度の高い発光は `data-accent="primary"` を付与した CTA 1 箇所のみに限定する。
+- `.donate-cta-animated` は `var(--cta-layer-base)` を既定レイヤ、`var(--cta-layer-primary)` をアクセントレイヤとし、`:hover` でも 0〜2px の影に収まる。`data-accent="primary"` を外した場合はニュートラルなトーンで描画され、`@media (prefers-reduced-motion: reduce)` では擬似要素のアニメーションを停止する。
 | `--space-sm` | `0.75rem` | セクション内の段落間 |
 | `--space-md` | `1rem` | カード内の基本余白 |
 | `--space-lg` | `1.5rem` | カードの外側余白、スタック間隔 |
@@ -125,7 +133,7 @@ Light と Dark は `prefers-color-scheme` で自動切り替えし、同一ト�
 
 | コンポーネント | 使用トークン | 備考 |
 | --- | --- | --- |
-| `.button` | `--radius-pill`, `--transition-base`, `--shadow-sm` | `button--primary` は `#111827` のソリッド背景（`box-shadow: 0 6px 20px rgba(17, 24, 39, 0.18)`）でコントラスト 4.5:1 以上を確保。`button--secondary` は `glass-sm` を利用。 |
+| `.button` | `--radius-pill`, `--transition-base`, `.glass-*` | `Button` コンポーネントは `data-accent` 属性でアクセント種別を管理し、`primary` のみ濃色塗りつぶし、その他は透明度とボーダー強度だけで差を付ける。`.donate-cta-animated` を重ねる CTA は `data-accent="primary"` の 1 要素に限定し、テキストは `text-white` で 4.5:1 を維持する。 |
 | `.alert` | `--radius-md`, `--color-*-soft` | 種別ごとに soft/border/strong トークンを組み合わせる。 |
 | `.donor-card` | `--radius-md`, `--shadow-xs`, `--color-surface-alt` | Donors リスト用のカード表現。空状態は `.donor-empty`。 |
 | `.checkout-action` | `.button` + `.tag` + `.button__meta` を組み合わせ、メニュー単位の補足を表示。 | `--space-3xs`, `--text-xs` |

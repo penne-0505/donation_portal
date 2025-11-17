@@ -108,8 +108,12 @@ export function AppShell({ children, className }: AppShellProps) {
 
   return (
     <div className="app-shell relative flex min-h-screen flex-col bg-root text-foreground">
-      <header className="sticky top-0 z-40 px-4 pt-4">
-        <div className="mx-auto flex max-w-6xl items-center justify-between rounded-2xl glass-sm border-gradient-subtle px-5 py-3 shadow-minimal shadow-inner-light backdrop-blur transition-glass relative">
+      <div className="app-shell-ambient" aria-hidden="true">
+        <div className="app-shell-ambient__layer app-shell-ambient__layer--soft" />
+        <div className="app-shell-ambient__layer app-shell-ambient__layer--veil" />
+      </div>
+      <header className="site-header sticky top-0 z-40 px-4 pt-4">
+        <div className="header-surface relative mx-auto flex max-w-6xl items-center justify-between rounded-2xl glass-sm border-gradient-subtle px-5 py-3 transition-glass">
           <Link
             href="/"
             className="text-base font-semibold tracking-tight text-foreground transition-colors transition-macos hover:opacity-80"
@@ -129,10 +133,7 @@ export function AppShell({ children, className }: AppShellProps) {
               onClick={handleCtaClick}
               size="md"
               variant={buttonShouldBeDeemphasized ? 'outline' : 'primary'}
-              className={cn(
-                'gap-2 transition-all duration-200',
-                buttonShouldBeDeemphasized && 'opacity-80 hover:opacity-100',
-              )}
+              className={cn('gap-2', buttonShouldBeDeemphasized && 'opacity-80 hover:opacity-100')}
               data-state={buttonShouldBeDeemphasized ? 'deemphasized' : 'active'}
               aria-label="寄付をはじめる"
             >
@@ -167,7 +168,7 @@ export function AppShell({ children, className }: AppShellProps) {
               role="menu"
               aria-labelledby={mobileMenuTriggerId}
               tabIndex={-1}
-              className="absolute right-5 top-full mt-3 flex w-[min(320px,calc(100vw-2.5rem))] flex-col gap-3 rounded-2xl glass-sm border-gradient-subtle bg-root/95 p-4 shadow-minimal shadow-inner-light backdrop-blur md:hidden"
+              className="absolute right-5 top-full mt-3 flex w-[min(320px,calc(100vw-2.5rem))] flex-col gap-3 rounded-2xl glass-sm border-gradient-subtle bg-root/95 p-4 transition-glass md:hidden"
             >
               <Link
                 href="/donors"
@@ -183,7 +184,7 @@ export function AppShell({ children, className }: AppShellProps) {
                 size="md"
                 variant={buttonShouldBeDeemphasized ? 'outline' : 'primary'}
                 className={cn(
-                  'w-full justify-center gap-2 transition-all duration-200',
+                  'w-full justify-center gap-2',
                   buttonShouldBeDeemphasized && 'opacity-80 hover:opacity-100',
                 )}
                 data-state={buttonShouldBeDeemphasized ? 'deemphasized' : 'active'}
@@ -208,8 +209,7 @@ export function AppShell({ children, className }: AppShellProps) {
         <div
           className={cn(
             'mx-auto flex max-w-6xl items-center justify-between px-5 py-4',
-            isLandingPage &&
-              'rounded-2xl glass-sm border-gradient-subtle shadow-minimal shadow-inner-light transition-glass',
+            isLandingPage && 'rounded-2xl glass-sm border-gradient-subtle transition-glass',
           )}
         >
           <span>© 2025 {ORGANIZATION_NAME}</span>

@@ -28,6 +28,47 @@ type DonorsHookMock = {
   refresh: () => Promise<void>;
 };
 
+type DonationFlowHookMock = {
+  session: SessionHookMock;
+  isSignedIn: boolean;
+  displayName: string;
+  consent: {
+    value: boolean;
+    isUpdating: boolean;
+    error: string | null;
+    toggle: (nextValue: boolean) => Promise<void>;
+  };
+  consentError: string | null;
+  checkout: {
+    isProcessing: boolean;
+    error: string | null;
+    ctaLabel: string;
+    ctaStatusMessage: string;
+    isDisabled: boolean;
+    submit: () => Promise<void>;
+  };
+  presets: readonly CheckoutPreset[];
+  selectedPreset: CheckoutPreset | null;
+  selectPreset: (preset: CheckoutPreset) => void;
+};
+
+type DonorDirectoryHookMock = {
+  session: SessionHookMock;
+  isSignedIn: boolean;
+  consentPublic: boolean;
+  donors: string[];
+  total: number;
+  donorError: string | null;
+  isLoading: boolean;
+  consentError: string | null;
+  isConsentUpdating: boolean;
+  refreshDonors: () => Promise<void>;
+  refreshSession: () => Promise<void>;
+  revokeConsent: () => Promise<void>;
+  login: () => void;
+  logout: () => void;
+};
+
 function createSessionMock(): SessionHookMock {
   return {
     status: { state: 'loading' },
@@ -64,11 +105,58 @@ function createDonorsMock(): DonorsHookMock {
   };
 }
 
+function createDonationFlowMock(): DonationFlowHookMock {
+  return {
+    session: createSessionMock(),
+    isSignedIn: false,
+    displayName: '',
+    consent: {
+      value: false,
+      isUpdating: false,
+      error: null,
+      toggle: async () => undefined,
+    },
+    consentError: null,
+    checkout: {
+      isProcessing: false,
+      error: null,
+      ctaLabel: 'プランを選択して寄付を進める',
+      ctaStatusMessage: 'Discord でログインすると寄付ボタンが有効になります。',
+      isDisabled: true,
+      submit: async () => undefined,
+    },
+    presets: [],
+    selectedPreset: null,
+    selectPreset: () => undefined,
+  };
+}
+
+function createDonorDirectoryMock(): DonorDirectoryHookMock {
+  return {
+    session: createSessionMock(),
+    isSignedIn: false,
+    consentPublic: false,
+    donors: [],
+    total: 0,
+    donorError: null,
+    isLoading: false,
+    consentError: null,
+    isConsentUpdating: false,
+    refreshDonors: async () => undefined,
+    refreshSession: async () => undefined,
+    revokeConsent: async () => undefined,
+    login: () => undefined,
+    logout: () => undefined,
+  };
+}
+
 const state = {
   session: createSessionMock(),
   consent: createConsentMock(),
   checkout: createCheckoutMock(),
   donors: createDonorsMock(),
+  donationFlow: createDonationFlowMock(),
+  donorDirectory: createDonorDirectoryMock(),
 };
 
 function setSessionHookMock(next: SessionHookMock): void {
@@ -87,11 +175,21 @@ function setDonorsHookMock(next: DonorsHookMock): void {
   state.donors = next;
 }
 
+function setDonationFlowHookMock(next: DonationFlowHookMock): void {
+  state.donationFlow = next;
+}
+
+function setDonorDirectoryHookMock(next: DonorDirectoryHookMock): void {
+  state.donorDirectory = next;
+}
+
 function resetUIHookMocks(): void {
   state.session = createSessionMock();
   state.consent = createConsentMock();
   state.checkout = createCheckoutMock();
   state.donors = createDonorsMock();
+  state.donationFlow = createDonationFlowMock();
+  state.donorDirectory = createDonorDirectoryMock();
 }
 
 function useSession(): SessionHookMock {
@@ -110,20 +208,41 @@ function useDonors(): DonorsHookMock {
   return state.donors;
 }
 
+function useDonationFlow(): DonationFlowHookMock {
+  return state.donationFlow;
+}
+
+function useDonorDirectory(): DonorDirectoryHookMock {
+  return state.donorDirectory;
+}
+
 export {
   createCheckoutMock,
   createConsentMock,
   createDonorsMock,
+  createDonorDirectoryMock,
+  createDonationFlowMock,
   createSessionMock,
   resetUIHookMocks,
   setCheckoutHookMock,
   setConsentHookMock,
   setDonorsHookMock,
+  setDonorDirectoryHookMock,
+  setDonationFlowHookMock,
   setSessionHookMock,
   useCheckout,
   useConsentMutation,
   useDonors,
+  useDonorDirectory,
+  useDonationFlow,
   useSession,
 };
 
-export type { CheckoutHookMock, ConsentHookMock, DonorsHookMock, SessionHookMock };
+export type {
+  CheckoutHookMock,
+  ConsentHookMock,
+  DonorDirectoryHookMock,
+  DonationFlowHookMock,
+  DonorsHookMock,
+  SessionHookMock,
+};

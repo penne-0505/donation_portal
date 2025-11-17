@@ -33,7 +33,7 @@ export function useDonors() {
   const fetchDonors = useCallback(async () => {
     setState((previous) => ({ ...previous, isLoading: true, error: null }));
     try {
-      const response = await fetch('/api/donors?limit=200', {
+      const response = await fetch('/api/donors?limit=100', {
         method: 'GET',
         headers: { Accept: 'application/json' },
       });
