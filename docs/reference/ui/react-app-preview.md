@@ -4,7 +4,7 @@ domain: "donation-portal"
 status: "active"
 version: "0.2.0"
 created: "2025-11-01"
-updated: "2025-11-12"
+updated: "2025-11-17"
 related_issues: []
 related_prs: []
 references:
@@ -89,7 +89,7 @@ Next.js (App Router) を利用した React 版 UI が `/donate`・`/donors`・`/
 | --- | --- | --- |
 | `components/ui/button.tsx` | 主要操作・リンクのスタイル統一 | `href` を指定すると Next.js の `<Link>` を描画。 |
 | `components/ui/card.tsx` | ガラス風カード表現 | カード内の余白とシャドウを統一。 |
-| `components/ui/checkbox.tsx` | カスタムチェックボックス | 状態制御は `onCheckedChange` で行う。 |
+| `components/ui/checkbox.tsx` | カスタムチェックボックス | 状態制御は `onCheckedChange`。未選択時は 1.5rem / `border-2` で枠線を強調し、視認性を担保。 |
 | `components/ui/section-heading.tsx` | セクション見出し | サイズ/揃え/ARIA の id を共通化。 |
 | `components/donation-impact.tsx` | 寄付プランの鼓舞コンテンツ | 選択したメニューに応じたコピー/アイコンを出し分け。 |
 | `components/donor-pill.tsx` | Donors リストのタグ表示 | Flex wrap を前提。 |
