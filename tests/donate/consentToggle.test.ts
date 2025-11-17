@@ -13,7 +13,7 @@ describe('ConsentToggle', () => {
     cleanup();
   });
 
-  it('aria-checked 属性が受け取った checked 値を反映する', () => {
+  it('チェック状態が checked 値を反映する', () => {
     render(
       createElement(ConsentToggle, {
         checked: true,
@@ -22,8 +22,8 @@ describe('ConsentToggle', () => {
       }),
     );
 
-    const toggle = screen.getByRole('switch', { name: '掲示同意' });
-    assert.equal(toggle.getAttribute('aria-checked'), 'true');
+    const toggle = screen.getByRole('checkbox', { name: '掲示同意' }) as HTMLInputElement;
+    assert.equal(toggle.checked, true);
   });
 
   it('クリックで onCheckedChange を呼び出す', () => {
@@ -38,13 +38,13 @@ describe('ConsentToggle', () => {
       }),
     );
 
-    const toggle = screen.getByRole('switch', { name: '掲示同意' });
+    const toggle = screen.getByRole('checkbox', { name: '掲示同意' });
     fireEvent.click(toggle);
 
     assert.deepEqual(calls, [true]);
   });
 
-  it('制御コンポーネントとして aria-checked が更新される', async () => {
+  it('制御コンポーネントとして checked が更新される', async () => {
     function ControlledToggle() {
       const [value, setValue] = useState(false);
       return createElement(ConsentToggle, {
@@ -56,13 +56,13 @@ describe('ConsentToggle', () => {
 
     render(createElement(ControlledToggle));
 
-    const toggle = screen.getByRole('switch', { name: '掲示同意' }) as HTMLButtonElement;
-    assert.equal(toggle.getAttribute('aria-checked'), 'false');
+    const toggle = screen.getByRole('checkbox', { name: '掲示同意' }) as HTMLInputElement;
+    assert.equal(toggle.checked, false);
 
     fireEvent.click(toggle);
 
-    await screen.findByRole('switch', { name: '掲示同意', checked: true });
-    assert.equal(toggle.getAttribute('aria-checked'), 'true');
+    await screen.findByRole('checkbox', { name: '掲示同意', checked: true });
+    assert.equal(toggle.checked, true);
   });
 
   it('disabled=true の場合は onCheckedChange を呼び出さない', () => {
@@ -78,10 +78,10 @@ describe('ConsentToggle', () => {
       }),
     );
 
-    const toggle = screen.getByRole('switch', { name: '掲示同意' });
+    const toggle = screen.getByRole('checkbox', { name: '掲示同意' });
     fireEvent.click(toggle);
 
     assert.equal(toggled, false);
-    assert.equal(toggle.getAttribute('aria-checked'), 'false');
+    assert.equal((toggle as HTMLInputElement).checked, false);
   });
 });
