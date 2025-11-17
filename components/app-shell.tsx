@@ -108,6 +108,10 @@ export function AppShell({ children, className }: AppShellProps) {
 
   return (
     <div className="app-shell relative flex min-h-screen flex-col bg-root text-foreground">
+      <div className="app-shell-ambient" aria-hidden="true">
+        <div className="app-shell-ambient__layer app-shell-ambient__layer--soft" />
+        <div className="app-shell-ambient__layer app-shell-ambient__layer--veil" />
+      </div>
       <header className="site-header sticky top-0 z-40 px-4 pt-4">
         <div className="header-surface relative mx-auto flex max-w-6xl items-center justify-between rounded-2xl glass-sm border-gradient-subtle px-5 py-3 transition-glass">
           <Link

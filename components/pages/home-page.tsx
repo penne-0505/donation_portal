@@ -47,7 +47,7 @@ export function HomePage() {
                 onClick={handleCTAClick}
                 size="md"
                 variant="primary"
-                className="donate-cta-animated cta-donate-glow gap-2 px-8 text-white"
+                className="donate-cta-animated cta-donate-glow home-cta-static gap-2 px-8 text-white"
                 aria-label="寄付をはじめる"
                 data-accent="primary"
               >
