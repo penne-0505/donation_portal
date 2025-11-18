@@ -35,10 +35,6 @@ export function AppShell({ children, className }: AppShellProps) {
 
   return (
     <div className="app-shell relative flex min-h-screen flex-col bg-root text-foreground">
-      <div className="app-shell-ambient" aria-hidden="true">
-        <div className="app-shell-ambient__layer app-shell-ambient__layer--soft" />
-        <div className="app-shell-ambient__layer app-shell-ambient__layer--veil" />
-      </div>
       <header className="site-header sticky top-0 z-40 px-4 pt-4">
         <div className="header-surface relative mx-auto flex max-w-6xl items-center justify-between rounded-2xl glass-sm border-gradient-subtle px-5 py-3 transition-glass">
           <Link
@@ -73,7 +69,10 @@ export function AppShell({ children, className }: AppShellProps) {
         </div>
       </header>
       <main
-        className={cn('relative z-10 mx-auto w-full flex-1 max-w-6xl px-5 py-6 md:py-8', className)}
+        className={cn(
+          'page-main-ambient relative z-10 mx-auto w-full flex-1 max-w-6xl px-5 py-6 md:py-8',
+          className,
+        )}
       >
         {children}
       </main>
@@ -87,14 +86,14 @@ export function AppShell({ children, className }: AppShellProps) {
           <span>© 2025 {ORGANIZATION_NAME}</span>
           <div className="flex items-center gap-4">
             <Link
-              href="/privacy"
+              href="/terms"
               className="transition-colors transition-macos hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground/25 focus-visible:ring-offset-2"
             >
-              プライバシーポリシー
+              利用規約・プライバシーポリシー
             </Link>
             <span className="hidden text-border/40 sm:inline">•</span>
             <Link
-              href="/privacy#operator-info"
+              href="/terms?tab=privacy#operator-info"
               className="hidden transition-colors transition-macos hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground/25 focus-visible:ring-offset-2 sm:inline"
             >
               運営者情報

@@ -26,7 +26,9 @@
   /* サーフェス・アクセントの透明層 */
   --color-surface: rgba(255, 255, 255, 0.72);
   --color-surface-strong: rgba(255, 255, 255, 0.88);
-  --color-accent: #5865f2;
+  --color-accent: #10b981;
+  --color-accent-strong: #047857;
+  --color-accent-soft: #d1fae5;
   --shadow-soft: 0 1px 2px rgba(15, 23, 42, 0.04);
 
   /* アニメーション用 easing */
@@ -152,6 +154,29 @@
     animation: drift-orb-veil 32s ease-in-out infinite;
   }
 
+  /* メインコンテンツ背後の単一グロー: ヒーロー/フォームをそっと持ち上げる */
+  .page-main-ambient {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .page-main-ambient::before {
+    content: '';
+    position: absolute;
+    inset: -6% -10%;
+    background: radial-gradient(
+      125% 125% at 50% 0%,
+      rgba(255, 255, 255, 0.9) 0%,
+      rgba(255, 255, 255, 0.6) 30%,
+      rgba(148, 163, 184, 0.08) 60%,
+      transparent 80%
+    );
+    opacity: 0.93;
+    filter: blur(18px);
+    pointer-events: none;
+    z-index: -1;
+  }
+
   /* CTA ボタン: 擬似要素でコアとハイライト層を分け、ホバーで発光→高揚感を出す */
   .donate-cta-animated {
     position: relative;
@@ -247,10 +272,20 @@
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
   }
 
-  /* ホームヒーローの寄付CTAでは hover グロー/アニメーションを抑える */
+  /* ホームヒーローの寄付CTAでは、位置は固定しグローのみを強調する */
+  .donate-cta-animated.home-cta-static {
+    transform: translateY(0);
+    transition-property:
+      background-color, border-color, color, filter, box-shadow, opacity, transform;
+  }
+
   .donate-cta-animated.home-cta-static::before,
   .donate-cta-animated.home-cta-static::after {
-    transition: none;
+    transition:
+      opacity var(--motion-duration-standard) var(--ease-macos),
+      box-shadow var(--motion-duration-standard) var(--ease-macos),
+      filter var(--motion-duration-standard) var(--ease-macos),
+      background var(--motion-duration-standard) var(--ease-macos);
   }
 
   .donate-cta-animated.home-cta-static:not(:disabled):not([aria-disabled='true']):hover::before,
@@ -272,8 +307,8 @@
   .cta-donate-glow.home-cta-static:not(:disabled):not([aria-disabled='true']):hover,
   .cta-donate-glow.home-cta-static:not(:disabled):not([aria-disabled='true']):focus-visible {
     box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.18),
-      0 1px 2px rgba(15, 23, 42, 0.12);
+      inset 0 0 0 1px rgba(255, 255, 255, 0.32),
+      0 0 32px rgba(15, 23, 42, 0.32);
   }
 
   .donate-cta-animated.home-cta-static.cta-donate-glow[data-accent='primary']:not(:disabled):not(
@@ -364,12 +399,15 @@
   }
 
   /* Backgrounds: ページ/セクション用の大域背景 -------------------------------- */
-  /* ページ背景: 天井から光が降り注ぐような柔らかなグラデーション */
+  /* ページ背景: 上部がわずかに明るい、ごく控えめな縦グラデーション */
   .bg-root {
     background-color: var(--surface-root);
-    background-image:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.96), var(--surface-root)),
-      radial-gradient(1600px 820px at 50% -22%, var(--accent-ambient-soft), transparent 68%);
+    background-image: linear-gradient(
+      180deg,
+      #ffffff 0%,
+      var(--surface-root) 52%,
+      var(--surface-root-muted) 100%
+    );
     background-repeat: no-repeat;
     background-position: center;
   }
@@ -438,7 +476,8 @@
   /* Transitions ---------------------------------------------------------------- */
   /* ガラス系ユーティリティのデフォルト遷移。光沢や枠の変化を一括管理 */
   .transition-glass {
-    transition-property: background-color, border-color, color, filter, box-shadow, opacity;
+    transition-property:
+      background-color, border-color, color, filter, box-shadow, opacity, transform;
     transition-duration: var(--motion-duration-standard);
     transition-timing-function: var(--ease-macos);
   }
@@ -699,6 +738,13 @@
       0 1px 2px rgba(15, 23, 42, 0.12);
   }
 
+  /* ホームヒーローCTAでは、デフォルト状態のグローを控えめにする */
+  .cta-donate-glow.home-cta-static {
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.12),
+      0 0 4px rgba(15, 23, 42, 0.06);
+  }
+
   .cta-donate-glow:hover,
   .cta-donate-glow:focus-visible {
     box-shadow:
@@ -729,6 +775,42 @@
       inset 0 0 0 1px rgba(255, 255, 255, 0.38),
       0 0 14px rgba(15, 23, 42, 0.1);
     border-color: rgba(255, 255, 255, 0.42);
+  }
+
+  /* セグメントタブ: 利用規約/プライバシー切り替え用のピル状グループ */
+  .tabs-segmented {
+    position: relative;
+    display: inline-flex;
+    align-items: stretch;
+    padding: 0;
+    border-radius: 9999px;
+    background-color: var(--accent-ambient-soft);
+    border: 1px solid var(--surface-divider);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    overflow: hidden;
+  }
+
+  .tabs-segmented-highlight {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 50%;
+    border-radius: 9999px;
+    background-color: var(--surface-panel-strong);
+    box-shadow:
+      0 1px 2px rgba(15, 23, 42, 0.08),
+      inset 0 1px 0 var(--surface-glint);
+    transition:
+      transform var(--motion-duration-standard) var(--ease-macos),
+      background-color var(--motion-duration-standard) var(--ease-macos);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .tabs-segmented button {
+    border: none;
+    background: transparent;
   }
 
   /* 成功バッジ: 淡い緑ガラスで安心感を伝える */
