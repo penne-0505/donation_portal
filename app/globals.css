@@ -272,10 +272,20 @@
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
   }
 
-  /* ホームヒーローの寄付CTAでは hover グロー/アニメーションを抑える */
+  /* ホームヒーローの寄付CTAでは、位置は固定しグローのみを強調する */
+  .donate-cta-animated.home-cta-static {
+    transform: translateY(0);
+    transition-property:
+      background-color, border-color, color, filter, box-shadow, opacity, transform;
+  }
+
   .donate-cta-animated.home-cta-static::before,
   .donate-cta-animated.home-cta-static::after {
-    transition: none;
+    transition:
+      opacity var(--motion-duration-standard) var(--ease-macos),
+      box-shadow var(--motion-duration-standard) var(--ease-macos),
+      filter var(--motion-duration-standard) var(--ease-macos),
+      background var(--motion-duration-standard) var(--ease-macos);
   }
 
   .donate-cta-animated.home-cta-static:not(:disabled):not([aria-disabled='true']):hover::before,
@@ -297,8 +307,8 @@
   .cta-donate-glow.home-cta-static:not(:disabled):not([aria-disabled='true']):hover,
   .cta-donate-glow.home-cta-static:not(:disabled):not([aria-disabled='true']):focus-visible {
     box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.18),
-      0 1px 2px rgba(15, 23, 42, 0.12);
+      inset 0 0 0 1px rgba(255, 255, 255, 0.32),
+      0 0 32px rgba(15, 23, 42, 0.32);
   }
 
   .donate-cta-animated.home-cta-static.cta-donate-glow[data-accent='primary']:not(:disabled):not(
@@ -466,7 +476,8 @@
   /* Transitions ---------------------------------------------------------------- */
   /* ガラス系ユーティリティのデフォルト遷移。光沢や枠の変化を一括管理 */
   .transition-glass {
-    transition-property: background-color, border-color, color, filter, box-shadow, opacity;
+    transition-property:
+      background-color, border-color, color, filter, box-shadow, opacity, transform;
     transition-duration: var(--motion-duration-standard);
     transition-timing-function: var(--ease-macos);
   }
@@ -725,6 +736,13 @@
     box-shadow:
       inset 0 0 0 1px rgba(255, 255, 255, 0.18),
       0 1px 2px rgba(15, 23, 42, 0.12);
+  }
+
+  /* ホームヒーローCTAでは、デフォルト状態のグローを控えめにする */
+  .cta-donate-glow.home-cta-static {
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.12),
+      0 0 4px rgba(15, 23, 42, 0.06);
   }
 
   .cta-donate-glow:hover,

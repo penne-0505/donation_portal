@@ -4,7 +4,7 @@ domain: ui
 status: active
 version: 1
 created: 2025-11-02
-updated: 2025-11-17
+updated: 2025-11-18
 related_issues: []
 related_prs: []
 references:
@@ -275,6 +275,7 @@ export function HomePage() {
 - `gap-3`: ボタン間隔 12px（12 / 16 = 0.75rem）
 - `sm:flex-row`: SP `flex-col` (縦積み) / PC `flex-row` (横並び)
 - `px-10`: 左右パディング 40px
+- ホームヒーローのメインCTAには `donate-cta-animated cta-donate-glow home-cta-static` を付与し、hover/focus 時でもオーロラグラデーションは抑えつつ、ボタンの位置は固定したまま、外周グローのみを強めてアニメーションさせる。
 - `aria-label`: スクリーンリーダー用ラベル
 - `aria-hidden`: アイコンを読み上げ非表示化
 
