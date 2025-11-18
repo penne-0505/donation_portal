@@ -31,7 +31,7 @@ Discord コミュニティ向けの任意寄付を受け付ける Cloudflare Pag
 
 ## リポジトリ構成
 
-- `app/(main)/` – 現行 UI ルート (`/`, `/donate`, `/donors`, `/thanks`, `/privacy`)
+- `app/(main)/` – 現行 UI ルート (`/`, `/donate`, `/donors`, `/thanks`, `/terms`)
 - `components/` – UI コンポーネント・ページ単位の React 実装
 - `lib/ui/` – UI 向けユーティリティ、ブランド定義、Hooks
 - `functions/` – Cloudflare Pages Functions（API、OAuth、Webhook、Health）

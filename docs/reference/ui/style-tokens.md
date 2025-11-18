@@ -4,7 +4,7 @@ domain: "donation-portal"
 status: "active"
 version: "0.2.1"
 created: "2025-11-01"
-updated: "2025-11-17"
+updated: "2025-11-18"
 related_issues: []
 related_prs: []
 references:
@@ -43,10 +43,10 @@ Donation Portal の画面スタイルは `docs/archives/legacy-static/styles/bas
 ### 背景レイヤ
 
 - ルート背景は `--surface-root`（#fdfefe）と `--surface-root-muted` の 2 トーンに `--accent-ambient-*`（3〜5% のアクセント）を薄く重ね、常にホワイト主体の階調を保つ。
-- `.bg-root` は `linear-gradient(180deg, rgba(255,255,255,0.96), var(--surface-root))` に単一の radial グローを 1 枚だけ重ねる構成へ更新し、濃いラジアルグラデーションは `bg-root-legacy` でのみ参照できるようにする。
+- `.bg-root` は 画面全体を「上部がわずかに明るく、下部に向かってごく控えめにトーンが落ちる」縦グラデーションとして定義する。ベースは #ffffff → `--surface-root` → `--surface-root-muted` の 3 ストップで、カラフルな色味は持たない。より強いグラデーションやカラーアクセントが必要なケースでは `bg-root-legacy` を使用する。
 - `.bg-panel` / `.bg-panel-strong` は `--surface-panel` 系の透過ホワイトを背景に、`--surface-divider` 系と `--surface-glint` で 1px の縦グラデーションボーダーを形成する。
 - `.bg-gloss` は最上位の光沢レイヤで、`rgba(255,255,255,0.985)` + `inset 0 1px 0 var(--surface-glint)` によって Hero や固定ヘッダーに薄いハイライトを与える。
-- `.app-shell` 直下に `app-shell-ambient` コンテナを置き、`app-shell-ambient__layer--soft` / `--veil` の 2 枚で `--ambient-orb-*` トークン由来のカラードームを常時描画する。`drift-orb-soft` / `drift-orb-veil` の 28s / 32s アニメーションで視差を与えつつ、`prefers-reduced-motion` では自動停止してガラス層の背面だけを静かに照らす。すべての `--ambient-orb-*` は Discord インディゴ系の単一色相（透過率 0.035〜0.05）にそろえており、ヒーロー背景がピンクやグリーンへ逸脱しないように制御している。
+- 以前は `.app-shell` 直下に `app-shell-ambient` コンテナを置き、`app-shell-ambient__layer--soft` / `--veil` の 2 枚で `--ambient-orb-*` トークン由来のカラードームを常時描画していたが、現在はアクセシビリティと視覚ノイズ低減のためオーブ状の背景レイヤは使用していない（トークン自体は将来の再利用に備えて残している）。代わりに、`main` 要素に `page-main-ambient` クラスを付与し、ページ中央付近にだけ単一のホワイト系グローを薄く敷くことで、ヒーロー／寄付フォーム周辺だけをそっと持ち上げる演出にしている。
 
 ### ガラスユーティリティ
 
@@ -95,9 +95,9 @@ Light と Dark は `prefers-color-scheme` で自動切り替えし、同一ト�
 | `--color-text-muted` | `#475569` | `#cbd5f5` | サブテキスト |
 | `--color-text-subtle` | `#64748b` | `#94a3b8` | 注釈 |
 | `--color-text-inverse` | `#ffffff` | `#0f172a` | ボタン反転色 |
-| `--color-accent` | `#5865f2` | 同左 | 主要アクセント |
-| `--color-accent-strong` | `#4752c4` | 同左 | アクセントの濃色 |
-| `--color-accent-soft` | `rgba(88, 101, 242, 0.12)` | `rgba(129, 140, 248, 0.22)` | バッジ・背景チップ |
+| `--color-accent` | `#10b981` | 同左 | 主要アクセント |
+| `--color-accent-strong` | `#047857` | 同左 | アクセントの濃色 |
+| `--color-accent-soft` | `#d1fae5` | 同左 | バッジ・背景チップ |
 | `--color-info` | `#2563eb` | 同左 | 情報系アラート |
 | `--color-info-soft` | `rgba(37, 99, 235, 0.12)` | `rgba(96, 165, 250, 0.26)` | 情報系背景 |
 | `--color-success` | `#0f766e` | 同左 | 完了ステータス |

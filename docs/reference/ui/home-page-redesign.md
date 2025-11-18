@@ -28,9 +28,9 @@ components/
     ├── donate-page.tsx           # 寄付ページ（計測追加）
     └── thanks-page.tsx           # サンクスページ（計測追加）
 
-app/(app-shell)/
-└── privacy/
-    └── page.tsx                  # プライバシーポリシーページ
+app/(main)/
+└── terms/
+    └── page.tsx                  # 利用規約・プライバシーポリシーページ
 
 functions/
 └── (既存 API ルート、変更なし)
@@ -147,11 +147,11 @@ const isLandingPage = pathname === '/';
   >
     <span>© 2025 {ORGANIZATION_NAME}</span>
     <div className="flex items-center gap-4">
-      <Link href="/privacy" className="...">
-        プライバシーポリシー
+      <Link href="/terms" className="...">
+        利用規約・プライバシーポリシー
       </Link>
       <span className="hidden text-border/40 sm:inline">•</span>
-      <Link href="/privacy#operator-info" className="hidden sm:inline ...">
+      <Link href="/terms?tab=privacy#operator-info" className="hidden sm:inline ...">
         運営者情報
       </Link>
     </div>
@@ -444,32 +444,13 @@ const handleCheckout = useCallback(async () => {
 
 ---
 
-### 5. PrivacyPage（新規）
+### 5. TermsPage（利用規約・プライバシーポリシー）
 
-**ファイル**: `app/(app-shell)/privacy/page.tsx`
+**ファイル**: `app/(main)/terms/page.tsx`
 
-#### 構成
-
-```typescript
-export default function PrivacyPage() {
-  return (
-    <div className="space-y-8 py-8 page-enter">
-      <div className="space-y-4">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">
-          プライバシーポリシー
-        </h1>
-        <p className="text-base text-muted-foreground">最終更新：2025年11月2日</p>
-      </div>
-
-      {/* 7 sections */}
-      <section className="space-y-2">
-        <h2 className="text-lg font-semibold text-foreground">1. 序文</h2>
-        <p>...</p>
-      </section>
-    </div>
-  );
-}
-```
+- `/terms` で利用規約タブを初期表示し、`/terms?tab=privacy` でプライバシーポリシータブを表示する。
+- 2 つのタブボタン（「利用規約」「プライバシーポリシー」）で内容を切り替えるシンプルなクライアントコンポーネント。
+- プライバシーポリシー内の運営者情報セクションには `id="operator-info"` を付与し、`/terms?tab=privacy#operator-info` でディープリンク可能。
 
 ---
 
@@ -634,7 +615,7 @@ npm run build
 ✅ /donate
 ✅ /donors
 ✅ /thanks
-✅ /privacy
+✅ /terms
 ```
 
 ---
