@@ -452,6 +452,7 @@ const handleCheckout = useCallback(async () => {
 - `/terms` で利用規約タブを初期表示し、`/terms?tab=privacy` でプライバシーポリシータブを表示する。
 - 2 つのタブボタン（「利用規約」「プライバシーポリシー」）で内容を切り替えるシンプルなクライアントコンポーネント。
 - プライバシーポリシー内の運営者情報セクションには `id="operator-info"` を付与し、`/terms?tab=privacy#operator-info` でディープリンク可能。
+- Next.js 15 の要件に従い、クエリパラメータを扱うタブ切り替え部分は `Suspense` 境界内のクライアントコンポーネントとして実装する。
 
 ---
 

@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ORGANIZATION_NAME, REPRESENTATIVE_NAME } from '@/lib/ui/branding';
 
@@ -289,7 +290,7 @@ function PrivacyContent() {
   );
 }
 
-export default function TermsPage() {
+function TermsPageInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -385,5 +386,26 @@ export default function TermsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+function TermsPageFallback() {
+  return (
+    <div className="space-y-8 py-8 page-enter">
+      <div className="space-y-4 text-center">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+          利用規約・プライバシーポリシー
+        </h1>
+        <p className="text-base text-muted-foreground">コンテンツを読み込み中です...</p>
+      </div>
+    </div>
+  );
+}
+
+export default function TermsPage() {
+  return (
+    <Suspense fallback={<TermsPageFallback />}>
+      <TermsPageInner />
+    </Suspense>
   );
 }
