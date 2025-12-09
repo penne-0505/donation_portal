@@ -1,3 +1,6 @@
+# This project has been handed over to [here](https://github.com/penne-9595/clover-web-page). It is no longer updated and no guarantees are provided.
+
+
 # Donation Portal
 
 Discord コミュニティ向けの任意寄付を受け付ける Cloudflare Pages プロジェクトです。Stripe Checkout で単発・定期寄付を処理し、Discord OAuth で取得した表示名を寄付者の同意がある場合のみ公開します。Stripe の Customer metadata を単一のデータソース（SSOT）として利用し、自前の永続ストアは用意しません。
