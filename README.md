@@ -1,4 +1,4 @@
-# This project has been handed over to [here](https://github.com/penne-0505/clover-web-page). It is no longer updated and no guarantees are provided.
+# This project has been handed over to [here](https://github.com/penne-0505/clover_web_page). It is no longer updated and no guarantees are provided.
 
 
 # Donation Portal
